@@ -15,6 +15,11 @@ HF_REPO=${2:?usage: upload.sh <local_model_dir> <hf_user/repo>}
 [[ -f "$MODEL_DIR/README.md" ]] || { echo "missing $MODEL_DIR/README.md (model card)"; exit 1; }
 grep -qE '\{[A-Z][A-Z0-9_]*\}' "$MODEL_DIR/README.md" && { echo "model card still has unfilled {PLACEHOLDERS}"; exit 1; }
 
+# Fail BEFORE the multi-GB upload if the post-upload privacy step would crash:
+# it needs huggingface_hub importable (activate the project venv first).
+python3 -c 'import huggingface_hub' 2>/dev/null || {
+  echo "ERROR: huggingface_hub not importable — activate the project venv"; exit 1; }
+
 hf repo create "$HF_REPO" --repo-type model --private || true
 hf upload "$HF_REPO" "$MODEL_DIR" . --repo-type model
 # ENFORCE + VERIFY privacy after upload. Lesson learned the hard way: a silently
