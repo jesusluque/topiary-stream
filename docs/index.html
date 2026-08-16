@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Topiary Stream</title>
+<style>
+:root{--bg:#fbfcfe;--ink:#17222e;--muted:#5b6b7a;--accent:#1e5a8a;--soft:#e8eff6;
+--card:#ffffff;--mono:ui-monospace,'SF Mono',Menlo,monospace}
+@media (prefers-color-scheme: dark){:root{--bg:#0e141b;--ink:#e4ecf3;--muted:#93a4b5;
+--accent:#5ea3d8;--soft:#18222d;--card:#131c26}}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font:17px/1.65 -apple-system,system-ui,sans-serif;
+padding:0 20px 80px}
+main{max-width:880px;margin:0 auto}
+header{padding:56px 0 8px}
+h1{font-size:2.3rem;letter-spacing:-.02em}
+.tag{color:var(--muted);font-size:1.1rem;margin:6px 0 14px}
+nav a{color:var(--accent);text-decoration:none;margin-right:18px;font-weight:500}
+h2{margin:52px 0 14px;font-size:1.45rem;letter-spacing:-.01em}
+h3{margin:22px 0 8px;font-size:1.08rem}
+p{margin:10px 0;color:var(--ink)}
+.muted{color:var(--muted)}
+pre{background:var(--soft);border-radius:10px;padding:16px 18px;overflow-x:auto;
+font:13.5px/1.55 var(--mono);margin:14px 0}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.95rem}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--soft)}
+th{color:var(--muted);font-weight:600}
+.card{background:var(--card);border:1px solid var(--soft);border-radius:12px;
+padding:18px 20px;margin:14px 0}
+.caption{color:var(--muted);font-size:.88rem;margin-top:6px}
+strong{font-weight:650}
+li{margin:7px 0}
+ul{padding-left:22px}
+a{color:var(--accent)}
+.epigraph{border-left:3px solid var(--accent);padding-left:14px;color:var(--muted);
+font-style:italic;margin:18px 0}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Topiary Stream</h1>
+<p class="tag">Serve MoE models that don't fit — stock kernels, guaranteed floors, measured tolls.</p>
+<nav>
+<a href="https://github.com/jesusluque/topiary-stream">GitHub</a>
+<a href="https://github.com/jesusluque/topiary-stream/blob/main/paper/topiary-stream.md">Paper draft</a>
+<a href="#results">Results</a>
+<a href="#limits">Honest limits</a>
+<a href="https://jesusluque.github.io/topiary/">Topiary (static sibling)</a>
+</nav>
+<p class="epigraph">Topiary shapes the tree once; Stream keeps the whole tree
+alive on disk and lets your RAM hold only the branches the wind is moving.</p>
+</header>
+
+<section>
+<h2>A 24&nbsp;GB laptop, serving models it cannot load</h2>
+<p>The router of a mixture-of-experts model scores its experts <em>before</em>
+their weights are read — residency decisions are free. Topiary Stream splits
+every expert into <strong>bit planes that stock MLX kernels read directly</strong>
+(P0 = a servable half-byte floor, P0+P1 = bit-exact 4-bit), keeps the hot
+planes in a gate-governed pool, and guarantees that a cache miss serves the
+floor — blurry for one frame — never nothing, never a stall.</p>
+<pre>model                    4-bit size   served peak   HumanEval  GSM8K   tok/s
+Qwen3.5-35B-A3B            19.5 GB*    12.5–14 GB       92%      92%    44.5
+Qwen3-Next-80B-A3B         42   GB     17    GB         84%      96%    21.5
+Qwen3-235B-A22B           132   GB     — no servable middle at 24 GB (measured)
+ * loads, but Metal OOMs on generation: unservable whole</pre>
+<p class="caption">Apple M5 Pro, 24 GB. The 35B matches the best model that
+does fit (92/94) and beats it on general knowledge (WikiText PPL 7.11 vs 10.27).</p>
+</section>
+
+<section id="results">
+<h2>Results — controls first</h2>
+<div class="card">
+<h3>The control that anchors everything</h3>
+<p>Pager at τ=0 vs the true 4-bit base: PPL 2.3614 vs 2.3623 — <strong>no
+measurable difference</strong> — at 12.22&nbsp;GB peak instead of a crash.
+Reproduced across independent processes to four decimals.</p>
+</div>
+<table>
+<tr><th>35B config</th><th>Code PPL</th><th>Wiki PPL</th><th>Peak</th></tr>
+<tr><td>true base (control)</td><td>2.3623</td><td>7.0716</td><td>20.3 GB ✗</td></tr>
+<tr><td>pager τ=0.10</td><td>2.3830 (+0.9%)</td><td>7.1114 (+0.6%)</td><td>12.22 GB</td></tr>
+<tr><td>fast-path, tasks</td><td colspan="2">HumanEval 92% · GSM8K 92% (n=25/50)</td><td>14.4 GB</td></tr>
+</table>
+<p>The 80B's <em>true base</em> — measured through exact-mode paging at
+4.3&nbsp;GB peak, on a model that cannot be loaded — is the strongest this
+machine has touched (PPL 2.228 / 5.557). Served, it is a reasoning
+specialist: GSM8K 96%, with a heavy, honestly-reported teacher-forced toll in
+dispersed domains.</p>
+</section>
+
+<section>
+<h2>The breathing runtime</h2>
+<p>Residency is a dial, so a governor turns it: every refresh reads real
+memory pressure and resizes the pool. From the measured demo — an external
+8&nbsp;GB allocation against ~3&nbsp;GB available, generation running:</p>
+<pre>[gov] avail 4.1 GB → K 32→24 · 13.7 GB active
+[gov] avail 3.5 GB → K 24→16 · 13.4 GB active
+[gov] avail 3.1 GB → K 16→8  · 13.1 GB active
+[gov] avail 3.0 GB → K 8→4   · 12.8 GB active
+[balloon] INFLATING 8 GB
+[serve] 1106 tokens · 49.3 tok/s · peak 13.85 GB — completed cleanly</pre>
+<p class="caption">Four automatic retreats, no crash, and — because a smaller
+pool reads fewer planes — the elastic dial trades quality for memory
+<em>and</em> speed at once.</p>
+</section>
+
+<section id="limits">
+<h2>Honest limits — all measured, not speculated</h2>
+<ul>
+<li><strong>Pool policies pay in teacher-forced prefill</strong> (+6–11% PPL
+on the 35B; +28%/+120% on the 80B): flat prefill routing defeats recency.
+Task decode is unaffected — serve accordingly.</li>
+<li><strong>The 235B has no servable middle on 24 GB.</strong> Four modes
+measured: fast-but-collapsed, degenerate floor (its salience is flat),
+perfect-at-0.2-tok/s, batch-only exact. Falsifiable prediction: at 48–64 GB
+the same stack serves it.</li>
+<li><strong>Coverage laws:</strong> every routed slot needs a floor — naked
+drops of dominant slots collapse output; token-level retry needs
+L·k·P(miss) ≪ 1 (falsified live at 99% retries against load-balanced tails).</li>
+<li><strong>Speculative decoding is blocked</strong> on Qwen's hybrid
+generation in current mlx-lm (non-trimmable SSM caches) — an implementation
+limit, with the general solution known in the literature.</li>
+<li><strong>Statistics:</strong> at n=25/50, ≤2-item gaps are
+indistinguishable, not ties; throughput measured on a long-uptime machine.</li>
+</ul>
+</section>
+
+<section>
+<h2>Try it</h2>
+<pre>git clone https://github.com/jesusluque/topiary-stream && cd topiary-stream
+uv venv && source .venv/bin/activate && uv pip install -e .
+python src/split.py --src mlx-community/Qwen3.5-35B-A3B-4bit \
+    --out artifacts/qwen35-stream --layout resident-p0
+python src/serve.py --artifact artifacts/qwen35-stream --pool-k 32 --governor</pre>
+<h2 style="margin-top:48px">Artifacts</h2>
+<ul>
+<li><a href="https://huggingface.co/jesusluque/qwen3.5-35b-topiary-stream">qwen3.5-35b-topiary-stream</a> — the flagship (serve on any 24 GB Apple Silicon)</li>
+<li><a href="https://huggingface.co/jesusluque/qwen3-next-80b-topiary-stream">qwen3-next-80b-topiary-stream</a> — the reasoning specialist</li>
+<li><a href="https://huggingface.co/jesusluque/qwen3-235b-topiary-stream-kit">qwen3-235b-topiary-stream-kit</a> — build kit + the honest negative, for the 48–64 GB machine you'll own someday</li>
+</ul>
+<p class="caption">Released with the runtime — August 2026.</p>
+</section>
+
+<section id="cite">
+<h2>Citing</h2>
+<pre>@misc&#123;luque2026topiarystream,
+  title  = &#123;Topiary Stream: Gate-Governed Bit-Plane Residency for Serving
+            Oversized MoE Models on Apple Silicon&#125;,
+  author = &#123;luque, jesus&#125;,
+  year   = &#123;2026&#125;,
+  url    = &#123;https://github.com/jesusluque/topiary-stream&#125;
+&#125;</pre>
+</section>
+</main>
+</body>
+</html>

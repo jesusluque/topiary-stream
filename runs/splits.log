@@ -1,0 +1,18 @@
+  model-00001-of-00004.safetensors done
+  model-00002-of-00004.safetensors done
+  model-00003-of-00004.safetensors done
+  model-00004-of-00004.safetensors done
+[out] artifacts/qwen35-stream: resident 11.46 GB · P1 memmaps 8.05 GB
+=== 35B OK ===
+Fetching 21 files:   0%|          | 0/21 [00:00<?, ?it/s]Fetching 21 files: 100%|██████████| 21/21 [00:00<00:00, 3305.95it/s]
+  model-00001-of-00009.safetensors: 16 expert tensors
+  model-00002-of-00009.safetensors: 17 expert tensors
+  model-00003-of-00009.safetensors: 17 expert tensors
+  model-00004-of-00009.safetensors: 17 expert tensors
+  model-00005-of-00009.safetensors: 17 expert tensors
+  model-00006-of-00009.safetensors: 17 expert tensors
+  model-00007-of-00009.safetensors: 17 expert tensors
+  model-00008-of-00009.safetensors: 17 expert tensors
+  model-00009-of-00009.safetensors: 9 expert tensors
+[out] artifacts/qwen80-stream: skeleton 1.37 GB · memmaps 43.49 GB · 48 MoE layers
+=== 80B OK ===

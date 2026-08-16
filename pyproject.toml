@@ -1,0 +1,9 @@
+[project]
+name = "topiary-stream"
+version = "0.1.0"
+description = "Serve MoE models that do not fit: anchored bit-plane pyramid + gate-governed residency runtime for MLX"
+requires-python = ">=3.11"
+dependencies = ["mlx", "mlx-lm", "numpy", "datasets", "huggingface_hub"]
+
+[tool.ruff]
+line-length = 100
