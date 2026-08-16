@@ -1,0 +1,124 @@
+[load] 11.46 GB resident
+[pool] K=32/layer (12.46 GB with pools)
+[warmup] pool adapted to the prompt
+
+[gov] avail 4.0 GB -> K 32->24 · 13.7 GB active
+
+[gov] avail 3.5 GB -> K 24->16 · 13.4 GB active
+
+[gov] avail 3.2 GB -> K 16->8 · 13.1 GB active
+This is a classic merge problem from the merge sort algorithm. I'll create a function that merges two sorted lists into one sorted list, then explain the time and space complexity, and discuss edge cases.
+
+Let me write a clean, well-documented function with examples.
+</think>
+
+Here's a Python function that merges two sorted lists into one sorted list, along with an explanation of its complexity and edge cases.
+
+```python
+def merge_sorted_lists(list1, list2):
+    """
+    Merges two sorted lists into one sorted list.
+
+    Args:
+        list1 (List[int]): First sorted list
+        list2 (List[int]): Second sorted list
+
+    Returns:
+        List[int]: Merged sorted list
+    """
+    merged = []
+    i, j = 0, 0
+
+    # Compare elements from both lists and add the smaller one
+    while i < len(list1) and j < len(list2):
+        if list1[i] <= list2[j]:
+            merged.append(list1[i])
+            i += 1
+        else:
+            merged.append(list2[j])
+            j += 1
+
+    # Append remaining elements from list1
+    while i < len(list1):
+        merged.append(list1[i])
+        i += 1
+
+    # Append remaining elements from list2
+    while j < len(list2):
+        merged.append(list2[j])
+        j += 1
+
+    return merged
+```
+
+### Time and Space Complexity
+
+- **Time Complexity:** O(n + m), where n and m are the lengths of the two input lists. Each element is visited exactly once.
+- **Space Complexity:** O(n + m), as a new merged list is created to hold the result.
+
+### Edge Cases
+
+1. **Empty Lists:**
+   - If one or both lists are empty, the function correctly returns the non-empty list or an empty list.
+   - Example: `merge_sorted_lists([], [1, 2])` → `[1, 2]`
+
+2. **Single Element Lists:**
+   - Works correctly with lists containing one element each.
+   - Example: `merge_sorted_lists([1], [2])` → `[1, 2]`
+
+3. **Lists with Duplicate Values:**
+   - Preserves all elements, including duplicates.
+   - Example: `merge_sorted_lists([1, 1, 3], [1, 2, 3])` → `[1, 1, 1, 2, 3, 3]`
+
+4. **Negative Numbers:**
+   - Correctly handles negative values.
+   - Example: `merge_sorted_lists([-5, 0], [-3, 2])` → `[-5, -3, 0, 2]`
+
+5. **Already Sorted Lists:**
+   - If both lists are already sorted, the function merges them correctly.
+   - Example: `merge_sorted_lists([1, 2, 3], [4, 5, 6])` → `[1, 2, 3, 4, 5, 6]`
+
+6. **One List is a Subsequence of the Other:**
+   - Works correctly when one list is fully contained within the other.
+   - Example: `merge_sorted_lists([1, 2, 3], [1, 2, 3, 4, 5])` → `[1, 1, 2, 2, 3, 3, 4, 5]`
+
+### Alternative: In-Place Merge (Advanced)
+
+For scenarios where modifying one of the input lists in-place is acceptable, you can use a two-pointer approach from the end of both lists. This avoids allocating a new list and reduces space complexity to O(1).
+
+```python
+def merge_in_place(list1, list2):
+    """
+    Merges two sorted lists in-place, modifying list1.
+    Assumes list1 has enough space to hold all elements.
+
+    Args:
+        list1 (List[int]): First sorted list with extra space
+        list2 (List[int]): Second sorted list
+
+    Returns:
+        List[int]: Modified list1 containing merged result
+    """
+    i, j, k = len(list1) - 1, len(list2) - 1, len(list1) + len(list2) - 1
+
+    while j >= 0:
+        if i >= 0 and list1[i] > list2[j]:
+            list1[k] = list1[i]
+            i -= 1
+        else:
+            list1[k] = list2[j]
+            j -= 1
+        k -= 1
+
+    return list1
+```
+
+Note: This version requires that `list1` has enough capacity to hold all elements from both lists. It's useful in memory-constrained environments but is more complex and less Pythonic for general use.
+
+### Summary
+
+- The standard `merge_sorted_lists` function is simple, efficient, and safe for general use.
+- It handles all edge cases correctly and is easy to understand and maintain.
+- For advanced use cases, an in-place merge can be considered, but it requires additional constraints and careful handling.
+
+[serve] 1125 tokens in 23.7s = 47.4 tok/s · peak 13.84 GB

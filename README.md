@@ -38,7 +38,7 @@ inference engine.
    half the bytes; P0+P1 is bit-exact 4-bit. The pyramid is *anchored* at the
    serving level — refining upward is measured-free, truncating downward is
    only sound under gate protection (deriving levels top-down wins on weight
-   L2 and max error yet loses 20× end-to-end; the error lands on salient
+   L2 and max error yet loses ~20× end-to-end; the error lands on salient
    weights).
 2. **Let the gate govern residency.** Expert routing scores exist before any
    expert bytes are read. A per-layer pool keeps the hot experts' planes
@@ -130,7 +130,8 @@ speed here (hybrid mamba at batch-1 + a 248k-vocab head).
   equal. tok/s figures were measured on a long-running machine (indicative);
   cold-boot numbers pending.
 - **Cold storage must stay off the hot path.** Paging the floor from a USB
-  disk cost 30×. Slow tiers are for refresh-time reads only.
+  disk was >4× slower at minimum (the run had to be abandoned unfinished).
+  Slow tiers are for refresh-time reads only.
 
 ## Repository map
 

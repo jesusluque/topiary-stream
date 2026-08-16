@@ -1,0 +1,30 @@
+Hint: The `hf-cli` skill is not installed. Run `hf skills add -g --claude` to teach your AI agents how to use the `hf` CLI.
+Warning: `hf repo` is deprecated in favor of `hf repos`.
+repo_id=jesusluque/qwen3.5-35b-topiary-stream url=https://huggingface.co/jesusluque/qwen3.5-35b-topiary-stream
+Found 132 files to upload
+Uploading... 132/132 files checked, 0/0 uploaded (0.00B transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 2/125 uploaded (508MB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 4/125 uploaded (1.63GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 7/125 uploaded (2.45GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 14/125 uploaded (3.38GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 30/125 uploaded (4.38GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 55/125 uploaded (4.95GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 77/125 uploaded (5.55GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 78/125 uploaded (6.52GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 82/125 uploaded (7.48GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 89/125 uploaded (8.53GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 97/125 uploaded (9.23GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 120/125 uploaded (10.2GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 120/125 uploaded (10.8GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 120/125 uploaded (11.8GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 120/125 uploaded (12.9GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 120/125 uploaded (13.6GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 120/125 uploaded (14.6GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 121/125 uploaded (15.2GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 121/125 uploaded (15.5GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 121/125 uploaded (16.4GB transferred), 0 committed in 0 commit(s)
+Uploading... 132/132 files checked, 123/125 uploaded (16.9GB transferred), 0 committed in 0 commit(s)
+url=https://huggingface.co/jesusluque/qwen3.5-35b-topiary-stream/commit/390e9a305121ba9d2a6474e43cbfd29cade305ee
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+ModuleNotFoundError: No module named 'huggingface_hub'

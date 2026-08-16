@@ -32,7 +32,7 @@ centroid-folded bias (β+1.5s).
 
 Construction direction matters and we measure why. Deriving low levels by
 truncating a fine master *wins* on uniform weight metrics — L2 AND max error —
-yet *loses* end-to-end (derived Q2: 20× worse PPL than a native Q2 fit on
+yet *loses* end-to-end (derived Q2: ~20× worse PPL than a native Q2 fit on
 OLMoE-7B). The truncated grid concentrates its error on salient weights,
 which uniform metrics under-weight; this is the mechanistic face of the
 salient-weights principle (AWQ) arrived at through grid truncation, and the
@@ -110,7 +110,7 @@ collapses (naked drops of dominant slots destroy, not degrade); a universal
 salience is flat: the prefix captures 53.5% vs ~94% on concentrated models);
 a blocking floor yields *perfect* text at 0.2 tok/s (94 sync points/token);
 exact mode works batch-only. Three converging walls: pool coverage (11–16% of
-experts ≪ the measured ~30–60-experts/layer working set), floor budget below
+experts ≪ the observed ~30–60-experts/layer working set), floor budget below
 the width cliff, flat salience. Token-level retry-on-miss was predicted to
 converge at C ≫ working set and **falsified same-day** (99% retries): the
 correct condition is L·k·P(miss) ≪ 1, unreachable against load-balanced

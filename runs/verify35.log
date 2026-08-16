@@ -1,0 +1,70 @@
+[load] 11.46 GB resident
+[pool] K=32/layer (12.46 GB with pools)
+[warmup] pool adapted to the prompt
+This is a classic merge problem from the merge sort algorithm. I'll create a function that merges two sorted lists into one sorted list, then explain the time and space complexity, and discuss edge cases.
+
+Let me write a clean, well-documented function with examples.
+</think>
+
+Here's a Python function that merges two sorted lists into one sorted list, along with an explanation of its complexity and edge cases.
+
+```python
+def merge_sorted_lists(list1, list2):
+    """
+    Merges two sorted lists into one sorted list.
+
+    Args:
+        list1 (List[int]): First sorted list
+        list2 (List[int]): Second sorted list
+
+    Returns:
+        List[int]: Merged sorted list
+    """
+    merged = []
+    i, j = 0, 0
+
+    # Compare elements from both lists and add the smaller one
+    while i < len(list1) and j < len(list2):
+        if list1[i] <= list2[j]:
+            merged.append(list1[i])
+            i += 1
+        else:
+            merged.append(list2[j])
+            j += 1
+
+    # Append any remaining elements
+    merged.extend(list1[i:])
+    merged.extend(list2[j:])
+
+    return merged
+```
+
+### Time and Space Complexity
+
+- **Time Complexity:** O(n + m), where n and m are the lengths of the two input lists. Each element is visited exactly once.
+- **Space Complexity:** O(n + m), for the merged output list.
+
+### Edge Cases
+
+1. **Empty Lists:**
+   - If one or both lists are empty, the function correctly returns the non-empty list or an empty list.
+   - Example: `merge_sorted_lists([], [1, 2])` → `[1, 2]`
+
+2. **Single Element Lists:**
+   - Works correctly when one or both lists contain only one element.
+
+3. **Lists with Duplicates:**
+   - Preserves all elements, including duplicates, in the correct order.
+
+4. **Negative Numbers:**
+   - Correctly handles negative values and maintains sorted order.
+
+5. **Already Sorted Merged Result:**
+   - If the lists are already in order relative to each other, the function still performs the merge correctly.
+
+### Example Usage
+
+```python
+print(merge_sorted_lists([1, 3, 5], [2
+
+[serve] 511 tokens in 11.6s = 44.1 tok/s · peak 13.86 GB
