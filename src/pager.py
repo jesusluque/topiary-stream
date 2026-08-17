@@ -256,7 +256,11 @@ def patch_pool(model, art_dir: Path, pool_c: int, pool_k: int,
         xx = mx.expand_dims(x_flat, (-2, -3))
         mode = S["mode"]
 
-        if mode == "exact":
+        # EXACT PREFILL for pool policies: the prompt is one batched pass —
+        # serve it at true 4-bit and keep the pool policy for decode only.
+        # Removes the teacher-forced/prefill toll (measured +28%/+120% on an
+        # 80B) and starts decode from an exact KV.
+        if mode == "exact" or (x_flat.shape[0] > 1 and mode in ("nosync", "floor2d")):
             inds_np = np.array(inds)
             uniq, inv = np.unique(inds_np, return_inverse=True)
             rme = mx.array(inv.reshape(inds_np.shape).astype(np.int32))

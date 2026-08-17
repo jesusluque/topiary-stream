@@ -31,21 +31,23 @@ python src/serve.py --artifact jesusluque/qwen3-next-80b-topiary-stream \
 
 | Metric | Value |
 |---|---|
-| 4-bit size / served peak | 42 GB / **16.5–17.4 GB** |
+| 4-bit size / served peak | 42 GB / **16.5–17.7 GB** |
 | Decode speed | 20–21.5 tok/s (indicative) |
-| HumanEval / GSM8K (greedy, n=25) | 84% / **96%** — the best GSM8K on this machine |
+| HumanEval / GSM8K (greedy, n=15, exact-prefill serving) | **15/15 / 15/15** |
+| Served PPL (exact prefill) | 2.2280 code / 5.5569 general — **equals the true base** to four decimals |
 | True base (exact-mode paging, 4.3 GB peak) | PPL 2.228 code / 5.557 general — the strongest base this hardware has touched |
-| Serving toll (pool+drop, teacher-forced) | +28% code / **+120% general** |
 
 ## Honest limits — read before choosing this model
 
-Under this runtime the 80B is a **reasoning specialist, not a generalist**:
-the pool's drop policy is nearly free in task-style decode (GSM8K 96%) but
-expensive in dispersed domains (the +120% general-PPL toll is measured, not
-hypothetical — its knowledge advantage evaporates in broad-knowledge
-serving). For a balanced daily driver at this memory, prefer the
-[35B artifact](https://huggingface.co/jesusluque/qwen3.5-35b-topiary-stream).
-n=25 task statistics: ≤2-item differences are indistinguishable.
+The runtime serves **prefill exact by design** (the prompt is one batched
+pass; the needed P1 planes read once from the memmaps), so the pool policy
+governs decode only. Before that design fix, pool-served prefill cost +28%
+code / +120% general PPL and tasks measured 84%/96% — the prefill toll, not
+the decode policy, was the handicap. With exact prefill the served model
+matches its true base on PPL and scores 15/15 on both task sets (n=15;
+small-n statistics — treat as "no detected degradation", not proof of
+equality). Decode remains gate-governed: a pool miss serves the P0 floor for
+one token.
 
 ## Provenance
 

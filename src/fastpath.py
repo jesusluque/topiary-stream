@@ -121,8 +121,39 @@ def patch_fast(model, art_dir: Path, pool_k: int) -> None:
             mx.eval(inds)   # prefill: pin now — lazy inds under memory
                             # pressure have produced garbage indices
         STATE["pending"][id(self)].append(inds)
-
         glu = self.switch_mlp
+
+        if x_flat.shape[0] > 1:
+            # EXACT PREFILL: the prompt is one batched pass — serve it at full
+            # 4-bit (P1 for the union of needed experts read once from the
+            # memmap). The pool policy applies to decode only, where task
+            # quality is unaffected; this removes the teacher-forced/prefill
+            # toll and gives decode an exact KV to start from.
+            inds_np = np.array(inds)
+            uniq, inv = np.unique(inds_np, return_inverse=True)
+            rme = mx.array(inv.reshape(inds_np.shape).astype(np.int32))
+            xxp = mx.expand_dims(x_flat, (-2, -3))
+
+            def pfx(name, xin):
+                p = st.projs[name]
+                rows = mx.array(np.asarray(p["mm"][list(uniq)])).reshape(
+                    len(uniq), p["out"], -1)
+                s_u = p["s"][mx.array(uniq.astype(np.int32))]
+                b_u = p["b"][mx.array(uniq.astype(np.int32))]
+                return (mx.gather_qmm(xin, p["p0"], p["s"] * 4, p["b"],
+                                      rhs_indices=inds, transpose=True,
+                                      group_size=GROUP, bits=2)
+                        + mx.gather_qmm(xin, rows, s_u, mx.zeros_like(s_u),
+                                        rhs_indices=rme, transpose=True,
+                                        group_size=GROUP, bits=2))
+
+            h = glu.activation(pfx("up_proj", xxp), pfx("gate_proj", xxp))
+            y = pfx("down_proj", h).squeeze(-2)
+            y = (y * scores[..., None].astype(y.dtype)).sum(axis=-2)
+            if hasattr(self, "shared_expert"):
+                y = y + mx.sigmoid(self.shared_expert_gate(x_flat)) * self.shared_expert(x_flat)
+            return y.reshape(shape)
+
         xx = mx.expand_dims(x_flat, (-2, -3))
         do_sort = inds.size >= 64
         idx = inds

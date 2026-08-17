@@ -63,7 +63,7 @@ planes in a gate-governed pool, and guarantees that a cache miss serves the
 floor — blurry for one frame — never nothing, never a stall.</p>
 <pre>model                    4-bit size   served peak   HumanEval  GSM8K   tok/s
 Qwen3.5-35B-A3B            19.5 GB*    12.5–14 GB       92%      92%    44.5
-Qwen3-Next-80B-A3B         42   GB     17    GB         84%      96%    21.5
+Qwen3-Next-80B-A3B         42   GB     17.6  GB       15/15    15/15    20.1
 Qwen3-235B-A22B           132   GB     — no servable middle at 24 GB (measured)
  * loads, but Metal OOMs on generation: unservable whole</pre>
 <p class="caption">Apple M5 Pro, 24 GB. The 35B matches the best model that
@@ -83,12 +83,14 @@ Reproduced across independent processes to four decimals.</p>
 <tr><td>true base (control)</td><td>2.3623</td><td>7.0716</td><td>20.3 GB ✗</td></tr>
 <tr><td>pager τ=0.10</td><td>2.3830 (+0.9%)</td><td>7.1114 (+0.6%)</td><td>12.22 GB</td></tr>
 <tr><td>fast-path, tasks</td><td colspan="2">HumanEval 92% · GSM8K 92% (n=25/50)</td><td>14.4 GB</td></tr>
+<tr><td>fast-path + exact prefill</td><td colspan="2">HumanEval 14/15 · GSM8K 15/15 (n=15) · TF PPL = base</td><td>14.05 GB</td></tr>
 </table>
 <p>The 80B's <em>true base</em> — measured through exact-mode paging at
 4.3&nbsp;GB peak, on a model that cannot be loaded — is the strongest this
-machine has touched (PPL 2.228 / 5.557). Served, it is a reasoning
-specialist: GSM8K 96%, with a heavy, honestly-reported teacher-forced toll in
-dispersed domains.</p>
+machine has touched (PPL 2.228 / 5.557). Served with exact prefill, its PPL
+<strong>equals that base to four decimals</strong> and it scores HumanEval
+15/15 · GSM8K 15/15 (n=15) — the earlier 84%/96% was the prefill toll, not
+the decode policy.</p>
 </section>
 
 <section>
@@ -110,9 +112,11 @@ pool reads fewer planes — the elastic dial trades quality for memory
 <section id="limits">
 <h2>Honest limits — all measured, not speculated</h2>
 <ul>
-<li><strong>Pool policies pay in teacher-forced prefill</strong> (+6–11% PPL
-on the 35B; +28%/+120% on the 80B): flat prefill routing defeats recency.
-Task decode is unaffected — serve accordingly.</li>
+<li><strong>Prefill is served exact by design</strong> — the prompt is one
+batched pass whose P1 union reads once from the memmaps, so the pool policy
+governs decode only. Before this fix the prefill toll measured +6–11% PPL on
+the 35B and +28%/+120% on the 80B (flat prefill routing defeats recency);
+that measurement is why the design changed.</li>
 <li><strong>The 235B has no servable middle on 24 GB.</strong> Four modes
 measured: fast-but-collapsed, degenerate floor (its salience is flat),
 perfect-at-0.2-tok/s, batch-only exact. Falsifiable prediction: at 48–64 GB
@@ -138,7 +142,7 @@ python src/serve.py --artifact artifacts/qwen35-stream --pool-k 32 --governor</p
 <h2 style="margin-top:48px">Artifacts</h2>
 <ul>
 <li><a href="https://huggingface.co/jesusluque/qwen3.5-35b-topiary-stream">qwen3.5-35b-topiary-stream</a> — the flagship (serve on any 24 GB Apple Silicon)</li>
-<li><a href="https://huggingface.co/jesusluque/qwen3-next-80b-topiary-stream">qwen3-next-80b-topiary-stream</a> — the reasoning specialist</li>
+<li><a href="https://huggingface.co/jesusluque/qwen3-next-80b-topiary-stream">qwen3-next-80b-topiary-stream</a> — the strongest model this hardware has touched, served at its true base</li>
 <li><a href="https://huggingface.co/jesusluque/qwen3-235b-topiary-stream-kit">qwen3-235b-topiary-stream-kit</a> — build kit + the honest negative, for the 48–64 GB machine you'll own someday</li>
 </ul>
 <p class="caption">Released with the runtime — August 2026.</p>

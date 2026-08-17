@@ -1,0 +1,8 @@
+[load] 12.46 GB
+  humaneval 5/15: 5 ok
+  humaneval 10/15: 10 ok
+  humaneval 15/15: 14 ok
+[humaneval] 14/15 = 93%
+  gsm 10/15: 10 ok
+[gsm8k] 15/15 = 100%
+[mem] peak 14.05 GB

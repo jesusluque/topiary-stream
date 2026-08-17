@@ -1,0 +1,19 @@
+[load] 12.46 GB
+[ep35] PPL code: 2.3614 (462s)
+[ep35] PPL general: 7.0583 (398s)
+[mem] peak 14.38 GB
+=== 35B PPL OK ===
+[load] 16.46 GB
+[ep80] PPL code: 2.2280 (968s)
+[ep80] PPL general: 5.5569 (751s)
+[mem] peak 17.88 GB
+=== 80B PPL OK ===
+[load] 16.46 GB
+  humaneval 5/15: 5 ok
+  humaneval 10/15: 10 ok
+  humaneval 15/15: 15 ok
+[humaneval] 15/15 = 100%
+  gsm 10/15: 10 ok
+[gsm8k] 15/15 = 100%
+[mem] peak 17.65 GB
+=== TAREAS OK ===

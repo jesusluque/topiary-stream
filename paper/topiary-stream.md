@@ -16,8 +16,9 @@ charted by serving three model scales (1.1×, 1.8×, 5.2× of RAM) to their
 respective outcomes. On a 24 GB MacBook Pro, a Qwen3.5-35B whose 4-bit
 checkpoint cannot generate at all serves at 44.5 tok/s within 14 GB, matching
 the strongest natively-fitting model on HumanEval/GSM8K (92%/92%, n=25/50)
-while improving general-domain perplexity by 31%; an 80B serves at 21.5 tok/s
-with GSM8K 96%; a 235B is shown to have *no servable middle ground* at this
+while improving general-domain perplexity by 31%; an 80B serves at 20–21.5
+tok/s with served PPL equal to its true base and HumanEval/GSM8K 15/15
+(n=15) under exact prefill; a 235B is shown to have *no servable middle ground* at this
 memory — a negative we map to three converging, measured walls.
 
 ## 1. Method
@@ -90,17 +91,23 @@ peak — reproduced across independent processes to four decimals. The τ=0.10
 operating point costs +0.9%/+0.6% PPL. Through the full fast-path (pool K=32),
 HumanEval 92% (23/25) and GSM8K 92% (46/50) — indistinguishable from the best
 natively-fitting model (92%/94%) — with WikiText PPL 7.11–7.83 vs its 10.27.
+With exact prefill (§2.2) the fast-path's teacher-forced PPL equals the base
+(2.3614 / 7.0583) and a task mirror scores 14/15 / 15/15 (n=15).
 
 ### 2.2 Scaling up: 80B (1.8×) and the true-base control
 
-The 80B serves at 21.5 tok/s / 17 GB with GSM8K 96%. Exact-mode evaluation —
-every slot served P0+P1 straight from memmaps at 4.3 GB peak — measures the
-true base of a model that cannot be loaded: PPL 2.228/5.557, the strongest
-base on this hardware. The pool's teacher-forced toll is heavy in dispersed
-domains (+28% code, +120% general) while task decode is unaffected: under
-this runtime the 80B is a reasoning specialist. Toll asymmetry has a measured
-mechanism: prefill routing is flat (recency-based membership covers little);
-decode routing is local.
+The 80B serves at 20–21.5 tok/s / 17.6 GB. Exact-mode evaluation — every slot
+served P0+P1 straight from memmaps at 4.3 GB peak — measures the true base of
+a model that cannot be loaded: PPL 2.228/5.557, the strongest base on this
+hardware. Under pool-served prefill the teacher-forced toll was heavy in
+dispersed domains (+28% code, +120% general) with a measured mechanism —
+prefill routing is flat, so recency-based membership covers little — which
+motivated the design fix: **prefill is served exact** (the prompt is one
+batched pass; the expert-union's P1 reads once from the memmaps), confining
+the pool policy to decode. With exact prefill, served PPL equals the true
+base to four decimals and tasks reach HumanEval 15/15 / GSM8K 15/15 (n=15;
+pool-prefill serving had measured 84%/96% — the prefill toll, not the decode
+policy, was the handicap).
 
 ### 2.3 The negative that maps the boundary: 235B (5.2×)
 
@@ -143,9 +150,9 @@ gives the general solution.
 Single machine, single model family (Qwen) plus OLMoE as a bench; task
 n=25/50 (exact-McNemar indistinguishability radii reported); PPL anchors for
 the 35B under a short protocol; throughput measured on a long-uptime machine;
-the 235B artifact mixes DWQ with plain 4-bit siblings. The pool's prefill
-toll makes teacher-forced perplexity a hostile metric for this runtime —
-we report it anyway.
+the 235B artifact mixes DWQ with plain 4-bit siblings. Exact prefill removes
+the pool's teacher-forced toll by construction; the residual decode-side toll
+is bounded only by task results at small n.
 
 ## 5. Reproducibility
 

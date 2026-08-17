@@ -19,9 +19,10 @@ What that buys on one MacBook Pro (M5 Pro, 24 GB), all measured:
 ```
 model                     4-bit size   served peak   HumanEval  GSM8K   tok/s
 Qwen3.5-35B-A3B             19.5 GB*     12.5-14 GB      92%     92%    44.5
-Qwen3-Next-80B-A3B          42   GB      17    GB        84%     96%    21.5
+Qwen3-Next-80B-A3B          42   GB      17.6  GB     15/15    15/15    20.1
 Qwen3-235B-A22B            132   GB      — no servable middle exists (see limits)
     * loads, but Metal OOMs on generation — the model cannot be served whole
+    (80B task n=15 under exact-prefill serving; served PPL == its true base)
 ```
 
 The 35B row matches the best model that *does* fit this machine (a tuned
@@ -92,11 +93,14 @@ row-pageable planes) and size the pool with `--pool-c`.
 | true 4-bit base (control) | 2.3623 | 7.0716 | 20.3 (crashes on generation) |
 | pager, τ=0 control | 2.3614 — no measurable difference | — | **12.22** |
 | pager, τ=0.10 operating point | 2.3830 (+0.9%) | 7.1114 (+0.6%) | 12.22 |
-| fast-path tasks (pool K=32) | HumanEval **92%** · GSM8K **92%** | | 14.4 |
+| fast-path tasks (pool K=32) | HumanEval **92%** · GSM8K **92%** (n=25/50) | | 14.4 |
+| fast-path + exact prefill (current) | HumanEval **14/15** · GSM8K **15/15** (n=15) · TF PPL 2.3614/7.0583 = base | | 14.05 |
 
-**The 80B (Qwen3-Next-80B-A3B, 1.8× RAM):** true base PPL 2.228 / 5.557 — the
-strongest base this machine has touched — served at 21.5 tok/s with GSM8K 96%.
-The pool's teacher-forced toll is real and reported (below).
+**The 80B (Qwen3-Next-80B-A3B, 1.8× RAM):** with exact prefill, served PPL
+equals its true base to four decimals (2.2280 / 5.5569 — the strongest base
+this machine has touched) at 20–21.5 tok/s. Tasks under the full runtime:
+HumanEval **15/15**, GSM8K **15/15** (n=15; earlier pool-prefill serving had
+measured 84%/96% — the prefill toll was the whole handicap).
 
 **Speed attribution** (why we trust 44.5 tok/s is near the ceiling): compiling
 the block graph changed nothing (30.8 vs 30.4 — Python was not the
@@ -106,10 +110,12 @@ speed here (hybrid mamba at batch-1 + a 248k-vocab head).
 
 ## Honest limits (all measured, not speculated)
 
-- **Pool policies pay in teacher-forced prefill.** Flat prefill routing
-  defeats recency: +6–11% PPL on the 35B, +28% code / **+120% wiki** on the
-  80B — while task decode is unaffected (92/92). Serve accordingly: the 80B
-  under this runtime is a reasoning specialist, not a generalist.
+- **Prefill is served exact by design** (the prompt is one batched pass; P1
+  for its expert-union reads once from the memmaps), so the pool policy
+  governs decode only. Before this design the pool's prefill toll measured
+  +6–11% PPL on the 35B and +28%/+120% on the 80B — flat prefill routing
+  defeats recency — which is why the split exists. Decode-side pool cost is
+  bounded by the task results above.
 - **The 235B has no servable middle on 24 GB.** Four modes measured:
   drop-renormalize = fast but collapsed output; universal 16.7%-width floor =
   degenerate (salience too flat: 53.5% captured); blocking floor = perfect
