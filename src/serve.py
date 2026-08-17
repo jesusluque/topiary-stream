@@ -48,6 +48,10 @@ def main() -> None:
                         help="full-memmap: routed-salience npz for the pool prior")
     parser.add_argument("--governor", action="store_true",
                         help="resident-p0: elastic memory governor")
+    parser.add_argument("--gov-low", type=float, default=4.0,
+                        help="governor: shrink K below this available-GB")
+    parser.add_argument("--gov-high", type=float, default=7.0,
+                        help="governor: grow K above this available-GB")
     parser.add_argument("--refresh", type=int, default=256)
     args = parser.parse_args()
 
@@ -63,7 +67,8 @@ def main() -> None:
         rt.patch_fast(model, Path(args.artifact), args.pool_k)
         print(f"[pool] K={args.pool_k}/layer "
               f"({mx.get_active_memory() / 1e9:.2f} GB with pools)")
-        governor = rt.govern if args.governor else None
+        governor = ((lambda: rt.govern(low=args.gov_low, high=args.gov_high))
+                    if args.governor else None)
     elif layout == "full-memmap":
         import pager as rt
 
@@ -107,6 +112,12 @@ def main() -> None:
                 msg = governor()
                 if msg:
                     print(f"\n{msg} · {mx.get_active_memory() / 1e9:.1f} GB active",
+                          flush=True)
+                else:
+                    from fastpath import available_gb
+
+                    k_now = next(iter(rt.STATE["layers"].values())).pool_k
+                    print(f"\n[gov] avail {available_gb():.1f} GB · K={k_now} (hold)",
                           flush=True)
             rt.refresh_all()
     dt = time.perf_counter() - t_dec

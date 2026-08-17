@@ -1,0 +1,121 @@
+[load] 11.46 GB resident
+[pool] K=8/layer (12.46 GB with pools)
+[warmup] pool adapted to the prompt
+
+[gov] avail 4.3 GB -> K 8->16 · 12.8 GB active
+
+[gov] avail 3.9 GB · K=16 (hold)
+
+[gov] avail 3.9 GB · K=16 (hold)
+
+[gov] avail 3.9 GB · K=16 (hold)
+
+[gov] avail 4.2 GB -> K 16->24 · 13.1 GB active
+
+[gov] avail 3.6 GB · K=24 (hold)
+
+[gov] avail 3.6 GB · K=24 (hold)
+
+[gov] avail 3.6 GB · K=24 (hold)
+
+[gov] avail 4.2 GB -> K 24->32 · 13.4 GB active
+
+[gov] avail 3.5 GB · K=32 (hold)
+
+[gov] avail 3.4 GB · K=32 (hold)
+
+[gov] avail 3.4 GB · K=32 (hold)
+
+[gov] avail 4.3 GB -> K 32->40 · 13.7 GB active
+This is a classic problem - merging two sorted lists. I'll create a function that efficiently merges them, explain the time and space complexity, and discuss edge cases.
+
+Let me think about the approach:
+1. Use two pointers to iterate through both lists
+2. Compare elements and add the smaller one to result
+3. Handle remaining elements from either list
+4. This is the standard merge step from merge sort
+
+Let me write a comprehensive solution with:
+- The function implementation
+- Time and space complexity analysis
+- Edge cases discussion
+- Examples
+</think>
+
+Here's a Python function that merges two sorted lists into one sorted list, along with an explanation of its complexity and edge cases.
+
+### Function Implementation
+
+```python
+def merge_sorted_lists(list1, list2):
+    """
+    Merges two sorted lists into one sorted list.
+
+    Args:
+        list1 (List[int]): First sorted list
+        list2 (List[int]): Second sorted list
+
+    Returns:
+        List[int]: Merged sorted list
+    """
+    merged = []
+    i, j = 0, 0
+
+    # Compare elements from both lists and add the smaller one
+    while i < len(list1) and j < len(list2):
+        if list1[i] <= list2[j]:
+            merged.append(list1[i])
+            i += 1
+        else:
+            merged.append(list2[j])
+            j += 1
+
+    # Append remaining elements from list1
+    while i < len(list1):
+        merged.append(list1[i])
+        i += 1
+
+    # Append remaining elements from list2
+    while j < len(list2):
+        merged.append(list2[j])
+        j += 1
+
+    return merged
+```
+
+### Time and Space Complexity
+
+- **Time Complexity:** O(n + m), where n and m are the lengths of the two input lists. Each element is visited exactly once.
+- **Space Complexity:** O(n + m), for the merged output list.
+
+### Edge Cases
+
+1. **Empty Lists:**
+   - If one or both lists are empty, the function correctly returns the non-empty list or an empty list.
+2. **Single-Element Lists:**
+   - Works correctly by comparing and appending the single elements.
+3. **Lists with Duplicate Values:**
+   - Preserves all duplicates and maintains sorted order.
+4. **Negative Numbers:**
+   - Correctly handles negative values as they are compared numerically.
+5. **Very Large Lists:**
+   - Efficiently processes large inputs without recursion or excessive memory usage.
+
+### Example Usage
+
+```python
+print(merge_sorted_lists([1, 3, 5], [2, 4, 6]))  # [1, 2, 3, 4, 5, 6]
+print(merge_sorted_lists([], [1, 2, 3]))         # [1, 2, 3]
+print(merge_sorted_lists([1, 1, 2], [1, 2, 3]))  # [1, 1, 1, 2, 2, 3]
+print(merge_sorted_lists([-5, 0, 5], [-3, 2, 7])) # [-5, -3, 0, 2, 5, 7]
+```
+
+### Alternative: In-Place Merge (Advanced)
+
+For scenarios where modifying one of the input lists in-place is acceptable and memory efficiency is critical, an in-place merge can be used. This approach avoids allocating a new list but is more complex and typically used in specialized contexts like merge sort on arrays.
+
+### Summary
+
+This function provides an efficient and clear way to merge two sorted lists. It handles all edge cases gracefully and is suitable for general-purpose use. For most applications, the standard two-pointer approach is optimal in both time and space.
+
+[serve] 833 tokens in 23.3s = 35.8 tok/s · peak 14.14 GB
