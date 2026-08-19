@@ -14,5 +14,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install mlx mlx-lm numpy pytest
+      # Pin a las versiones probadas: el fast-path depende de internals de
+      # mlx-lm (switch_layers._gather_sort) y de la semántica de
+      # sorted_indices; "latest" no atraparía roturas que los tests de
+      # lógica pura no ven.
+      - run: pip install "mlx==0.32.0" "mlx-lm==0.31.3" numpy pytest
       - run: python -m pytest tests/ -q

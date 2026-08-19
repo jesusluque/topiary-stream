@@ -37,7 +37,11 @@ A 4-bit affine tensor with codes q4 splits exactly into two 2-bit planes,
 q4 = 4·q_hi + q_lo, giving w = [4s]·q_hi + [s]·q_lo + β. Each plane is a
 *valid affine tensor* for MLX's `gather_qmm`: level-4 reads P0+P1 (bit-exact,
 verified to 2.6e-7 through the kernel); the floor reads P0 alone with a
-centroid-folded bias (β+1.5s).
+centroid-folded bias (β+1.5s). The 1.5s fold is the expectation-correct
+(first-order unbiased) constant under uniform q_lo; we measured the dropped
+plane to be near-uniform in practice (global mean 1.504, and replacing the
+constant with per-group empirical means improves floor MSE by only 1.5% —
+§2.6), so the uniform fold is both principled and empirically tight.
 
 Construction direction matters and we measure why. Deriving low levels by
 truncating a fine master *wins* on uniform weight metrics — L2 AND max error —
@@ -251,12 +255,41 @@ and tolls) this work fills; the lineage runs back to LLM-in-a-flash
 [llmflash2024]. HOBBIT [hobbit2024], MoE-Infinity [moeinfinity2024],
 ExpertFlow [expertflow2024], ProMoE [promoe2024], Fiddler [fiddler2025],
 KTransformers [ktransformers2025] and MoE-Lightning [moelightning2025]
-offload whole experts on CUDA/x86. Any-Precision LLM's bit-plane engine
-[anyprecision2024] motivates our stock-kernel constraint; MatQuant
-[matquant2025] co-trains the nested scales we anchor instead, and AWQ
-[awq2024] states the salient-weights principle our truncation anatomy
-(§1.1) reaches through the grid. The static companion is Topiary
-[luque2026topiary]. Speculative decoding on hybrid SSM architectures is an
+offload whole experts on CUDA/x86. **The nested-quantization lineage** ("one model, many precisions") is
+saturated and we claim none of it: Any-Precision LLM [anyprecision2024]
+serves bit-planes through a custom CUDA engine over non-uniform codes;
+MatQuant [matquant2025] co-trains MSB-sliceable weights (its right-shifted
+distributions are the training-time answer to the truncation failure we
+anatomize in §1.1); MatGPTQ [matgptq2026] brings that to one-shot PTQ with
+dedicated kernels; AnyBCQ [anybcq2025] operates directly on binary-coded
+planes; D²MoE [d2moe2025] nests expert bit-widths (MWQ) on-device — with a
+bespoke dequantization kernel, which is exactly the contrast that motivates
+us: our planes are *standard affine tensors*, and every level is served by
+the unmodified stock kernel. AWQ [awq2024] states the salient-weights
+principle our truncation anatomy reaches through the grid; SqueezeLLM
+[squeezellm2024] establishes the memory-bound batch-1 regime this whole
+design lives in, and MoQE [moqe2023] documents that expert FFNs tolerate
+2-bit — the reason a 2-bit floor is viable at all when gate-protected.
+Earlier offloading lines are mixtral-offloading [mixtraloffload2023],
+AdapMoE [adapmoe2024] (gate-aware skipping) and DynaExq [dynaexq2025]
+(hot-expert precision promotion). An independent corroboration of our sync
+finding exists in llama.cpp's expert-cache RFC [llamacpp24528]: their Metal
+slot-pool experiments ran 2× slower than vanilla even at 97–99% hit rate
+purely from per-layer sync points — the same wall our dynamic-biases
+membership removes — and their hybrid hit/miss execution is exact-only (no
+precision floor). The kimi-k3 MLX port [kimik3mlx] stores two quantized
+banks per expert and reportedly pays a host sync to split indices — the
+design point our single-kernel path avoids.
+
+**Phase-asymmetric fidelity.** Prefill/decode disaggregation is standard for
+throughput [distserve2024]; PMPD [pmpd2024] lowers precision progressively
+along decode, and HMA-Serve [hmaserve2026] serves prefill in vendor-native
+low precision with BF16 decode. Our exact prefill points the asymmetry the
+other way — exact prompt, pool-governed decode — motivated by a measured
+toll (+28%/+120% PPL from flat prefill routing, §1.4) rather than a
+throughput budget.
+
+The static companion is Topiary [luque2026topiary]. Speculative decoding on hybrid SSM architectures is an
 implementation gap in MLX today; The Mamba in the Llama [mambainllama2024]
 gives the general solution.
 
@@ -285,10 +318,28 @@ or publisher on 2026-08-19.
 
 ## 4. Limitations
 
-Single machine, single model family (Qwen) plus OLMoE as a bench; task
-n=25/50 (exact-McNemar indistinguishability radii reported); PPL anchors for
-the 35B under a short protocol; throughput measured on a long-uptime machine;
-the 235B artifact mixes DWQ with plain 4-bit siblings. Exact prefill removes
+**Statistical power.** Task accuracies at n=15/25/50 carry wide intervals
+(95% CI ≈ ±11 points at 92%/n=25, ≈ ±7.5 at n=50): they support
+*indistinguishability* claims and large effects (the −20-point coverage
+break), not fine rankings. Perplexity equalities (base matched to four
+decimals) are the statistically strong results — means over tens of
+thousands of tokens. Scaling tasks to n≥300 with bootstrap CIs is the
+pre-submission bar we set ourselves.
+
+**Generality.** Single machine, single routed family (Qwen) plus OLMoE as a
+bench. Qwen3's decode routing is highly local; a load-balanced router
+(OLMoE, Mixtral) could defeat recency-based residency and must be measured
+before the coverage laws are claimed beyond "MoE with high decode locality".
+
+**Engineering surface.** The fast-path depends on one mlx-lm internal
+(`switch_layers._gather_sort`) and on `gather_qmm`'s `sorted_indices`
+semantics; versions are pinned (mlx≥0.32.0, mlx-lm≥0.31.3) and the helper is
+small enough to vendor if 3.x breaks it. No cold-boot numbers yet: all
+throughput is warm-machine, and pool warm-up cost is unreported.
+
+Also: PPL anchors for
+the 35B under a short protocol; the 235B artifact mixes DWQ with plain 4-bit
+siblings. Exact prefill removes
 the pool's teacher-forced toll by construction; the residual decode-side toll
 is bounded only by task results at small n. In the solutions bench, only the
 original/pruned and pruned/Stream pairs are same-model controlled — the

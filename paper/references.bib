@@ -46,11 +46,12 @@
   note      = {arXiv:2402.10517}
 }
 
-@misc{matquant2025,
+@inproceedings{matquant2025,
   title     = {Matryoshka Quantization},
   author    = {Nair, Pranav and Datta, Puranjay and Dean, Jeff and Jain, Prateek and Kusupati, Aditya},
+  booktitle = {ICML},
   year      = {2025},
-  note      = {arXiv:2502.06786}
+  note      = {arXiv:2502.06786. PMLR v267 (el "ICLR 2025 Oral" que circula es el workshop SLLM)}
 }
 
 @inproceedings{awq2024,
@@ -174,3 +175,19 @@
   year  = {2026},
   note  = {arXiv:2608.07911. MLX en M4 Pro 24 GB; métrica union-to-capacity r-bar}
 }
+
+% ---- Añadidas tras la revisión externa profunda (2026-08-19, 16/16 verificadas) ----
+
+@inproceedings{squeezellm2024, title={SqueezeLLM: Dense-and-Sparse Quantization}, author={Kim, Sehoon and others}, booktitle={ICML}, year={2024}, note={arXiv:2306.07629}}
+@misc{anybcq2025, title={AnyBCQ: Hardware Efficient Flexible Binary-Coded Quantization for Multi-Precision LLMs}, year={2025}, note={arXiv:2510.10467}}
+@misc{matgptq2026, title={MatGPTQ: Accurate and Efficient Post-Training Matryoshka Quantization}, year={2026}, note={arXiv:2602.03537}}
+@inproceedings{d2moe2025, title={D\textsuperscript{2}MoE: Dual Routing and Dynamic Scheduling for Efficient On-Device MoE-based LLM Serving}, booktitle={MobiCom}, year={2025}, note={arXiv:2504.15299. Incluye Matryoshka Weight Quantization (MWQ); kernel de dequant a medida}}
+@misc{moqe2023, title={Mixture of Quantized Experts (MoQE): Complementary Effect of Low-bit Quantization and Robustness}, year={2023}, note={arXiv:2310.02410}}
+@misc{pmpd2024, title={Progressive Mixed-Precision Decoding for Efficient LLM Inference}, year={2024}, note={arXiv:2410.13461}}
+@inproceedings{distserve2024, title={DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving}, booktitle={OSDI}, year={2024}, note={arXiv:2401.09670}}
+@misc{mixtraloffload2023, title={Fast Inference of Mixture-of-Experts Language Models with Offloading}, author={Eliseev, Artyom and Mazur, Denis}, year={2023}, note={arXiv:2312.17238}}
+@misc{adapmoe2024, title={AdapMoE: Adaptive Sensitivity-based Expert Gating and Management for Efficient MoE Inference}, year={2024}, note={arXiv:2408.10284}}
+@misc{dynaexq2025, title={Dynamic Expert Quantization for Scalable Mixture-of-Experts Inference}, year={2025}, note={arXiv:2511.15015. Sistema DynaExq}}
+@misc{hmaserve2026, title={HBM Is Not All You Need: Efficient Disaggregated LLM Serving across Memory-heterogeneous Accelerators}, year={2026}, note={arXiv:2606.29986. Sistema HMA-Serve: prefill en baja precisión nativa, decode BF16}}
+@misc{llamacpp24528, title={RFC: MoE Expert Cache (hybrid hit/miss execution)}, year={2026}, note={github.com/ggml-org/llama.cpp issue 24528. Slot-pool en Metal 2x mas lento incluso a 97-99\% hits por syncs por capa}}
+@misc{kimik3mlx, title={kimi-k3-mlx: TwoBankSwitchGLU port of Kimi-K3}, year={2026}, note={github.com/PipeNetwork/kimi-k3-mlx}}
