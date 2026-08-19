@@ -63,3 +63,14 @@ Peak memory: 17.234 GB
 === 1:1:4 OK (25% saliente) ===
 === 0:0:4 OK (gate/up puro suelo) ===
 === DEEPSUB COMPLETO Wed Aug 19 15:20:26 CEST 2026 ===
+=== SPEED NATIVO START Wed Aug 19 16:54:24 CEST 2026 ===
+[WARNING] Generating with a model that requires 16378 MB which is close to the maximum recommended size of 18186 MB. This can be slow. See the documentation for possible work-arounds: https://github.com/ml-explore/mlx-lm/tree/main#large-models
+[original_r1] 255 tokens = 103.0 tok/s · pico 17.23 GB
+[per-layer] active: moe 576-704x48
+[taper_r1] 255 tokens = 108.3 tok/s · pico 14.52 GB
+[WARNING] Generating with a model that requires 16378 MB which is close to the maximum recommended size of 18186 MB. This can be slow. See the documentation for possible work-arounds: https://github.com/ml-explore/mlx-lm/tree/main#large-models
+[original_r2] 255 tokens = 101.4 tok/s · pico 17.23 GB
+[per-layer] active: moe 576-704x48
+[taper_r2] 255 tokens = 108.1 tok/s · pico 14.52 GB
+=== SPEED NATIVO OK ===
+=== C120 QUALITY START Wed Aug 19 16:54:57 CEST 2026 ===

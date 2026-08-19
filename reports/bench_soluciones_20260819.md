@@ -39,8 +39,8 @@ El campeón cabe ahora en máquinas de 16 GB.
 
 | Config | tok/s | Pico GB |
 |---|---|---|
-| 30B original nativo | **104.4** | 17.2 |
-| 30B Topiary nativo | pendiente remedir† | ~15 |
+| 30B original nativo | 101.4–103.0 | 17.2 |
+| 30B Topiary nativo | **108.1–108.3** | **14.5** |
 | 30B-Stream K=32 | 47.9 | 11.1 |
 | 35B K=4 | 54.8 | 12.9 |
 | 35B K=32 (producción) | 47.6 | 13.9 |
@@ -51,9 +51,10 @@ El campeón cabe ahora en máquinas de 16 GB.
 | 80B C=120 | 28.1 | 10.2 |
 | 80B refresh=64 | 12.4 | 17.0 |
 
-† la fila del campeón falló su grep en el run; el 87 tok/s histórico es de otra
-sesión y NO es comparable con el 104.4 del original medido hoy. Remedir ambos
-el mismo día antes de afirmar nada sobre velocidad del taper.
+Remedido mismo día, rondas intercaladas, solo-decode (examples/speed_nativo.py):
+el taper compra **+6% tok/s y −2.7 GB** — real pero modesto. La reducción de
+bytes es 16% y la ganancia 6%: el 30B a batch-1 no es puramente memory-bound
+en esta máquina. (El "87 vs 104" previo era un artefacto de comparar sesiones.)
 
 Notas: el governor sale gratis (51.1 — probablemente encogió K solo). El 80B
 C=120 (+62% velocidad, −40% memoria) queda **sin validar en calidad** —
