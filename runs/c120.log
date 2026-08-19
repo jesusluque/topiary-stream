@@ -25,3 +25,4 @@
 [load] 9.66 GB
   mmlu 50/500: 45 ok
   mmlu 100/500: 90 ok
+  mmlu 150/500: 131 ok

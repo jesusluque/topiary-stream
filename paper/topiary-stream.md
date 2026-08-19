@@ -309,7 +309,7 @@ Apple Silicon (macos-14).
 - **Code**: github.com/jesusluque/topiary-stream — the eight-tool runtime
   (split/serve/pager/fastpath/pyramid/salience/floor/eval), tests, frozen
   benchmark datasets (`data/`), and this paper.
-- **Servable artifacts** (Hugging Face, pending public release):
+- **Servable artifacts** (Hugging Face, public):
   `jesusluque/qwen3.5-35b-topiary-stream` (resident-P0, 18 GB),
   `jesusluque/qwen3-next-80b-topiary-stream` (full-memmap skeleton + planes,
   42 GB, includes routed-salience orders),
