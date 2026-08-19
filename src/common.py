@@ -51,8 +51,11 @@ def load_corpus(path: Path, limit_tokens: int) -> list[dict[str, Any]]:
 
 
 def token_nll(logits: mx.array, ids: mx.array) -> mx.array:
-    """Teacher-forced per-token NLL. logits [1,L,V], ids [1,L] -> [L-1]."""
-    lp = mx.log(mx.softmax(logits[0, :-1].astype(mx.float32), axis=-1) + 1e-12)
+    """Teacher-forced per-token NLL. logits [1,L,V], ids [1,L] -> [L-1].
+    log-softmax directo (z - logsumexp): estable con vocabularios de 248k,
+    donde log(softmax+eps) pierde las colas."""
+    z = logits[0, :-1].astype(mx.float32)
+    lp = z - mx.logsumexp(z, axis=-1, keepdims=True)
     return -mx.take_along_axis(lp, ids[0, 1:][:, None], axis=-1).squeeze(-1)
 
 

@@ -93,8 +93,8 @@ row-pageable planes) and size the pool with `--pool-c`.
 | true 4-bit base (control) | 2.3623 | 7.0716 | 20.3 (crashes on generation) |
 | pager, τ=0 control | 2.3614 — no measurable difference | — | **12.22** |
 | pager, τ=0.10 operating point | 2.3830 (+0.9%) | 7.1114 (+0.6%) | 12.22 |
-| fast-path tasks (pool K=32) | HumanEval **92%** · GSM8K **92%** (n=25/50) | | 14.4 |
-| fast-path + exact prefill (current) | HumanEval **14/15** · GSM8K **15/15** (n=15) · TF PPL 2.3614/7.0583 = base | | 14.05 |
+| fast-path tasks, pool-served prefill (superseded) | HumanEval **92%** · GSM8K **92%** (n=25/50) | | 14.4 |
+| **fast-path + exact prefill — the shipping default** | HumanEval **14/15** · GSM8K **15/15** (n=15) · TF PPL 2.3614/7.0583 = base | | 14.05 |
 
 **The 80B (Qwen3-Next-80B-A3B, 1.8× RAM):** with exact prefill, served PPL
 equals its true base to four decimals (2.2280 / 5.5569 — the strongest base

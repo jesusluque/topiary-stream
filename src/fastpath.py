@@ -24,6 +24,7 @@ Usage (via serve.py):
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 from pathlib import Path
 
@@ -53,7 +54,6 @@ class FastLayer:
             mm = np.memmap(art_dir / f"L{meta['layer']}.{name}.p1.bin",
                            dtype=np.uint32, mode="r",
                            shape=(meta["experts"], meta["words"]))
-            e = meta["experts"]
             s, b = proj.scales, proj.biases
             if centroid == "empirical":
                 # suelo informado: el bias frío pliega la MEDIA REAL de los
@@ -90,13 +90,22 @@ class FastLayer:
                 "pool": mx.zeros(pool_shape, dtype=mx.uint32),
                 "pool_s": mx.zeros(s_pool_shape, dtype=s.dtype),
             }
-        self.n_experts = e
-        self.lookup = mx.full((e,), -1, dtype=mx.int32)
+        n = by_proj["gate_proj"]["experts"]
+        self.n_experts = n
+        self.lookup = mx.full((n,), -1, dtype=mx.int32)
         self.members: list[int] = []
-        self.ema = np.zeros(e, dtype=np.float64)
+        self.ema = np.zeros(n, dtype=np.float64)
 
     def refresh(self, counts: np.ndarray) -> int:
-        """EMA + recency -> top-K; page new members from the memmap."""
+        """EMA + recency -> top-K; page new members from the memmap.
+
+        Nota deliberada: aquí el pool se repagina ENTERO ante cualquier
+        cambio (a diferencia del refresh incremental del pager). Es
+        aceptable porque las filas del resident-p0 son pequeñas: K=32
+        completos son ~40 MB desde page cache, una vez cada REFRESH tokens
+        — medido: refresh=64 cuesta solo −2.5% tok/s vs refresh=256. En el
+        pager (80B, C=240) las filas son ~10× mayores y la reconstrucción
+        completa costaba 10×: allí lo incremental es obligatorio."""
         self.ema = 0.7 * self.ema + counts
         want = list(np.argsort(-self.ema)[: self.pool_k])
         entered = [e for e in want if e not in self.members]
@@ -272,6 +281,8 @@ def refresh_all() -> int:
 def available_gb() -> float:
     """Real macOS available RAM (free+inactive+purgeable+speculative)."""
     out = subprocess.run(["vm_stat"], capture_output=True, text=True).stdout
+    m = re.search(r"page size of (\d+) bytes", out)
+    page = int(m.group(1)) if m else 16384
     pages = {}
     for line in out.splitlines():
         if ":" in line:
@@ -281,7 +292,7 @@ def available_gb() -> float:
                 pages[kk.strip()] = int(v)
     n = (pages.get("Pages free", 0) + pages.get("Pages inactive", 0)
          + pages.get("Pages purgeable", 0) + pages.get("Pages speculative", 0))
-    return n * 16384 / 1e9
+    return n * page / 1e9
 
 
 def govern(low: float = 4.0, high: float = 7.0,

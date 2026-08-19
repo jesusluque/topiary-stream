@@ -3,7 +3,17 @@ name = "topiary-stream"
 version = "0.1.0"
 description = "Serve MoE models that do not fit: anchored bit-plane pyramid + gate-governed residency runtime for MLX"
 requires-python = ">=3.11"
-dependencies = ["mlx", "mlx-lm", "numpy", "datasets", "huggingface_hub"]
+license = { text = "MIT" }
+readme = "README.md"
+# El fast-path depende de internals de mlx-lm (switch_layers._gather_sort)
+# y de la semántica de sorted_indices en gather_qmm: versiones probadas.
+dependencies = [
+    "mlx>=0.32.0",
+    "mlx-lm>=0.31.3",
+    "numpy",
+    "datasets",
+    "huggingface_hub",
+]
 
 [tool.ruff]
 line-length = 100

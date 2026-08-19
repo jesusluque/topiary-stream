@@ -20,8 +20,8 @@ Registros: `runs/bench_*.json`, logs en `runs/`.
 ambas) pero **costó −10 puntos de MMLU** (68.2 vs 78.2; 50 ítems a n=500, muy
 significativo) y −4.4 de LAMBADA. El taper es un recorte de *conocimiento*, no
 de *razonamiento*. Hasta hoy era invisible porque solo se evaluaba con
-benchmarks de razonamiento. Implicación pendiente: actualizar el README y las
-cards públicas de topiary con esta tabla (decisión del usuario: repos públicos).
+benchmarks de razonamiento. HECHO el mismo día: README de topiary, paper §3.7
+y las 3 cards públicas de HF actualizadas (commit topiary 032b039).
 
 **Especialización por solución:** el esculpido domina razonamiento; los Stream
 grandes dominan conocimiento (MMLU/LAMBADA +15–18 sobre los 30B). La razón de
