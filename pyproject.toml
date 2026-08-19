@@ -8,8 +8,8 @@ readme = "README.md"
 # El fast-path depende de internals de mlx-lm (switch_layers._gather_sort)
 # y de la semántica de sorted_indices en gather_qmm: versiones probadas.
 dependencies = [
-    "mlx>=0.32.0",
-    "mlx-lm>=0.31.3",
+    "mlx>=0.32.0,<0.33",
+    "mlx-lm>=0.31.3,<0.32",
     "numpy",
     "datasets",
     "huggingface_hub",

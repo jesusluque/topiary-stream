@@ -333,7 +333,8 @@ before the coverage laws are claimed beyond "MoE with high decode locality".
 
 **Engineering surface.** The fast-path depends on one mlx-lm internal
 (`switch_layers._gather_sort`) and on `gather_qmm`'s `sorted_indices`
-semantics; versions are pinned (mlx≥0.32.0, mlx-lm≥0.31.3) and the helper is
+semantics; CI is pinned to the tested versions (mlx 0.32.0, mlx-lm 0.31.3)
+and the package declares bounded compatible ranges; the helper is
 small enough to vendor if 3.x breaks it. No cold-boot numbers yet: all
 throughput is warm-machine, and pool warm-up cost is unreported.
 
