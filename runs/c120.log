@@ -1,1 +1,27 @@
 [load] 9.66 GB
+  math500 10/100: 9 ok
+  math500 20/100: 16 ok
+  math500 30/100: 20 ok
+  math500 40/100: 26 ok
+  math500 50/100: 29 ok
+  math500 60/100: 33 ok
+  math500 70/100: 38 ok
+  math500 80/100: 39 ok
+  math500 90/100: 42 ok
+  math500 100/100: 44 ok
+[math500] 44/100 = 44%
+  mbpp 10/100: 2 ok
+  mbpp 20/100: 8 ok
+  mbpp 30/100: 18 ok
+  mbpp 40/100: 26 ok
+  mbpp 50/100: 34 ok
+  mbpp 60/100: 41 ok
+  mbpp 70/100: 47 ok
+  mbpp 80/100: 54 ok
+  mbpp 90/100: 63 ok
+  mbpp 100/100: 72 ok
+[mbpp] 72/100 = 72%
+[mem] peak 11.79 GB
+[load] 9.66 GB
+  mmlu 50/500: 45 ok
+  mmlu 100/500: 90 ok

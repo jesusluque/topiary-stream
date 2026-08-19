@@ -19,7 +19,15 @@ the strongest natively-fitting model on HumanEval/GSM8K (92%/92%, n=25/50)
 while improving general-domain perplexity by 31%; an 80B serves at 20–21.5
 tok/s with served PPL equal to its true base and HumanEval/GSM8K 15/15
 (n=15) under exact prefill; a 235B is shown to have *no servable middle ground* at this
-memory — a negative we map to three converging, measured walls.
+memory — a negative we map to three converging, measured walls. A
+four-benchmark suite (MATH-500, MBPP, MMLU, LAMBADA) over five servable
+configurations separates what each compression axis costs: static salience
+pruning preserves reasoning but cuts knowledge (−10 MMLU points against its
+own unpruned base); paged residency preserves both at the cost of speed; and
+an intra-model coverage ablation (same checkpoint, pool halved) breaks
+long-form reasoning by 20 points while leaving short-form knowledge intact —
+turning the coverage law from a cross-model observation into a controlled,
+same-model result.
 
 ## 1. Method
 
@@ -73,7 +81,25 @@ experiments bound remaining overheads: graph compilation changes nothing
 rest is the architecture's intrinsic batch-1 cost (hybrid SSM layers, a
 248k-vocab head).
 
-### 1.4 The elastic governor
+### 1.4 Exact prefill and partial-detail variants
+
+Prompt processing is one batched pass, so it is served exact by design: for
+any multi-token forward, P0 is read as usual and the P1 planes for the
+prompt's expert *union* are gathered once from the memmaps. The pool policy
+therefore governs decode only. This single design choice erased the
+runtime's largest measured toll — pool-served prefill had cost +6–11% PPL on
+the 35B and +28%/+120% on the 80B (flat prefill routing defeats
+recency-based membership) — and lifted the 80B from 84%/96% to 15/15 / 15/15
+on HumanEval/GSM8K.
+
+Two floor refinements are implemented and measured (§2.6): `--p1-frac g,u,d`
+serves P1 only for a salient-channel prefix per projection (a contiguous
+slice, because Topiary checkpoints ship with channels salience-ordered), and
+`--centroid empirical` folds the per-group empirical mean of the dropped
+plane into the floor bias instead of the uniform 1.5s. The second is a
+documented negative: the dropped plane is near-uniform noise.
+
+### 1.5 The elastic governor
 
 Residency is a dial, so we attach a controller: each refresh reads macOS's
 real available memory and resizes K stepwise between bounds. Measured under
@@ -124,26 +150,138 @@ correct condition is L·k·P(miss) ≪ 1, unreachable against load-balanced
 expert tails. Falsifiable prediction: at 48–64 GB (coverage ≈50%) this stack
 serves the 235B with nothing new built.
 
+### 2.4 The solutions bench: what each compression axis costs
+
+A single four-benchmark battery (MATH-500 n=100 level-stratified, MBPP
+sanitized n=100, MMLU n=500 subject-stratified, LAMBADA n=500; greedy, fixed
+seed, identical samples) over every servable configuration on this machine:
+
+| | 30B original | 30B Topiary (pruned) | 30B-Stream | 35B Stream | 80B Stream |
+|---|---|---|---|---|---|
+| served RAM | 16.4–17.9 GB | 14.5–15.2 GB | **9.2–11.3 GB** | 12.5–14.6 GB | 16.5–17.9 GB |
+| MATH-500 | 70% | **72%** | 67% | 60% | 64% |
+| MBPP | **83%** | 81% | 82% | 78% | 81% |
+| MMLU | 78.2% | 68.2% | 69.4% | 83.0% | **85.2%** |
+| LAMBADA | 64.6% | 60.2% | 60.0% | 75.4% | **78.2%** |
+
+Two controlled pairs sit inside this table. **Original vs. pruned** (same
+model): salience pruning preserved reasoning entirely (MATH 72 vs 70, MBPP 81
+vs 83 — both n.s.) but **cost 10 MMLU points** (68.2 vs 78.2; 50 items at
+n=500) and 4.4 LAMBADA points. The taper removes *knowledge*, not
+*reasoning* — invisible to reasoning-only batteries, which is how it went
+unnoticed until this suite. Same-day interleaved decode-only rounds put the
+speed dividend at +6% (108.1 vs 101.4 tok/s) with −2.7 GB. **Pruned vs.
+Stream-served** (same checkpoint): the paged artifact is indistinguishable on
+3 of 4 axes (MBPP +1, MMLU +1.2, LAMBADA −0.2; MATH −5 at the edge of
+significance) while dropping peak memory from 14.5 to 9.2 GB — the champion
+now fits 16 GB machines. The remaining columns mix model families
+(Qwen3 / Qwen3.5 / Qwen3-Next), so their reading is directional: the large
+paged models dominate exactly where total parameter mass lives (knowledge:
++15–18 points of MMLU/LAMBADA over the 30Bs), while the pruned 30B keeps the
+reasoning crown.
+
+### 2.5 The coverage law, third point: a same-model break
+
+The 235B negative left the coverage frontier as two points confounded by
+family, expert count and shared-expert presence (§2.3). Halving the 80B's
+pool (C=240→120; 47%→23% of 512 experts/layer, same checkpoint, same
+runtime) removes the confound: MATH-500 collapses 64%→44% and MBPP 81%→72%,
+while short-form MMLU is intact at the C=120 operating point (90% on the
+first 100 items, final pending). The mechanism is now isolated: under exact
+prefill, dropping non-resident experts damages *long decode chains*
+specifically — errors compound over hundreds of tokens — while single-token
+answers survive. Coverage below the routed working set does not degrade
+smoothly; it breaks, and it breaks reasoning first.
+
+### 2.6 Salience-prefix subsampling and two measured negatives
+
+With salience-ordered channels (free in Topiary checkpoints), P1 can be
+served for only the top fraction of each projection's channels. An
+eight-point matrix on the 30B-Stream (notation gate:up:down; 4 = full P1,
+2 = 50% salient prefix, 0 = floor only):
+
+| config | pool bytes | MATH-500 | MBPP | MMLU |
+|---|---|---|---|---|
+| 4:4:4 (default) | 3.0× | 67% | 82% | 69.4% |
+| 4:4:2 | 2.5× | 72% | — | — |
+| 2:2:4 | 2.0× | 69% | 74% | 65.8% |
+| 2:4:2 | 2.0× | 65% | — | — |
+| 2:2:2 (K=64) | 3.0× | 66% | — | — |
+| 2:2:2 | 1.5× | 65% | — | — |
+| 1:1:4 | ~1.2× | 64% | — | — |
+| 0:0:4 | ~1.0× | 64% | — | — |
+
+The MATH-vs-bytes curve is strikingly flat — three points from 3.0× down to
+1.0× — but the full battery on 2:2:4 falsifies the free lunch: −8 MBPP and
+−3.6 MMLU against the default. At n=100 the 64–72% MATH spread is not
+pairwise-orderable; what is defensible is that the salient prefix is a
+*memory-emergency dial* (0:0:4 serves usable MATH at 10.4 GB peak), not a
+general optimization. Full P1 remains the default, and the recipe must be
+revalidated per model — non-Topiary checkpoints do not ship salience-ordered
+channels.
+
+Two cheaper ideas were measured to death first. The *empirical centroid*
+(per-group mean of the dropped plane folded into the floor bias, replacing
+the uniform 1.5s) improves floor MSE by only 1.5%: the dropped low bits are
+near-uniform noise (global mean 1.504 vs 1.5 theoretical). And *row-delta
+compression* (1-bit change mask between rows plus changed values, motivated
+by video codecs) was falsified directly: the fraction of identical values
+between neighboring rows or neighboring experts equals the chance rate
+exactly (8.6% measured vs 8.6% from the code distribution on q4), so the
+scheme expands to 4.66 bits/weight. Quantized trained weights carry no
+row-to-row redundancy to exploit; the exploitable structure is *which*
+weights matter (salience), not *what values* they share.
+
 ## 3. Related work
 
-SliceMoE (DAC'26) caches experts at bit-slice granularity with a
+SliceMoE [slicemoe2026] caches experts at bit-slice granularity with a
 truncation-compatible Matryoshka quantization — hardware-oriented co-design
 whose AMAT grid redesign independently corroborates our metric inversion.
-PagedWeight (2026) pages expert precision under a Hessian-aware planner to
-free KV memory on datacenter GPUs. WiSP (2026) casts low-resource MoE serving
-as Denning working-set management with byte-identical outputs; our working-set
-measurements instantiate that frame. Cache-conditional routing (Skliar et
-al.) biases the *router* toward resident experts; our dynamic biases act on
-the *served representation*, leaving routing untouched. On Apple Silicon, a
-2026 wave of SSD-streaming engines (flash-moe, SwiftLM, mlx-moe) serves
-oversized MoE at whole-expert granularity with custom pipelines and no
-published quality accounting — precisely the two gaps (sub-expert planes on
-stock kernels; measured floors and tolls) this work fills. HOBBIT, MoE-
-Infinity, ExpertFlow, ProMoE, Fiddler, KTransformers and MoE-Lightning
+PagedWeight [pagedweight2026] pages expert precision under a Hessian-aware
+planner to free KV memory on datacenter GPUs. WiSP [wisp2026] casts
+low-resource MoE serving as Denning working-set management with
+byte-identical outputs; our working-set measurements instantiate that frame.
+Cache-conditional routing [cacheconditional2025] biases the *router* toward
+resident experts; our dynamic biases act on the *served representation*,
+leaving routing untouched. On Apple Silicon, a 2026 wave of SSD-streaming
+engines (flash-moe, SwiftLM, mlx-moe) serves oversized MoE at whole-expert
+granularity with custom pipelines and no published quality accounting —
+precisely the two gaps (sub-expert planes on stock kernels; measured floors
+and tolls) this work fills; the lineage runs back to LLM-in-a-flash
+[llmflash2024]. HOBBIT [hobbit2024], MoE-Infinity [moeinfinity2024],
+ExpertFlow [expertflow2024], ProMoE [promoe2024], Fiddler [fiddler2025],
+KTransformers [ktransformers2025] and MoE-Lightning [moelightning2025]
 offload whole experts on CUDA/x86. Any-Precision LLM's bit-plane engine
-motivates our stock-kernel constraint. Speculative decoding on hybrid SSM
-architectures is an implementation gap in MLX today; The Mamba in the Llama
+[anyprecision2024] motivates our stock-kernel constraint; MatQuant
+[matquant2025] co-trains the nested scales we anchor instead, and AWQ
+[awq2024] states the salient-weights principle our truncation anatomy
+(§1.1) reaches through the grid. The static companion is Topiary
+[luque2026topiary]. Speculative decoding on hybrid SSM architectures is an
+implementation gap in MLX today; The Mamba in the Llama [mambainllama2024]
 gives the general solution.
+
+**Concurrent work (post-July 2026, found in an adversarial sweep on
+2026-08-19).** Tied Trit-Planes [tiedtritplanes2026] publishes a
+plane-decomposition that folds losslessly into one 4-bit code plane and
+disk-streams a 284B MoE on 64 GB consumer machines including Apple hardware —
+through a bespoke Zig/Metal engine with LRU residency and no quality floor.
+vLLM-Moet [vllmmoet2026] serves a 2-bit expert base with a confidence-gated
+FP4 recovery tier on Blackwell GPUs via hand-written SASS. Both narrow the
+novelty of "bit-planes for oversized MoE" as such; what remains unclaimed,
+and what we therefore lead with, is the *conjunction*: planes each servable
+by unmodified stock kernels, a hard miss-never-blocks floor, and quality
+accounting (PPL = base, task parity) published with every policy. A
+trace-driven-evaluation audit [traceeval2026] — run on MLX on a 24 GB M4
+Pro, our exact hardware class — shows replay artifacts inverting expert-cache
+policy rankings and mandates reporting the union-to-capacity ratio r̄; our
+coverage experiments are live-served (no trace replay), and our working-set
+measurements (~30–60 experts/layer against C) are the quality-linked
+counterpart of that ratio.
+
+Benchmarks: [math2021, math500-2023, mbpp2021,
+mmlu2021, lambada2016, humaneval2021, gsm8k2021, wikitext2017]. Full BibTeX
+in `paper/references.bib`; every identifier verified against the arXiv API
+or publisher on 2026-08-19.
 
 ## 4. Limitations
 
@@ -152,11 +290,36 @@ n=25/50 (exact-McNemar indistinguishability radii reported); PPL anchors for
 the 35B under a short protocol; throughput measured on a long-uptime machine;
 the 235B artifact mixes DWQ with plain 4-bit siblings. Exact prefill removes
 the pool's teacher-forced toll by construction; the residual decode-side toll
-is bounded only by task results at small n.
+is bounded only by task results at small n. In the solutions bench, only the
+original/pruned and pruned/Stream pairs are same-model controlled — the
+cross-scale columns confound technique with model family. The P1-subsampling
+matrix is n=100 per cell: its 64–72% MATH spread is not pairwise-orderable,
+and the salient-prefix mechanism itself requires salience-ordered channels
+(free only in Topiary checkpoints). The C=120 short-form results and the
+K-dial quality batteries were in flight at writing time and are reported as
+partial where marked.
 
-## 5. Reproducibility
+## 5. Reproducibility and artifacts
 
-Every number descends from committed configs and JSON run records; plane
-arithmetic and the pool state machine are covered by a pure-logic test suite
-run in CI on Apple Silicon. Artifacts (35B, 80B) and a 235B build kit are
-published with the runtime.
+Every number descends from committed configs and JSON run records
+(`runs/*.json`, `reports/bench_soluciones_20260819.md`); plane arithmetic and
+the pool state machine are covered by a pure-logic test suite run in CI on
+Apple Silicon (macos-14).
+
+- **Code**: github.com/jesusluque/topiary-stream — the eight-tool runtime
+  (split/serve/pager/fastpath/pyramid/salience/floor/eval), tests, frozen
+  benchmark datasets (`data/`), and this paper.
+- **Servable artifacts** (Hugging Face, pending public release):
+  `jesusluque/qwen3.5-35b-topiary-stream` (resident-P0, 18 GB),
+  `jesusluque/qwen3-next-80b-topiary-stream` (full-memmap skeleton + planes,
+  42 GB, includes routed-salience orders),
+  `jesusluque/qwen3-235b-topiary-stream-kit` (skeleton + universal floor +
+  orders + rebuild recipe; the 127 GB of planes rebuild in ~1 h with
+  `split.py --consume`).
+- **Static companion** (public): github.com/jesusluque/topiary and the
+  pruned checkpoints `jesusluque/qwen3-30b-topiary` (the taper),
+  `-w640`, `-w576-code`. The 30B-Stream artifact of §2.4 is produced from
+  the taper checkpoint with `split.py --layout resident-p0` in ~15 min.
+
+Serving is one command per artifact, e.g.
+`python src/serve.py --artifact artifacts/qwen35-stream --pool-k 32 --governor`.
