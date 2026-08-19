@@ -62,10 +62,12 @@ every expert into <strong>bit planes that stock MLX kernels read directly</stron
 planes in a gate-governed pool, and guarantees that a cache miss serves the
 floor — blurry for one frame — never nothing, never a stall.</p>
 <pre>model                    4-bit size   served peak   HumanEval  GSM8K   tok/s
+Qwen3-30B-topiary (†)      14.5 GB      9.2–11.3 GB     92%      94%    47.9
 Qwen3.5-35B-A3B            19.5 GB*    12.5–14 GB       92%      92%    44.5
 Qwen3-Next-80B-A3B         42   GB     17.6  GB       15/15    15/15    20.1
 Qwen3-235B-A22B           132   GB     — no servable middle at 24 GB (measured)
- * loads, but Metal OOMs on generation: unservable whole</pre>
+ * loads, but Metal OOMs on generation: unservable whole
+ † the static sibling's champion, Stream-served: fits 16 GB machines</pre>
 <p class="caption">Apple M5 Pro, 24 GB. The 35B matches the best model that
 does fit (92/94) and beats it on general knowledge (WikiText PPL 7.11 vs 10.27).</p>
 </section>
@@ -91,6 +93,42 @@ machine has touched (PPL 2.228 / 5.557). Served with exact prefill, its PPL
 <strong>equals that base to four decimals</strong> and it scores HumanEval
 15/15 · GSM8K 15/15 (n=15) — the earlier 84%/96% was the prefill toll, not
 the decode policy.</p>
+</section>
+
+<section>
+<h2>The solutions bench — what each compression axis costs</h2>
+<p>One four-benchmark battery (MATH-500, MBPP, MMLU&nbsp;n=500,
+LAMBADA&nbsp;n=500; greedy, fixed seed, identical samples) over every
+servable configuration on this machine:</p>
+<table>
+<tr><th></th><th>30B original</th><th>30B pruned</th><th>30B-Stream</th><th>35B Stream</th><th>80B Stream</th></tr>
+<tr><td>served RAM</td><td>16.4–17.9 GB</td><td>14.5 GB</td><td><strong>9.2 GB</strong></td><td>12.5–14.6 GB</td><td>16.5–17.9 GB</td></tr>
+<tr><td>MATH-500</td><td>70%</td><td><strong>72%</strong></td><td>67%</td><td>60%</td><td>64%</td></tr>
+<tr><td>MBPP</td><td><strong>83%</strong></td><td>81%</td><td>82%</td><td>78%</td><td>81%</td></tr>
+<tr><td>MMLU</td><td><strong>78.2%</strong></td><td>68.2%</td><td>69.4%</td><td>83.0%</td><td><strong>85.2%</strong></td></tr>
+<tr><td>LAMBADA</td><td><strong>64.6%</strong></td><td>60.2%</td><td>60.0%</td><td>75.4%</td><td><strong>78.2%</strong></td></tr>
+</table>
+<div class="card">
+<h3>Pruning removes knowledge, not reasoning</h3>
+<p>Same model, same day: salience pruning kept MATH/MBPP intact and paid
+<strong>−10 MMLU / −4.4 LAMBADA points</strong> — invisible to
+reasoning-only batteries, which is how it went unnoticed. The paged models
+buy back exactly that: knowledge lives in total parameter mass, and Stream
+is how mass that doesn't fit gets served. Speed dividend of pruning,
+remeasured same-day and interleaved: +6% (108 vs 101–103 tok/s), −2.7 GB.</p>
+</div>
+<div class="card">
+<h3>The coverage law, now same-model</h3>
+<p>Halving the 80B's resident pool (C 240→120: 47%→23% of its 512
+experts/layer, same checkpoint) collapses long-form reasoning — MATH
+64%→44%, MBPP 81%→72% — while short-form MMLU holds. Coverage below the
+routed working set doesn't degrade; it <em>breaks</em>, and it breaks
+reasoning first. Falsifiable prediction unchanged: at 48–64 GB the same
+stack serves the 235B.</p>
+</div>
+<p class="caption">Cross-family columns are directional (Qwen3 / 3.5 / Next
+mix technique with model); the original↔pruned and pruned↔Stream pairs are
+same-model controlled. Full protocol: paper §2.4–2.6.</p>
 </section>
 
 <section>
@@ -127,6 +165,18 @@ L·k·P(miss) ≪ 1 (falsified live at 99% retries against load-balanced tails).
 <li><strong>Speculative decoding is blocked</strong> on Qwen's hybrid
 generation in current mlx-lm (non-trimmable SSM caches) — an implementation
 limit, with the general solution known in the literature.</li>
+<li><strong>Salient-prefix subsampling is a memory dial, not a free lunch:</strong>
+an 8-point matrix on the 30B-Stream shows MATH nearly flat from 3.0× down to
+1.0× pool bytes (67→64%), but the full battery on the seeming winner (2:2:4)
+pays −8 MBPP / −3.6 MMLU. Default stays full P1. Two cheaper ideas measured
+to death: better floor constants (dropped bits are uniform noise, 1.5% MSE)
+and row-delta compression (neighbor equality = exact chance rate — it
+<em>expands</em>).</li>
+<li><strong>Concurrent work is closing the window</strong> (adversarial sweep,
+Aug 19): Tied Trit-Planes folds planes to 4-bit through a bespoke Zig engine;
+vLLM-Moet gates FP4 recovery on Blackwell. Neither has stock kernels, a hard
+floor, or published quality accounting — the conjunction this project leads
+with. Details and citations in the paper's related work.</li>
 <li><strong>Statistics:</strong> at n=25/50, ≤2-item gaps are
 indistinguishable, not ties; throughput measured on a long-uptime machine.</li>
 </ul>
