@@ -53,6 +53,9 @@ def main() -> None:
     parser.add_argument("--gov-high", type=float, default=7.0,
                         help="governor: grow K above this available-GB")
     parser.add_argument("--refresh", type=int, default=256)
+    parser.add_argument("--centroid", default="uniform",
+                        choices=["uniform", "empirical"])
+    parser.add_argument("--p1-frac", default="1.0")
     args = parser.parse_args()
 
     set_seeds(1234)
@@ -61,10 +64,16 @@ def main() -> None:
         import fastpath as rt
         from mlx_lm import load
 
+        try:  # checkpoints con anchos per-layer (taper de topiary)
+            from dense_loader import maybe_patch_per_layer
+            maybe_patch_per_layer(args.artifact)
+        except ImportError:
+            pass
         model, tokenizer = load(args.artifact)
         mx.eval(model.parameters())
         print(f"[load] {mx.get_active_memory() / 1e9:.2f} GB resident")
-        rt.patch_fast(model, Path(args.artifact), args.pool_k)
+        rt.patch_fast(model, Path(args.artifact), args.pool_k,
+                      args.centroid, args.p1_frac)
         print(f"[pool] K={args.pool_k}/layer "
               f"({mx.get_active_memory() / 1e9:.2f} GB with pools)")
         governor = ((lambda: rt.govern(low=args.gov_low, high=args.gov_high))

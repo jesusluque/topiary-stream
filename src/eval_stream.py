@@ -47,15 +47,38 @@ def mcnemar_exact(b: int, c: int) -> float:
 
 
 def load_runtime(artifact: str, pool_c: int, pool_k: int, serve_mode: str,
-                 orders: str | None, floor: str | None):
+                 orders: str | None, floor: str | None,
+                 centroid: str = "uniform", p1_frac: str | float = 1.0):
     layout = json.load(open(Path(artifact) / "config.json")).get("stream_layout")
+    if layout is None:
+        # checkpoint normal (p.ej. el campeón Topiary estático): sin runtime
+        try:  # anchos per-layer de topiary (shim del lab, vía PYTHONPATH)
+            from dense_loader import maybe_patch_per_layer
+            maybe_patch_per_layer(artifact)
+        except ImportError:
+            pass
+        from mlx_lm import load
+
+        class _PlainRT:
+            @staticmethod
+            def refresh_all():
+                return 0
+
+        model, tokenizer = load(artifact)
+        mx.eval(model.parameters())
+        return model, tokenizer, _PlainRT
     if layout == "resident-p0":
         import fastpath as rt
         from mlx_lm import load
 
+        try:  # anchos per-layer también en artefactos stream (30B taper)
+            from dense_loader import maybe_patch_per_layer
+            maybe_patch_per_layer(artifact)
+        except ImportError:
+            pass
         model, tokenizer = load(artifact)
         mx.eval(model.parameters())
-        rt.patch_fast(model, Path(artifact), pool_k)
+        rt.patch_fast(model, Path(artifact), pool_k, centroid, p1_frac)
         return model, tokenizer, rt
     import pager as rt
 
@@ -172,10 +195,134 @@ def stage_tasks(model, tokenizer, rt, n_humaneval: int, n_gsm: int, tag: str) ->
     print(f"[mem] peak {results['peak_gb']:.2f} GB")
 
 
+def stage_bench(model, tokenizer, rt, benches: list[str], n_bench: int,
+                tag: str) -> None:
+    """Alternative benchmarks from local data/ files (downloaded once):
+    math500 (symbolic verify), mmlu (letter choice), mbpp (executable tests),
+    lambada (teacher-forced final-word accuracy — a runtime control, near-free).
+    """
+    rng = np.random.default_rng(1234)
+    data = Path(__file__).parent.parent / "data"
+    results = {}
+
+    if "math500" in benches:
+        from math_verify import parse as mv_parse, verify as mv_verify
+
+        rows = [json.loads(l) for l in open(data / "math500.jsonl")]
+        by_level: dict[int, list] = {}
+        for r in rows:
+            by_level.setdefault(r["level"], []).append(r)
+        picked = []
+        for lvl in sorted(by_level):   # estratificado por nivel
+            sub = by_level[lvl]
+            take = max(1, round(n_bench * len(sub) / len(rows)))
+            picked += [sub[i] for i in rng.permutation(len(sub))[:take]]
+        picked = picked[:n_bench]
+        ok = 0
+        for j, r in enumerate(picked):
+            out = _ask(model, tokenizer, rt,
+                       r["problem"] + "\n\nSolve step by step and put your final "
+                       "answer inside \\boxed{}.", 1024)
+            m = re.findall(r"\\boxed\{", out)
+            got = None
+            if m:
+                i = out.rfind("\\boxed{")
+                depth, k = 0, i + 7
+                while k < len(out):
+                    depth += out[k] == "{"
+                    if out[k] == "}":
+                        if depth == 0:
+                            break
+                        depth -= 1
+                    k += 1
+                got = out[i:k + 1]
+            try:
+                ok += int(got is not None and
+                          mv_verify(mv_parse("\\boxed{" + r["answer"] + "}"),
+                                    mv_parse(got)))
+            except Exception:
+                pass
+            if (j + 1) % 10 == 0:
+                print(f"  math500 {j + 1}/{len(picked)}: {ok} ok")
+        results["math500"] = ok / len(picked)
+        print(f"[math500] {ok}/{len(picked)} = {ok / len(picked):.0%}")
+
+    if "mmlu" in benches:
+        rows = [json.loads(l) for l in open(data / "mmlu500.jsonl")][:n_bench if n_bench < 500 else 500]
+        ok = 0
+        for j, r in enumerate(rows):
+            letters = "ABCD"
+            q = r["question"] + "\n" + "\n".join(
+                f"{letters[i]}. {c}" for i, c in enumerate(r["choices"]))
+            out = _ask(model, tokenizer, rt,
+                       q + "\n\nReply with ONLY the letter of the correct answer.", 8)
+            m = re.search(r"\b([ABCD])\b", out)
+            ok += int(bool(m) and letters.index(m.group(1)) == r["answer"])
+            if (j + 1) % 50 == 0:
+                print(f"  mmlu {j + 1}/{len(rows)}: {ok} ok")
+        results["mmlu"] = ok / len(rows)
+        print(f"[mmlu] {ok}/{len(rows)} = {ok / len(rows):.0%}")
+
+    if "mbpp" in benches:
+        rows = [json.loads(l) for l in open(data / "mbpp.jsonl")]
+        rows = [rows[i] for i in rng.permutation(len(rows))[:n_bench]]
+        ok = 0
+        for j, r in enumerate(rows):
+            prompt = (r["prompt"] + "\n\nYour function must satisfy this test:\n"
+                      + r["test_list"][0] + "\n\nReply with ONLY the complete "
+                      "Python function inside a ```python code block.")
+            out = _ask(model, tokenizer, rt, prompt, 512)
+            m = re.findall(r"```(?:python)?\n(.*?)```", out, re.DOTALL)
+            code = m[0] if m else out
+            program = ("\n".join(r.get("test_imports") or []) + "\n" + code
+                       + "\n\n" + "\n".join(r["test_list"]) + "\nprint('PASS')\n")
+            with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as f:
+                f.write(program)
+            try:
+                res = subprocess.run(["python3", f.name], capture_output=True,
+                                     text=True, timeout=15)
+                ok += int("PASS" in res.stdout)
+            except Exception:
+                pass
+            if (j + 1) % 10 == 0:
+                print(f"  mbpp {j + 1}/{len(rows)}: {ok} ok")
+        results["mbpp"] = ok / len(rows)
+        print(f"[mbpp] {ok}/{len(rows)} = {ok / len(rows):.0%}")
+
+    if "lambada" in benches:
+        rows = [json.loads(l) for l in open(data / "lambada.jsonl")]
+        rows = [rows[i] for i in rng.permutation(len(rows))[:n_bench]]
+        ok = 0
+        for j, r in enumerate(rows):
+            text = r["text"]
+            prefix, last = text.rsplit(" ", 1)
+            ids_full = tokenizer.encode(text)
+            ids_pre = tokenizer.encode(prefix)
+            tail = ids_full[len(ids_pre):]
+            if not tail:
+                continue
+            out = model(mx.array(ids_full)[None])
+            pred = np.array(mx.argmax(out[0, len(ids_pre) - 1:len(ids_full) - 1], axis=-1))
+            mx.eval(out)
+            ok += int((pred == np.array(tail)).all())
+            del out
+            rt.refresh_all()
+            mx.clear_cache()
+            if (j + 1) % 100 == 0:
+                print(f"  lambada {j + 1}/{len(rows)}: {ok} ok")
+        results["lambada"] = ok / len(rows)
+        print(f"[lambada] {ok}/{len(rows)} = {ok / len(rows):.0%}")
+
+    results["peak_gb"] = mx.get_peak_memory() / 1e9
+    Path("runs").mkdir(exist_ok=True)
+    Path(f"runs/bench_{tag}.json").write_text(json.dumps(results, indent=2))
+    print(f"[mem] peak {results['peak_gb']:.2f} GB")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Quality accounting for Stream artifacts")
     parser.add_argument("--artifact", required=True)
-    parser.add_argument("--stage", required=True, choices=["ppl", "tasks"])
+    parser.add_argument("--stage", required=True, choices=["ppl", "tasks", "bench"])
     parser.add_argument("--serve-mode", default="nosync",
                         choices=["exact", "nosync", "floor", "floor2d"])
     parser.add_argument("--pool-c", type=int, default=240)
@@ -189,16 +336,28 @@ def main() -> None:
     parser.add_argument("--chunk-len", type=int, default=512)
     parser.add_argument("--humaneval", type=int, default=25)
     parser.add_argument("--gsm", type=int, default=50)
+    parser.add_argument("--bench", default="math500,mmlu,mbpp,lambada",
+                        help="comma list: math500,mmlu,mbpp,lambada")
+    parser.add_argument("--n", type=int, default=50,
+                        help="items per bench (mmlu siempre usa hasta 500)")
+    parser.add_argument("--centroid", default="uniform",
+                        choices=["uniform", "empirical"])
+    parser.add_argument("--p1-frac", default="1.0",
+                        help="fracción saliente del P1 en el pool: '0.5' "
+                             "uniforme o 'gate,up,down' (p.ej. '0.5,0.5,1.0')")
     parser.add_argument("--tag", default="run")
     args = parser.parse_args()
 
     set_seeds(1234)
     model, tokenizer, rt = load_runtime(args.artifact, args.pool_c, args.pool_k,
-                                        args.serve_mode, args.orders, args.floor)
+                                        args.serve_mode, args.orders, args.floor,
+                                        args.centroid, args.p1_frac)
     print(f"[load] {mx.get_active_memory() / 1e9:.2f} GB")
     if args.stage == "ppl":
         stage_ppl(model, tokenizer, rt, args.data_code, args.data_general,
                   (args.chunks_code, args.chunks_general), args.chunk_len, args.tag)
+    elif args.stage == "bench":
+        stage_bench(model, tokenizer, rt, args.bench.split(","), args.n, args.tag)
     else:
         stage_tasks(model, tokenizer, rt, args.humaneval, args.gsm, args.tag)
 

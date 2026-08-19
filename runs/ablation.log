@@ -1,0 +1,65 @@
+=== SOLUCIONES START Wed Aug 19 05:38:40 CEST 2026 ===
+--- 30B_topiary_nativo
+--- 35B_baseline_K32_r256
+--- 35B_K4
+--- 35B_K64
+--- 35B_refresh64
+--- 35B_governor
+--- 80B_baseline_C240_K32
+--- 80B_C120
+--- 80B_refresh64
+=== SOLUCIONES OK Wed Aug 19 05:38:42 CEST 2026 ===
+=== SOLUCIONES v2 START Wed Aug 19 09:06:41 CEST 2026 ===
+=== 30B HARD OK ===
+=== 30B WIDE OK ===
+--- 30B_topiary_nativo
+--- 35B_baseline_K32_r256
+[serve] 255 tokens in 5.4s = 47.6 tok/s · peak 13.85 GB
+--- 35B_K4
+[serve] 255 tokens in 4.7s = 54.8 tok/s · peak 12.85 GB
+--- 35B_K64
+[serve] 255 tokens in 5.7s = 44.5 tok/s · peak 15.00 GB
+--- 35B_refresh64
+[serve] 255 tokens in 5.5s = 46.4 tok/s · peak 13.85 GB
+--- 35B_governor
+[serve] 255 tokens in 5.0s = 51.1 tok/s · peak 13.85 GB
+--- 80B_baseline_C240_K32
+[serve] 255 tokens in 14.7s = 17.3 tok/s · peak 16.97 GB
+--- 80B_C120
+[serve] 255 tokens in 9.1s = 28.1 tok/s · peak 10.22 GB
+--- 80B_refresh64
+[serve] 255 tokens in 20.5s = 12.4 tok/s · peak 16.98 GB
+=== SOLUCIONES v2 OK Wed Aug 19 09:31:04 CEST 2026 ===
+=== 30B-STREAM BUILD START Wed Aug 19 09:31:19 CEST 2026 ===
+=== 30B-STREAM SPLIT OK ===
+[load] 8.42 GB resident
+[pool] K=32/layer (9.17 GB with pools)
+[serve] 255 tokens in 5.3s = 47.9 tok/s · peak 11.09 GB
+=== 30B-STREAM HARD OK ===
+=== 30B-STREAM WIDE OK ===
+=== 30B-STREAM COMPLETO Wed Aug 19 10:38:03 CEST 2026 ===
+=== P1FRAC START Wed Aug 19 11:03:12 CEST 2026 ===
+=== K64 P1-0.5 OK (mismos bytes que K32 completo) ===
+=== K32 P1-0.5 OK (mitad de bytes) ===
+=== P1FRAC COMPLETO Wed Aug 19 12:09:36 CEST 2026 ===
+=== P1AXES START Wed Aug 19 12:10:15 CEST 2026 ===
+=== 2:2:4 OK (down entero, gate/up a mitad) ===
+=== 4:4:2 OK (down a mitad, gate/up enteros) ===
+=== 2:4:2 OK (up entero) ===
+=== P1AXES COMPLETO Wed Aug 19 13:34:29 CEST 2026 ===
+=== ORIGINAL START Wed Aug 19 13:35:12 CEST 2026 ===
+=== 30B-ORIG HARD OK ===
+=== 30B-ORIG WIDE OK ===
+--- 30B_original_nativo
+Prompt: 18 tokens, 4.992 tokens-per-sec
+Generation: 256 tokens, 104.445 tokens-per-sec
+Peak memory: 17.234 GB
+=== ORIGINAL OK Wed Aug 19 13:53:12 CEST 2026 ===
+=== 224 FULL START Wed Aug 19 13:53:29 CEST 2026 ===
+=== 224 MBPP OK ===
+=== 224 WIDE OK ===
+=== 224 FULL COMPLETO Wed Aug 19 14:34:07 CEST 2026 ===
+=== DEEPSUB START Wed Aug 19 14:34:31 CEST 2026 ===
+=== 1:1:4 OK (25% saliente) ===
+=== 0:0:4 OK (gate/up puro suelo) ===
+=== DEEPSUB COMPLETO Wed Aug 19 15:20:26 CEST 2026 ===

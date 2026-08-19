@@ -38,8 +38,13 @@ PARTS = ("gate_proj", "up_proj", "down_proj")
 class FastLayer:
     """Per-layer state: resident P0 + on-GPU P1 pool [K] + dynamic biases."""
 
-    def __init__(self, blk, art_dir: Path, by_proj: dict, pool_k: int):
+    def __init__(self, blk, art_dir: Path, by_proj: dict, pool_k: int,
+                 centroid: str = "uniform", p1_frac: str | float = 1.0):
         self.pool_k = pool_k
+        # fracción del prefijo P1 por proyección: "0.5" uniforme o "g,u,d"
+        parts = str(p1_frac).split(",")
+        fracs = dict(zip(PARTS, map(float, parts * 3 if len(parts) == 1 else parts)))
+        self.p1_frac = fracs
         self.projs = {}
         glu = blk.switch_mlp
         for name in PARTS:
@@ -50,14 +55,40 @@ class FastLayer:
                            shape=(meta["experts"], meta["words"]))
             e = meta["experts"]
             s, b = proj.scales, proj.biases
-            b_dyn = b + 1.5 * s   # everyone starts cold (centroid floor)
+            if centroid == "empirical":
+                # suelo informado: el bias frío pliega la MEDIA REAL de los
+                # 2 bits descartados por grupo (no el 1.5 uniforme). Mismo
+                # formato, mismos bytes; solo cambia la constante del pliegue.
+                qbar = _p1_group_means(mm, meta["out"],
+                                       art_dir / f"L{meta['layer']}.{name}.cbias.npy")
+                b_cold = b + s * mx.array(qbar)
+            else:
+                b_cold = b + 1.5 * s
+            b_dyn = b_cold   # everyone starts cold (centroid floor)
             mx.eval(b_dyn)
+            # Prefijo-P1 (4:2:2 sobre la dimensión intermedia): los canales de
+            # los checkpoints topiary vienen ORDENADOS por saliencia, así que
+            # "los R primeros" = "los R más salientes". gate/up recortan filas
+            # de salida (R); down recorta grupos de entrada (Rg = R/64).
+            in_words = meta["words"] // meta["out"]
+            frac = fracs[name]
+            if frac == 0:           # sin P1: la proyección vive solo del suelo
+                r, pool_shape, s_pool_shape = 0, (0,), (0,)
+            elif name == "down_proj":
+                rg = max(1, round(frac * in_words // 4))
+                pool_shape = (pool_k, meta["out"], rg * 4)
+                s_pool_shape = (pool_k, s.shape[1], rg)
+                r = rg * 4          # words por fila que se cargan del memmap
+            else:
+                r = max(64, int(round(frac * meta["out"] / 64)) * 64)
+                r = min(r, meta["out"])
+                pool_shape = (pool_k, r, in_words)
+                s_pool_shape = (pool_k, r, s.shape[2])
             self.projs[name] = {
-                "p0": proj.weight, "s": s, "b": b, "mm": mm,
-                "out": meta["out"], "b_dyn": b_dyn,
-                "pool": mx.zeros((pool_k, meta["out"],
-                                  meta["words"] // meta["out"]), dtype=mx.uint32),
-                "pool_s": mx.zeros((pool_k,) + tuple(s.shape[1:]), dtype=s.dtype),
+                "p0": proj.weight, "s": s, "b": b, "b_cold": b_cold, "mm": mm,
+                "out": meta["out"], "b_dyn": b_dyn, "r": r,
+                "pool": mx.zeros(pool_shape, dtype=mx.uint32),
+                "pool_s": mx.zeros(s_pool_shape, dtype=s.dtype),
             }
         self.n_experts = e
         self.lookup = mx.full((e,), -1, dtype=mx.int32)
@@ -78,22 +109,46 @@ class FastLayer:
         want_mx = mx.array(np.array(want, dtype=np.int32))
         for name in PARTS:
             p = self.projs[name]
+            if p["r"] == 0:
+                continue
             rows = np.asarray(p["mm"][want])          # only pool pages read
-            p["pool"] = mx.array(rows).reshape(len(want), p["out"], -1)
-            p["pool_s"] = p["s"][want_mx]
-            # dynamic biases: members beta (exact with P1), rest beta+1.5s
-            # (all in mx — numpy has no bf16)
-            b_dyn = p["b"] + 1.5 * p["s"]
+            rows = rows.reshape(len(want), p["out"], -1)
+            if name == "down_proj":
+                p["pool"] = mx.array(rows[:, :, :p["r"]])
+                p["pool_s"] = p["s"][want_mx][:, :, :p["r"] // 4]
+            else:
+                p["pool"] = mx.array(rows[:, :p["r"], :])
+                p["pool_s"] = p["s"][want_mx][:, :p["r"], :]
+            # dynamic biases: members beta (exact with P1), rest the cold
+            # floor bias (uniform 1.5s or empirical centroid, see __init__)
+            b_dyn = p["b_cold"] * 1
             b_dyn[want_mx] = p["b"][want_mx]
             p["b_dyn"] = b_dyn
             mx.eval(p["pool"], p["pool_s"], p["b_dyn"], self.lookup)
         return len(entered)
 
 
+def _p1_group_means(mm: np.memmap, out: int, cache: Path) -> np.ndarray:
+    """Media por grupo-de-64 de los valores 2-bit del plano P1 (float16
+    [experts, out, groups]). Una pasada por el memmap; cacheado a disco."""
+    if cache.exists():
+        return np.load(cache)
+    experts = mm.shape[0]
+    qbar = np.empty((experts, out, mm.shape[1] // out // 4), dtype=np.float16)
+    lanes = 2 * np.arange(16, dtype=np.uint32)
+    for ei in range(experts):
+        w = np.asarray(mm[ei]).reshape(out, -1, 4)          # 4 words = grupo 64
+        vals = (w[..., None] >> lanes) & 3                  # [out, g, 4, 16]
+        qbar[ei] = vals.reshape(out, -1, 64).mean(-1)
+    np.save(cache, qbar)
+    return qbar
+
+
 STATE: dict = {}
 
 
-def patch_fast(model, art_dir: Path, pool_k: int) -> None:
+def patch_fast(model, art_dir: Path, pool_k: int,
+               centroid: str = "uniform", p1_frac: str | float = 1.0) -> None:
     from mlx_lm.models import switch_layers as sl
 
     manifest = json.load(open(art_dir / "p1_manifest.json"))
@@ -103,7 +158,8 @@ def patch_fast(model, art_dir: Path, pool_k: int) -> None:
 
     blocks = find_moe_blocks(model)
     block_cls = type(blocks[0][1])
-    layers = {id(b): FastLayer(b, art_dir, by_layer[li], pool_k)
+    layers = {id(b): FastLayer(b, art_dir, by_layer[li], pool_k, centroid,
+                               p1_frac)
               for li, b in blocks}
     STATE.update({"layers": layers, "pending": {id(b): [] for _, b in blocks}})
 
@@ -170,9 +226,14 @@ def patch_fast(model, art_dir: Path, pool_k: int) -> None:
             y = mx.gather_qmm(xin, p["p0"], p["s"] * 4, p["b_dyn"],
                               rhs_indices=idx, transpose=True,
                               group_size=GROUP, bits=2, sorted_indices=do_sort)
-            y1 = mx.gather_qmm(xin, p["pool"], p["pool_s"],
+            if p["r"] == 0:
+                return y
+            xin1 = xin[..., : p["r"] * 16] if name == "down_proj" else xin
+            y1 = mx.gather_qmm(xin1, p["pool"], p["pool_s"],
                                mx.zeros_like(p["pool_s"]), rhs_indices=remap,
                                transpose=True, group_size=GROUP, bits=2)
+            if name != "down_proj" and p["r"] < p["out"]:
+                y1 = mx.pad(y1, [(0, 0)] * (y1.ndim - 1) + [(0, p["out"] - p["r"])])
             return y + y1 * mask
 
         h = glu.activation(pf("up_proj", xx), pf("gate_proj", xx))

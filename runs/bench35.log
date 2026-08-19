@@ -1,0 +1,46 @@
+[load] 12.46 GB
+  math500 10/100: 10 ok
+  math500 20/100: 18 ok
+  math500 30/100: 24 ok
+  math500 40/100: 33 ok
+  math500 50/100: 39 ok
+  math500 60/100: 45 ok
+  math500 70/100: 50 ok
+  math500 80/100: 52 ok
+  math500 90/100: 55 ok
+  math500 100/100: 60 ok
+[math500] 60/100 = 60%
+  mbpp 10/100: 5 ok
+  mbpp 20/100: 12 ok
+  mbpp 30/100: 21 ok
+  mbpp 40/100: 29 ok
+  mbpp 50/100: 38 ok
+  mbpp 60/100: 45 ok
+  mbpp 70/100: 53 ok
+  mbpp 80/100: 60 ok
+  mbpp 90/100: 68 ok
+  mbpp 100/100: 78 ok
+[mbpp] 78/100 = 78%
+[mem] peak 14.56 GB
+=== 35B HARD OK ===
+[load] 12.46 GB
+  mmlu 50/500: 38 ok
+  mmlu 100/500: 80 ok
+  mmlu 150/500: 119 ok
+  mmlu 200/500: 160 ok
+  mmlu 250/500: 204 ok
+  mmlu 300/500: 244 ok
+  mmlu 350/500: 286 ok
+  mmlu 400/500: 329 ok
+  mmlu 450/500: 372 ok
+  mmlu 500/500: 415 ok
+[mmlu] 415/500 = 83%
+  lambada 100/500: 76 ok
+  lambada 200/500: 150 ok
+  lambada 300/500: 226 ok
+  lambada 400/500: 301 ok
+  lambada 500/500: 377 ok
+[lambada] 377/500 = 75%
+[mem] peak 14.31 GB
+=== 35B WIDE OK ===
+=== BENCH SUITE COMPLETA ===
