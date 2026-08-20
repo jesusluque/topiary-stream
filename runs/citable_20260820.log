@@ -1,0 +1,9 @@
+=== citable bench Thu Aug 20 09:19:33 CEST 2026 · uptime:  9:19  up 10 mins, 2 users, load averages: 2.88 5.37 4.82 ===
+vm.swapusage: total = 0.00M  used = 0.00M  free = 0.00M  (encrypted)
+--- round 1: 35B ---
+[serve] 1023 tokens in 21.7s = 47.2 tok/s · peak 14.88 GB
+--- round 1: 80B ---
+[serve] 1023 tokens in 62.2s = 16.4 tok/s · peak 16.98 GB
+--- round 2: 35B ---
+[serve] 1023 tokens in 23.1s = 44.2 tok/s · peak 14.88 GB
+--- round 2: 80B ---

@@ -319,10 +319,109 @@ def stage_bench(model, tokenizer, rt, benches: list[str], n_bench: int,
     print(f"[mem] peak {results['peak_gb']:.2f} GB")
 
 
+def stage_kld(model, tokenizer, rt, data: str, chunks: int, chunk_len: int,
+              ref: str | None, out: str | None, tag: str) -> None:
+    """KLD servido-vs-base por token (Accuracy is Not All You Need,
+    2407.09141: la PPL media cancela daño por token; KLD no). Dos pasadas:
+    con --kld-out guarda log-probs de la referencia (modo exact = la base);
+    con --kld-ref carga y reporta KL(base ‖ servido) media/p95/p99."""
+    rows = load_corpus(Path(data), 10**9)[:chunks]
+    all_lp = []
+    for row in rows:
+        ids = mx.array(tokenizer.encode(row["text"])[:chunk_len])[None]
+        z = model(ids)[0, :-1].astype(mx.float32)
+        lp = z - mx.logsumexp(z, axis=-1, keepdims=True)
+        mx.eval(lp)
+        all_lp.append(np.array(lp, dtype=np.float16))
+        del z, lp
+        rt.refresh_all()
+        mx.clear_cache()
+    if out:
+        np.savez_compressed(out, *all_lp)
+        print(f"[kld] referencia guardada: {out} ({len(all_lp)} chunks)")
+        return
+    refz = np.load(ref)
+    kls = []
+    for i, lq in enumerate(all_lp):
+        lp = refz[f"arr_{i}"].astype(np.float32)      # base
+        lq = lq.astype(np.float32)                    # servido
+        n = min(len(lp), len(lq))
+        kl = (np.exp(lp[:n]) * (lp[:n] - lq[:n])).sum(-1)   # KL(P‖Q) por token
+        kls.append(kl)
+    kl = np.concatenate(kls)
+    res = {"kld_mean": float(kl.mean()), "kld_p95": float(np.percentile(kl, 95)),
+           "kld_p99": float(np.percentile(kl, 99)), "kld_max": float(kl.max()),
+           "tokens": int(len(kl)), "peak_gb": mx.get_peak_memory() / 1e9}
+    Path(f"runs/kld_{tag}.json").write_text(json.dumps(res, indent=2))
+    print(f"[kld] media {res['kld_mean']:.5f} · p95 {res['kld_p95']:.5f} · "
+          f"p99 {res['kld_p99']:.5f} · max {res['kld_max']:.3f} ({len(kl)} tokens)")
+
+
+def stage_traj(model, tokenizer, rt, n_prompts: int, gen_len: int,
+               ref: str | None, out: str | None, tag: str) -> None:
+    """Divergencia de trayectoria greedy (estilo Divergence-300@32 de
+    Unsloth): mismos prompts, decodificación greedy, ¿cuándo divergen las
+    trayectorias del servido respecto a la base exacta?"""
+    data = Path(__file__).parent.parent / "data"
+    rng = np.random.default_rng(1234)
+    prompts = []
+    for fname, key, k in (("math500.jsonl", "problem", n_prompts // 3),
+                          ("mmlu500.jsonl", "question", n_prompts // 3),
+                          ("mbpp.jsonl", "prompt", n_prompts - 2 * (n_prompts // 3))):
+        rows = [json.loads(l) for l in open(data / fname)]
+        prompts += [rows[i][key] for i in rng.permutation(len(rows))[:k]]
+    trajs = []
+    for j, p in enumerate(prompts):
+        out_text_ids = []
+        msgs = [{"role": "user", "content": p}]
+        try:
+            text = tokenizer.apply_chat_template(msgs, enable_thinking=False,
+                                                 add_generation_prompt=True, tokenize=False)
+        except TypeError:
+            text = tokenizer.apply_chat_template(msgs, add_generation_prompt=True,
+                                                 tokenize=False)
+        from mlx_lm import generate
+        from mlx_lm.sample_utils import make_sampler
+        txt = generate(model, tokenizer, text, max_tokens=gen_len,
+                       sampler=make_sampler(temp=0.0))
+        out_text_ids = tokenizer.encode(txt)[:gen_len]
+        rt.refresh_all()
+        trajs.append(out_text_ids)
+        if (j + 1) % 25 == 0:
+            print(f"  traj {j + 1}/{len(prompts)}")
+    if out:
+        np.savez_compressed(out, *[np.array(t, dtype=np.int64) for t in trajs])
+        print(f"[traj] referencia guardada: {out} ({len(trajs)} prompts)")
+        return
+    refz = np.load(ref)
+    exact, first_div = 0, []
+    for i, t in enumerate(trajs):
+        r = refz[f"arr_{i}"].tolist()
+        n = min(len(r), len(t))
+        div = next((k for k in range(n) if r[k] != t[k]), None)
+        if div is None and len(r) == len(t):
+            exact += 1
+        first_div.append(div if div is not None else n)
+    res = {"prompts": len(trajs), "gen_len": gen_len,
+           "exact_match": exact / len(trajs),
+           "mean_first_divergence": float(np.mean(first_div)),
+           "peak_gb": mx.get_peak_memory() / 1e9}
+    Path(f"runs/traj_{tag}.json").write_text(json.dumps(res, indent=2))
+    print(f"[traj] exact-match@{gen_len}: {exact}/{len(trajs)} = "
+          f"{exact / len(trajs):.0%} · divergencia media en token "
+          f"{np.mean(first_div):.1f}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Quality accounting for Stream artifacts")
     parser.add_argument("--artifact", required=True)
-    parser.add_argument("--stage", required=True, choices=["ppl", "tasks", "bench"])
+    parser.add_argument("--stage", required=True,
+                        choices=["ppl", "tasks", "bench", "kld", "traj"])
+    parser.add_argument("--kld-out", default=None,
+                        help="guardar log-probs/trayectorias de referencia aquí")
+    parser.add_argument("--kld-ref", default=None,
+                        help="comparar contra la referencia guardada")
+    parser.add_argument("--gen-len", type=int, default=32)
     parser.add_argument("--serve-mode", default="nosync",
                         choices=["exact", "nosync", "floor", "floor2d"])
     parser.add_argument("--pool-c", type=int, default=240)
@@ -358,6 +457,13 @@ def main() -> None:
                   (args.chunks_code, args.chunks_general), args.chunk_len, args.tag)
     elif args.stage == "bench":
         stage_bench(model, tokenizer, rt, args.bench.split(","), args.n, args.tag)
+    elif args.stage == "kld":
+        stage_kld(model, tokenizer, rt, args.data_general,
+                  args.chunks_general, args.chunk_len,
+                  args.kld_ref, args.kld_out, args.tag)
+    elif args.stage == "traj":
+        stage_traj(model, tokenizer, rt, args.n, args.gen_len,
+                   args.kld_ref, args.kld_out, args.tag)
     else:
         stage_tasks(model, tokenizer, rt, args.humaneval, args.gsm, args.tag)
 
