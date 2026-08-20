@@ -77,9 +77,10 @@ G. **Porte CUDA en AWS (generalidad del método + upstream)**. La jerarquía
    kernels STOCK (Marlin/machete int4; en CUDA no hay 2-bit de serie) sobre
    vLLM; (2) residencia de tres tiers con gobernador de dos fronteras;
    (3) réplica de la ley de cobertura + duelo vs llama.cpp/HOBBIT en la
-   misma instancia. Instancia: g5.2xlarge (A10G 24GB VRAM = espejo del
-   presupuesto del M5, ~$1.2/h); g6e.xlarge (L40S 48GB) probaría de paso la
-   predicción del 235B en silicio ajeno. Coste: ~30-60 GPU-h ≈ $40-80 +
+   misma instancia. Instancias (generación g6, por decisión del usuario): g6.2xlarge
+   (L4 24GB VRAM = espejo del presupuesto del M5, ~$1.0/h, Ada con mejor
+   eficiencia que A10G) y g6e.xlarge (L40S 48GB, ~$1.9/h) que probaría de
+   paso la predicción del 235B en la gama 48-64GB en silicio ajeno. Coste: ~30-60 GPU-h ≈ $40-80 +
    1-2 semanas. Contribuciones upstream independientes del porte: biases
    dinámicos como PR a vLLM/FusedMoE, y suelo Q8_0→2×Q4_0 (¡el split porta
    a GGUF por arriba, simétrico sin fold!) al RFC llama.cpp #24528.
