@@ -363,8 +363,12 @@ before the coverage laws are claimed beyond "MoE with high decode locality".
 (`switch_layers._gather_sort`) and on `gather_qmm`'s `sorted_indices`
 semantics; CI is pinned to the tested versions (mlx 0.32.0, mlx-lm 0.31.3)
 and the package declares bounded compatible ranges; the helper is
-small enough to vendor if 3.x breaks it. No cold-boot numbers yet: all
-throughput is warm-machine, and pool warm-up cost is unreported.
+small enough to vendor if 3.x breaks it. Cold-boot throughput is now
+measured (fresh reboot, interleaved rounds): the 35B serves 47.2 tok/s
+median from cold — round 1 within 1% of warm — so pool warm-up is
+negligible at this scale; the 80B's cold rounds triggered swap (1.1 GB)
+and are discarded under our swap-zero protocol, leaving its warm figure
+(17.3–21.5 tok/s) as the citable one pending a settled-system re-run.
 
 Also: PPL anchors for
 the 35B under a short protocol; the 235B artifact mixes DWQ with plain 4-bit

@@ -133,8 +133,11 @@ speed here (hybrid mamba at batch-1 + a 248k-vocab head).
   (NeurIPS 2024) for the general solution; vLLM supports it partially.
 - **Statistics.** Task n=25/50: differences of ≤2 items are indistinguishable
   (exact McNemar), so "92% vs 92%" means *indistinguishable*, not proven
-  equal. tok/s figures were measured on a long-running machine (indicative);
-  cold-boot numbers pending.
+  equal. Citable throughput (fresh reboot, 3 interleaved 1024-token rounds,
+  median): 35B **47.2 tok/s** swap-free; the 80B's cold rounds (median 16.4)
+  triggered 1.1 GB of swap and are discarded per protocol — its warm
+  17.3–21.5 stands, cold re-run pending. Cold boot costs the 35B almost
+  nothing (round 1: 47.2 vs warm 47.6).
 - **Cold storage must stay off the hot path.** Paging the floor from a USB
   disk was >4× slower at minimum (the run had to be abandoned unfinished).
   Slow tiers are for refresh-time reads only.

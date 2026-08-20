@@ -7,3 +7,10 @@ vm.swapusage: total = 0.00M  used = 0.00M  free = 0.00M  (encrypted)
 --- round 2: 35B ---
 [serve] 1023 tokens in 23.1s = 44.2 tok/s · peak 14.88 GB
 --- round 2: 80B ---
+[serve] 1023 tokens in 73.5s = 13.9 tok/s · peak 16.95 GB
+--- round 3: 35B ---
+[serve] 1023 tokens in 20.2s = 50.6 tok/s · peak 14.88 GB
+--- round 3: 80B ---
+[serve] 1023 tokens in 53.7s = 19.1 tok/s · peak 16.95 GB
+vm.swapusage: total = 2048.00M  used = 1100.31M  free = 947.69M  (encrypted)
+=== done — median of 3 interleaved rounds is the citable figure ===
