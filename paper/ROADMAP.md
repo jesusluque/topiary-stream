@@ -68,3 +68,18 @@ E. **Perfil "small-machine" (gama 16 GB)**: 30B-Stream a 9.2 GB y 0:0:4 a
 F. **Modo exacto como servicio de evaluación**: PPL verdadera de un 42 GB con
    4.3 GB de pico → herramienta independiente para evaluar/destilar/generar
    datasets desde modelos insersibles, en batch.
+
+G. **Porte CUDA en AWS (generalidad del método + upstream)**. La jerarquía
+   VRAM/RAM/NVMe-efímero de las instancias GPU mapea 1:1 con
+   pool/page-cache/memmaps — pero con DOS fronteras explícitas: el test duro
+   de las leyes de cobertura (¿ley del routing o de la plataforma?).
+   Plan: (1) pirámide subida un nivel — Q8 → 2 planos Q4 servibles por
+   kernels STOCK (Marlin/machete int4; en CUDA no hay 2-bit de serie) sobre
+   vLLM; (2) residencia de tres tiers con gobernador de dos fronteras;
+   (3) réplica de la ley de cobertura + duelo vs llama.cpp/HOBBIT en la
+   misma instancia. Instancia: g5.2xlarge (A10G 24GB VRAM = espejo del
+   presupuesto del M5, ~$1.2/h); g6e.xlarge (L40S 48GB) probaría de paso la
+   predicción del 235B en silicio ajeno. Coste: ~30-60 GPU-h ≈ $40-80 +
+   1-2 semanas. Contribuciones upstream independientes del porte: biases
+   dinámicos como PR a vLLM/FusedMoE, y suelo Q8_0→2×Q4_0 (¡el split porta
+   a GGUF por arriba, simétrico sin fold!) al RFC llama.cpp #24528.
