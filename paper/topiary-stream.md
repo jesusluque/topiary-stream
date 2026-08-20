@@ -37,7 +37,13 @@ A 4-bit affine tensor with codes q4 splits exactly into two 2-bit planes,
 q4 = 4·q_hi + q_lo, giving w = [4s]·q_hi + [s]·q_lo + β. Each plane is a
 *valid affine tensor* for MLX's `gather_qmm`: level-4 reads P0+P1 (bit-exact,
 verified to 2.6e-7 through the kernel); the floor reads P0 alone with a
-centroid-folded bias (β+1.5s). The 1.5s fold is the expectation-correct
+centroid-folded bias (β+1.5s). A scoping note: the exact plane split requires
+*flat affine* quantization (w = s·q + β per group). It does not port to
+GGUF's strong formats — K-quants nest 6-bit scales inside superblocks and
+IQ-quants are codebook-based — so the pyramid lives in the MLX affine world
+(of GGUF types, only Q4_1-style block affine is structurally compatible).
+This is the flip side of the stock-kernel property, and we state it rather
+than imply generality. The 1.5s fold is the expectation-correct
 (first-order unbiased) constant under uniform q_lo; we measured the dropped
 plane to be near-uniform in practice (global mean 1.504, and replacing the
 constant with per-group empirical means improves floor MSE by only 1.5% —
@@ -280,6 +286,28 @@ membership removes — and their hybrid hit/miss execution is exact-only (no
 precision floor). The kimi-k3 MLX port [kimik3mlx] stores two quantized
 banks per expert and reportedly pays a host sync to split indices — the
 design point our single-kernel path avoids.
+
+**Static salience-guided quantization as the deployment rival.** Unsloth's
+Dynamic 3.0 GGUFs [unslothdynamic2026] allocate bits per layer/tensor from
+imatrix calibration (no QAT), producing a family of artifacts whose
+quality/size point is chosen at download time and whose loss is permanent
+and uniform in time. For the 80B-on-24GB user the honest alternative is
+therefore not "it doesn't fit" but a ~2-bit UD artifact that fits and runs
+natively in llama.cpp; their own Gemma-3 27B table prices that route
+(MMLU 68.70 at Q2_K_XL vs 71.47 at Q4_K_XL — a well-made static 2-bit pays
+~3 points everywhere, always). Our thesis is that temporal bit allocation —
+the hot path always at full 4-bit, only the cold tail paying the floor —
+dominates static downsizing at equal memory; the side-by-side UD-Q2 baseline
+on the same machine is on our pre-submission roadmap, and we note the
+symmetry honestly: an imatrix-informed static 2-bit is a far better 2-bit
+than our naked P0 — our defense is that P0 is almost never served, not that
+it is a good 2-bit. From the same line we adopt the metrics critique
+[accuracynotall2024]: perplexity averages can cancel token-level damage,
+and KL-divergence plus answer flips are the better-correlated measures —
+directly relevant to us, since our strongest statistical evidence is a PPL
+equality. Measuring served-vs-base KLD and greedy trajectory divergence
+(we hold the exact-mode base control that makes this cheap) is queued as
+a headline metric alongside PPL.
 
 **Phase-asymmetric fidelity.** Prefill/decode disaggregation is standard for
 throughput [distserve2024]; PMPD [pmpd2024] lowers precision progressively

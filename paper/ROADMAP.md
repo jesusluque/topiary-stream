@@ -11,8 +11,18 @@ Bloqueantes antes de enviar a venue (MLSys/EuroSys/ICML systems track):
    igualdades de PPL son estadísticamente fuertes). McNemar solo entonces.
 3. **Baselines directos en el mismo M5 Pro**: (a) mixed-precision estilo
    HOBBIT (copias hi/lo duplicadas + espera on-demand) vs nuestro P0 —
-   objetivo: igualar calidad sin duplicación ni dos rutas; (b) llama.cpp
-   con mmap/offload para 35B/80B — cuantificar el "20 tok/s no tiene igual".
+   objetivo: igualar calidad sin duplicación ni dos rutas; (b) **Unsloth UD-Q2 del 80B en llama.cpp, mismo M5** (sustituye al
+   genérico "llama.cpp con mmap"): es la mejor versión del argumento
+   contrario — un 2-bit estático imatrix que SÍ cabe en 24 GB. Tesis a
+   probar: la asignación temporal de bits (camino caliente a 4-bit pleno)
+   domina al downsizing estático a igualdad de memoria. Simetría honesta:
+   su 2-bit machaca a nuestro P0 desnudo; la defensa es que P0 casi nunca
+   se sirve.
+3b. **KLD servido-vs-base + divergencia de trayectoria greedy** (estilo
+   Divergence-300@32 de Unsloth, motivado por arXiv:2407.09141): nuestra
+   evidencia fuerte es igualdad de PPL, exactamente la métrica que esa
+   línea ataca. Tenemos el control de base exacta del 80B → medir KLD y
+   flips es barato y blindaría el claim con la métrica del revisor hostil.
 
 Fuertemente recomendado:
 
