@@ -325,7 +325,7 @@ def stage_kld(model, tokenizer, rt, data: str, chunks: int, chunk_len: int,
     2407.09141: la PPL media cancela daño por token; KLD no). Dos pasadas:
     con --kld-out guarda log-probs de la referencia (modo exact = la base);
     con --kld-ref carga y reporta KL(base ‖ servido) media/p95/p99."""
-    rows = load_corpus(Path(data), 10**9)[:chunks]
+    rows = [json.loads(l) for l in open(data)][:chunks]   # jsonl con 'text'
     all_lp = []
     for row in rows:
         ids = mx.array(tokenizer.encode(row["text"])[:chunk_len])[None]
