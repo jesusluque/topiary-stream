@@ -3,7 +3,7 @@
 # el artefacto y el GPU esté libre. Decide: pool de seguimiento vs
 # autoespeculación sobre suelo.
 LOG=/Users/muriel/luc/topiary-stream/runs/ablation.log
-until grep -q "ARTEFACTO COMPLETO" /Users/muriel/luc/topiary-stream/runs/rebuild235.log 2>/dev/null && ! pgrep -f "eval_stream|src/serve.py" > /dev/null; do sleep 60; done
+until grep -q "ARTEFACTO COMPLETO" /Users/muriel/luc/topiary-stream/runs/rebuild235.log 2>/dev/null && grep -q "KLD-DECODE COMPLETO" $LOG 2>/dev/null && ! pgrep -f "eval_stream|src/serve.py|llama-" > /dev/null; do sleep 60; done
 sleep $((RANDOM % 15 + 5)); pgrep -f "eval_stream" > /dev/null && exec "$0"
 cd /Users/muriel/luc/nanite-moe
 echo "=== F48 START $(date) ===" >> $LOG
