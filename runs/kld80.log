@@ -1,0 +1,29 @@
+[load] 16.46 GB
+Traceback (most recent call last):
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 472, in <module>
+    main()
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 461, in main
+    stage_kld(model, tokenizer, rt, args.data_general,
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 328, in stage_kld
+    rows = load_corpus(Path(data), 10**9)[:chunks]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muriel/luc/topiary-stream/src/common.py", line 47, in load_corpus
+    total += row["n_tokens"]
+             ~~~^^^^^^^^^^^^
+KeyError: 'n_tokens'
+[load] 16.46 GB
+Traceback (most recent call last):
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 472, in <module>
+    main()
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 461, in main
+    stage_kld(model, tokenizer, rt, args.data_general,
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 328, in stage_kld
+    rows = load_corpus(Path(data), 10**9)[:chunks]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muriel/luc/topiary-stream/src/common.py", line 47, in load_corpus
+    total += row["n_tokens"]
+             ~~~^^^^^^^^^^^^
+KeyError: 'n_tokens'
+[load] 16.46 GB
+  traj 25/300
+  traj 50/300

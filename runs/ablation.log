@@ -76,3 +76,24 @@ Peak memory: 17.234 GB
 === C120 QUALITY START Wed Aug 19 16:54:57 CEST 2026 ===
 === C120 HARD OK ===
 === CITABLE OK Thu Aug 20 09:35:17 CEST 2026 ===
+=== C120 WIDE OK ===
+=== C120 COMPLETO Fri Aug 21 00:36:32 CEST 2026 ===
+=== ORQUESTADOR OK Fri Aug 21 00:36:32 CEST 2026 ===
+=== OPT30 START Fri Aug 21 00:36:56 CEST 2026 ===
+--- 30s_K4
+[serve] 255 tokens in 4.7s = 53.7 tok/s · peak 10.34 GB
+--- 30s_K32_base
+[serve] 255 tokens in 5.3s = 48.0 tok/s · peak 11.85 GB
+--- 30s_K64
+[serve] 255 tokens in 6.4s = 39.7 tok/s · peak 13.56 GB
+--- 30s_refresh64
+[serve] 255 tokens in 5.2s = 49.0 tok/s · peak 11.84 GB
+--- 30s_governor
+[serve] 255 tokens in 5.3s = 47.8 tok/s · peak 11.85 GB
+=== OPT30 SPEED OK ===
+=== K4 HARD OK ===
+=== K4 WIDE OK ===
+=== K64 HARD OK ===
+=== K64 WIDE OK ===
+=== OPT30 COMPLETO Fri Aug 21 03:59:21 CEST 2026 ===
+=== KLD START Fri Aug 21 04:00:10 CEST 2026 ===

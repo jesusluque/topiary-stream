@@ -29,3 +29,21 @@
   mmlu 200/500: 172 ok
   mmlu 250/500: 215 ok
 [load] 9.66 GB
+  mmlu 50/500: 45 ok
+  mmlu 100/500: 90 ok
+  mmlu 150/500: 131 ok
+  mmlu 200/500: 172 ok
+  mmlu 250/500: 215 ok
+  mmlu 300/500: 259 ok
+  mmlu 350/500: 305 ok
+  mmlu 400/500: 347 ok
+  mmlu 450/500: 387 ok
+  mmlu 500/500: 430 ok
+[mmlu] 430/500 = 86%
+  lambada 100/500: 76 ok
+  lambada 200/500: 149 ok
+  lambada 300/500: 227 ok
+  lambada 400/500: 306 ok
+  lambada 500/500: 391 ok
+[lambada] 391/500 = 78%
+[mem] peak 10.96 GB
