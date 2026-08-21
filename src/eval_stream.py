@@ -320,20 +320,48 @@ def stage_bench(model, tokenizer, rt, benches: list[str], n_bench: int,
 
 
 def stage_kld(model, tokenizer, rt, data: str, chunks: int, chunk_len: int,
-              ref: str | None, out: str | None, tag: str) -> None:
+              ref: str | None, out: str | None, tag: str,
+              decode: bool = False) -> None:
     """KLD servido-vs-base por token (Accuracy is Not All You Need,
     2407.09141: la PPL media cancela daño por token; KLD no). Dos pasadas:
     con --kld-out guarda log-probs de la referencia (modo exact = la base);
     con --kld-ref carga y reporta KL(base ‖ servido) media/p95/p99."""
     rows = [json.loads(l) for l in open(data)][:chunks]   # jsonl con 'text'
     all_lp = []
+    step = 0
     for row in rows:
-        ids = mx.array(tokenizer.encode(row["text"])[:chunk_len])[None]
-        z = model(ids)[0, :-1].astype(mx.float32)
-        lp = z - mx.logsumexp(z, axis=-1, keepdims=True)
-        mx.eval(lp)
-        all_lp.append(np.array(lp, dtype=np.float16))
-        del z, lp
+        toks = tokenizer.encode(row["text"])[:chunk_len]
+        if not decode:
+            # Teacher-forced en UN forward (T>1): el prefill exacto lo sirve
+            # bit-exacto por diseño → mide la exactitud del prefill, no el pool.
+            ids = mx.array(toks)[None]
+            z = model(ids)[0, :-1].astype(mx.float32)
+            lp = z - mx.logsumexp(z, axis=-1, keepdims=True)
+            mx.eval(lp)
+            all_lp.append(np.array(lp, dtype=np.float16))
+            del z, lp
+        else:
+            # RÉGIMEN DE DECODE: prefijo corto exacto + resto token a token con
+            # caché KV bajo la política del pool (refresh cada 256 como en
+            # producción). Esta es la KLD que mide el peaje real del pool.
+            from mlx_lm.models.cache import make_prompt_cache
+            cache = make_prompt_cache(model)
+            k0 = max(1, min(16, len(toks) // 2))
+            out = model(mx.array(toks[:k0])[None], cache=cache)
+            mx.eval(out)
+            rt.refresh_all()                    # el pool aprende del prompt
+            lps = []
+            for t in range(k0, len(toks) - 1):
+                z = model(mx.array([toks[t]])[None], cache=cache)[0, -1].astype(mx.float32)
+                lp = z - mx.logsumexp(z)
+                mx.eval(lp)
+                lps.append(np.array(lp, dtype=np.float16))
+                step += 1
+                if step % 256 == 0:
+                    rt.refresh_all()
+            if lps:
+                all_lp.append(np.stack(lps))
+            del cache
         rt.refresh_all()
         mx.clear_cache()
     if out:
@@ -422,6 +450,8 @@ def main() -> None:
     parser.add_argument("--kld-ref", default=None,
                         help="comparar contra la referencia guardada")
     parser.add_argument("--gen-len", type=int, default=32)
+    parser.add_argument("--kld-decode", action="store_true",
+                        help="KLD en régimen de decode (token a token con caché)")
     parser.add_argument("--serve-mode", default="nosync",
                         choices=["exact", "nosync", "floor", "floor2d"])
     parser.add_argument("--pool-c", type=int, default=240)
@@ -460,7 +490,7 @@ def main() -> None:
     elif args.stage == "kld":
         stage_kld(model, tokenizer, rt, args.data_general,
                   args.chunks_general, args.chunk_len,
-                  args.kld_ref, args.kld_out, args.tag)
+                  args.kld_ref, args.kld_out, args.tag, args.kld_decode)
     elif args.stage == "traj":
         stage_traj(model, tokenizer, rt, args.n, args.gen_len,
                    args.kld_ref, args.kld_out, args.tag)
