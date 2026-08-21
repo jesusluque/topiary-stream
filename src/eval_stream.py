@@ -119,7 +119,22 @@ def stage_ppl(model, tokenizer, rt, data_code: str, data_general: str,
     print(f"[mem] peak {results['peak_gb']:.2f} GB")
 
 
+OPENAI_BASE: str | None = None   # --openai-base: baseline externo (llama-server)
+
+
 def _ask(model, tokenizer, rt, prompt: str, max_tokens: int) -> str:
+    if OPENAI_BASE:
+        # Baseline externo vía API OpenAI-compatible (p.ej. llama-server con
+        # el UD-Q2 de Unsloth): mismos prompts, greedy, mismo parser.
+        import urllib.request
+
+        body = json.dumps({"model": "baseline", "temperature": 0.0,
+                           "max_tokens": max_tokens,
+                           "messages": [{"role": "user", "content": prompt}]}).encode()
+        req = urllib.request.Request(OPENAI_BASE.rstrip("/") + "/v1/chat/completions",
+                                     data=body, headers={"Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=600) as r:
+            return json.load(r)["choices"][0]["message"]["content"]
     from mlx_lm import generate
     from mlx_lm.sample_utils import make_sampler
 
@@ -289,7 +304,9 @@ def stage_bench(model, tokenizer, rt, benches: list[str], n_bench: int,
         results["mbpp"] = ok / len(rows)
         print(f"[mbpp] {ok}/{len(rows)} = {ok / len(rows):.0%}")
 
-    if "lambada" in benches:
+    if "lambada" in benches and OPENAI_BASE:
+        print("[lambada] omitido: teacher-forced no disponible vía API de chat")
+    elif "lambada" in benches:
         rows = [json.loads(l) for l in open(data / "lambada.jsonl")]
         rows = [rows[i] for i in rng.permutation(len(rows))[:n_bench]]
         ok = 0
@@ -452,6 +469,8 @@ def main() -> None:
     parser.add_argument("--gen-len", type=int, default=32)
     parser.add_argument("--kld-decode", action="store_true",
                         help="KLD en régimen de decode (token a token con caché)")
+    parser.add_argument("--openai-base", default=None,
+                        help="baseline externo OpenAI-compatible (p.ej. http://127.0.0.1:8080)")
     parser.add_argument("--serve-mode", default="nosync",
                         choices=["exact", "nosync", "floor", "floor2d"])
     parser.add_argument("--pool-c", type=int, default=240)
@@ -478,6 +497,18 @@ def main() -> None:
     args = parser.parse_args()
 
     set_seeds(1234)
+    if args.openai_base:
+        # Baseline externo: sin modelo MLX; el stage bench habla con la API.
+        global OPENAI_BASE
+        OPENAI_BASE = args.openai_base
+
+        class _NoRT:
+            @staticmethod
+            def refresh_all():
+                return 0
+
+        stage_bench(None, None, _NoRT, args.bench.split(","), args.n, args.tag)
+        return
     model, tokenizer, rt = load_runtime(args.artifact, args.pool_c, args.pool_k,
                                         args.serve_mode, args.orders, args.floor,
                                         args.centroid, args.p1_frac)

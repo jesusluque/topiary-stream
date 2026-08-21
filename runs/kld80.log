@@ -33,3 +33,4 @@ KeyError: 'n_tokens'
 [load] 16.46 GB
 [kld] media 0.00000 · p95 0.00000 · p99 0.00000 · max 0.000 (2278 tokens)
 [load] 16.46 GB
+  traj 25/300
