@@ -364,8 +364,9 @@ def stage_kld(model, tokenizer, rt, data: str, chunks: int, chunk_len: int,
             from mlx_lm.models.cache import make_prompt_cache
             cache = make_prompt_cache(model)
             k0 = max(1, min(16, len(toks) // 2))
-            out = model(mx.array(toks[:k0])[None], cache=cache)
-            mx.eval(out)
+            pf = model(mx.array(toks[:k0])[None], cache=cache)   # NO pisar `out`
+            mx.eval(pf)
+            del pf
             rt.refresh_all()                    # el pool aprende del prompt
             lps = []
             for t in range(k0, len(toks) - 1):

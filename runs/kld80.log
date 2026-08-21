@@ -34,3 +34,40 @@ KeyError: 'n_tokens'
 [kld] media 0.00000 · p95 0.00000 · p99 0.00000 · max 0.000 (2278 tokens)
 [load] 16.46 GB
   traj 25/300
+  traj 50/300
+  traj 75/300
+  traj 100/300
+  traj 125/300
+  traj 150/300
+  traj 175/300
+  traj 200/300
+  traj 225/300
+  traj 250/300
+  traj 275/300
+  traj 300/300
+[traj] referencia guardada: runs/traj80_base.npz (300 prompts)
+[load] 16.46 GB
+  traj 25/300
+  traj 50/300
+  traj 75/300
+  traj 100/300
+  traj 125/300
+  traj 150/300
+  traj 175/300
+  traj 200/300
+  traj 225/300
+  traj 250/300
+  traj 275/300
+  traj 300/300
+[traj] exact-match@32: 107/300 = 36% · divergencia media en token 19.9
+[load] 16.46 GB
+Traceback (most recent call last):
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 533, in <module>
+    main()
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 522, in main
+    stage_kld(model, tokenizer, rt, args.data_general,
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 384, in stage_kld
+    if out:
+       ^^^
+ValueError: [convert] Only length-1 arrays can be converted to Python scalars.
+[load] 16.46 GB
