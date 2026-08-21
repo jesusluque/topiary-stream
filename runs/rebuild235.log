@@ -16,3 +16,16 @@
   model-00014-of-00026.safetensors: 11 expert tensors (consumed)
   model-00015-of-00026.safetensors: 11 expert tensors (consumed)
   model-00016-of-00026.safetensors: 11 expert tensors (consumed)
+  model-00017-of-00026.safetensors: 11 expert tensors (consumed)
+  model-00018-of-00026.safetensors: 11 expert tensors (consumed)
+  model-00019-of-00026.safetensors: 11 expert tensors (consumed)
+  model-00020-of-00026.safetensors: 11 expert tensors (consumed)
+  model-00021-of-00026.safetensors: 11 expert tensors (consumed)
+  model-00022-of-00026.safetensors: 11 expert tensors (consumed)
+  model-00023-of-00026.safetensors: 11 expert tensors (consumed)
+  model-00024-of-00026.safetensors: 11 expert tensors (consumed)
+  model-00025-of-00026.safetensors: 11 expert tensors (consumed)
+  model-00026-of-00026.safetensors: 8 expert tensors (consumed)
+[out] artifacts/qwen235-stream: skeleton 4.54 GB · memmaps 127.74 GB · 94 MoE layers
+=== SPLIT OK ===
+=== ARTEFACTO COMPLETO ===
