@@ -1,0 +1,13 @@
+0.00.056.932 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.058.107 W srv  llama_server: -----------------
+0.00.058.109 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.058.109 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.058.109 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.058.109 W srv  llama_server: -----------------
+0.00.060.419 I srv    load_model: loading model 'artifacts/unsloth/Qwen3-Next-80B-A3B-Instruct-UD-Q2_K_XL.gguf'
+0.00.266.129 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.00.291.392 W llama_model_loader: tensor overrides to CPU are used with mmap enabled - consider using --load-mode none for better performance
+0.07.247.194 W ggml_metal_log_allocated_size: warning: current allocated size is greater than the recommended max working set size
+0.07.247.264 W ggml_metal_log_allocated_size: warning: current allocated size is greater than the recommended max working set size
+0.09.891.747 I cmn          init: llama threadpool init, n_threads = 5
+0.13.843.643 

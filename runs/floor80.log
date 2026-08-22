@@ -1,0 +1,4 @@
+  layer 0 (0.13 GB)
+  layer 20 (2.64 GB)
+  layer 40 (5.16 GB)
+[out] artifacts/qwen80-floor128.safetensors  (6.04 GB)
