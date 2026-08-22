@@ -172,3 +172,19 @@ aprendido el tema) que se estabiliza en ~0.12 tras los primeros ~64 tokens.
 Remedio barato: refresh temprano tras el prompt; remedio de calidad: K mayor
 para el régimen estacionario. Esto retira la hipótesis de "envenenamiento de
 la caché KV" para el 30B; queda por ver la curva del 80B (en cola).
+
+### 6c. Escalera de cobertura del 80B con la métrica hostil (wiki 4×512)
+
+| Config 80B | Cobertura | KLD media | p99 | curva (0–64 → 256–448) |
+|---|---|---|---|---|
+| C=120 drops | 23% | 1.563 | 10.7 | 2.09 → 1.26 (decrece) |
+| C=120 + suelo 25% | 23% (+suelo fino) | 1.354 | 9.5 | — |
+| C=240 drops (producción) | 47% | 0.774 | 9.0 | en cola |
+| C=340 todo P0 ("modo 2-bit") | 66% | en cola | | |
+| 30B-Stream, suelo universal | 100% P0 | **0.131** | 2.3 | 0.23 → 0.11 |
+
+Lecturas: (1) la cobertura manda — la mitad de pool dobla el daño; (2) el
+suelo fino (25%) ayuda un 13% a igual C, no es "peor que el drop" (mi lectura
+de esta mañana comparaba C distintos); (3) las curvas DECRECEN con la
+posición: el pool aprende; no hay acumulación en la KV — el daño es de
+arranque y de régimen estacionario, no creciente.
