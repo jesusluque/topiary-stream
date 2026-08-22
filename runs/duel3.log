@@ -34,3 +34,34 @@ vm.swapusage: total = 2048.00M  used = 988.44M  free = 1059.56M  (encrypted)
   math500 30/100: 28 ok
   math500 40/100: 37 ok
   math500 50/100: 44 ok
+  math500 60/100: 50 ok
+  math500 70/100: 56 ok
+  math500 80/100: 59 ok
+  math500 90/100: 63 ok
+  math500 100/100: 69 ok
+[math500] 69/100 = 69%
+  mbpp 10/100: 6 ok
+  mbpp 20/100: 13 ok
+  mbpp 30/100: 23 ok
+  mbpp 40/100: 33 ok
+  mbpp 50/100: 41 ok
+  mbpp 60/100: 50 ok
+  mbpp 70/100: 59 ok
+  mbpp 80/100: 67 ok
+  mbpp 90/100: 77 ok
+  mbpp 100/100: 86 ok
+[mbpp] 86/100 = 86%
+[mem] peak 0.00 GB
+  mmlu 50/500: 45 ok
+  mmlu 100/500: 90 ok
+  mmlu 150/500: 130 ok
+  mmlu 200/500: 174 ok
+  mmlu 250/500: 218 ok
+  mmlu 300/500: 261 ok
+  mmlu 350/500: 307 ok
+  mmlu 400/500: 348 ok
+  mmlu 450/500: 386 ok
+  mmlu 500/500: 431 ok
+[mmlu] 431/500 = 86%
+[mem] peak 0.00 GB
+vm.swapusage: total = 3072.00M  used = 1851.06M  free = 1220.94M  (encrypted)

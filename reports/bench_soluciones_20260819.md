@@ -112,3 +112,46 @@ ordenados por saliencia (haría falta calcular orders y permutar el artefacto).
   8.4 GB residente + pools).
 - Stage `bench` (math500/mmlu/mbpp/lambada) con verificación simbólica
   (math-verify), datasets congelados en `data/`.
+
+## 5. El duelo contra Unsloth UD-Q2_K_XL (2026-08-22)
+
+Misma máquina (M5 Pro 24 GB), misma batería, mismos prompts y parsers (vía
+API de llama-server). El rival solo arranca con todo en CPU (`-ngl 0`, mmap):
+con `-ngl 99` muere por OOM de Metal y con `--cpu-moe` el servidor muere
+tras cargar. Fichero: 30.1 GB (28.05 GiB) — no cabe en 24 GB, pagina.
+
+| | 80B Topiary Stream (C=240) | Unsloth UD-Q2_K_XL + llama.cpp |
+|---|---|---|
+| RAM servida | **17 GB** | 30 GB de pesos (pagina desde disco) |
+| tok/s | **17.3–21.5** (GPU) | 12.6 ± 3.7 (CPU, tg128) |
+| MATH-500 (n=100) | 64% | **69%** |
+| MBPP (n=100) | 81% | **86%** |
+| MMLU (n=500) | 85.2% | 86.2% (+5 ítems, n.s.) |
+| Prompt | exacto (bit a bit) | 2-bit |
+
+**Veredicto.** En calidad de tarea el estático calibrado está a la par o
+nominalmente por encima (+5/+5/+1; n=100 en los generativos). Mi predicción
+previa ("pierde 6–10 puntos") queda falsada: un 2-bit dinámico por capa
+(~3 bpw efectivos, capas sensibles protegidas) mantiene la calidad de tarea.
+Las ventajas de Stream son de SISTEMA: cabe donde el estático no cabe
+(17 vs 30 GB), +40–70% de velocidad, prompt exacto, gobernador elástico y
+suelo garantizado. Tesis corregida: la asignación temporal de bits es la
+forma de correr bien un modelo de 42 GB en 24 GB — no una forma de superar
+en calidad a un estático bien calibrado que necesita 30.
+
+## 6. Métricas hostiles (KLD/trayectorias, 2026-08-22)
+
+- KLD teacher-forced (T>1): **0.000** en 2278 tokens — identidad bit a bit
+  del prefill exacto.
+- Trayectorias greedy 300@32 (80B C=240 vs base exacta): exact-match 36%,
+  divergencia media en el token 19.9 (Unsloth: su UD-Q2_K_XL ≈25% vs BF16).
+- **KLD en decode (token a token, caché KV)**: LAMBADA (80 tok, prefijo 16):
+  media 0.118, p99 1.83. **Wiki 4×512 (prefijo exacto 64): media 0.774,
+  p95 4.40, p99 9.02** — el "+120% wiki" del peaje TF reaparece en decode:
+  en dominio disperso los DROPS (fuera de C no hay suelo) destruyen. Suelo
+  universal 2D del 80B (25% anchura, 6 GB, captura 61.6% de saliencia) a
+  C=120: **1.354** — peor (suelo bajo el precipicio, como en el 235B); a
+  C=240 no cabe (thrashing). Conclusión: a 24 GB el 80B no tiene suelo
+  universal viable → sirve prompts y tareas a nivel base; NO prosa general
+  larga. Pendientes: control drops C=120, modo 2-bit C=340, curva por
+  posición, KLD del 30B-Stream (suelo universal real).
