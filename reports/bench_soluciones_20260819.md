@@ -201,3 +201,15 @@ arranque y de régimen estacionario, no creciente.
 Hallazgo del arnés: las baterías de tareas corrían sin refresh
 intra-generación (pool congelado ~500 tokens por respuesta). Corregido
 (`--gen-refresh`); la campaña repite la batería con la mejor cadencia.
+
+### 7. Campaña "superar la tabla" — primera vuelta (2026-08-22)
+
+Cadencia de refresh (KLD wiki, C=240): 256→0.774 · 128→0.566 · 64→0.416 ·
+32→0.303 (estacionario 0.18, bajo el listón 0.22). Velocidad: 128→15.4 ·
+64→12.3 · 32→9.1 tok/s. Elegido refresh 128 (único ≥12.6). Batería con
+refresh 128 INTRA-generación: **MATH 65% (antes 64), MBPP 81% (= antes)** —
+la KLD mejora un 27% pero las tareas no se mueven: en dominio focal el pool
+ya seguía al routing y el peaje de tareas no es de cadencia. El rival sigue
+69/86. Hipótesis abierta: el peaje de tareas viene de la cobertura (drops
+al 47%), no del refresh → probar C=290 (modo 2-bit) en tareas y el refresh
+barato (tier de desbordamiento) que permita cadencia 32 a ≥15 tok/s.
