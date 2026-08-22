@@ -188,3 +188,16 @@ suelo fino (25%) ayuda un 13% a igual C, no es "peor que el drop" (mi lectura
 de esta mañana comparaba C distintos); (3) las curvas DECRECEN con la
 posición: el pool aprende; no hay acumulación en la KV — el daño es de
 arranque y de régimen estacionario, no creciente.
+
+### 6d. Palancas sobre el 80B C=240 (misma KLD realista)
+
+| Política | KLD media | curva 0–64 → 256–448 | Veredicto |
+|---|---|---|---|
+| producción (nosync, refresh 256) | 0.774 | 0.88 → 0.68 | referencia |
+| **refresh cada 64** | **0.416** | 0.62 → 0.38 | **−46%**: la cadencia es la palanca; coste medido −28% tok/s en el 80B |
+| absorb (el shared absorbe la masa caída) | 7.17 | plano ~7 | **negativo rotundo**: sobrepondera al shared (escalas distintas) |
+| modo 2-bit C=290 todo P0 | 0.582 | 0.63 → 0.51 | −25%: segunda marcha |
+
+Hallazgo del arnés: las baterías de tareas corrían sin refresh
+intra-generación (pool congelado ~500 tokens por respuesta). Corregido
+(`--gen-refresh`); la campaña repite la batería con la mejor cadencia.
