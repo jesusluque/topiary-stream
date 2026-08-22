@@ -395,7 +395,16 @@ def stage_kld(model, tokenizer, rt, data: str, chunks: int, chunk_len: int,
         kl = (np.exp(lp[:n]) * (lp[:n] - lq[:n])).sum(-1)   # KL(P‖Q) por token
         kls.append(kl)
     kl = np.concatenate(kls)
+    # curva por posición (dentro del chunk): ¿falla desde el principio o se
+    # acumula con la longitud? Guardar el vector por chunk y la media por tramos.
+    np.savez_compressed(f"runs/kld_{tag}_curve.npz", *kls)
+    L = min(len(k) for k in kls)
+    stack = np.stack([k[:L] for k in kls])
+    tramos = {f"pos_{a}-{b}": float(stack[:, a:b].mean())
+              for a, b in ((0, 64), (64, 128), (128, 256), (256, 448)) if b <= L}
+    print("[kld] por tramo de posición:", {k: round(v, 4) for k, v in tramos.items()})
     res = {"kld_mean": float(kl.mean()), "kld_p95": float(np.percentile(kl, 95)),
+           "by_position": tramos,
            "kld_p99": float(np.percentile(kl, 99)), "kld_max": float(kl.max()),
            "tokens": int(len(kl)), "peak_gb": mx.get_peak_memory() / 1e9}
     Path(f"runs/kld_{tag}.json").write_text(json.dumps(res, indent=2))

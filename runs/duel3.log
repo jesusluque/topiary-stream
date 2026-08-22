@@ -30,3 +30,7 @@ load_backend: loaded CPU backend from /opt/homebrew/Cellar/ggml/0.20.2/libexec/l
 build: cd644c395 (10520)
 vm.swapusage: total = 2048.00M  used = 988.44M  free = 1059.56M  (encrypted)
   math500 10/100: 10 ok
+  math500 20/100: 19 ok
+  math500 30/100: 28 ok
+  math500 40/100: 37 ok
+  math500 50/100: 44 ok
