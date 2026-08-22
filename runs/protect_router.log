@@ -1,0 +1,7 @@
+[router] 48 routers por rango desde Qwen/Qwen3-Next-80B-A3B-Instruct
+  10/48 tensores
+  20/48 tensores
+  30/48 tensores
+  40/48 tensores
+[router] sustituidos (BF16, sin cuantizar)
+[ok] artefacto protegido en artifacts/qwen80-prot (esqueleto nuevo, planos enlazados)
