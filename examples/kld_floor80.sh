@@ -9,7 +9,7 @@ LOG=runs/ablation.log
 A=artifacts/qwen80-stream; ORD=artifacts/qwen80-stream/orders_routed.npz
 F=artifacts/qwen80-floor128.safetensors
 D=/Users/muriel/luc/nanite-moe/data/calib_general_qwen3/held_out.jsonl
-until grep -q "floor guardado\|saved\|OK" runs/floor80.log 2>/dev/null && [ -f $F ] && ! pgrep -f "floor.py|eval_stream|llama-" > /dev/null; do sleep 60; done
+until grep -q "\[out\]" runs/floor80.log 2>/dev/null && [ -f $F ] && ! pgrep -f "floor.py|eval_stream|llama-" > /dev/null; do sleep 60; done
 sleep $((RANDOM % 15 + 5)); pgrep -f "eval_stream|llama-" > /dev/null && exec "$0"
 echo "=== KLD-FLOOR START $(date) ===" >> $LOG
 $PY -u src/eval_stream.py --artifact $A --stage kld --kld-decode --serve-mode floor2d --floor $F --pool-c 240 --pool-k 32 --orders $ORD --data-general $D --chunks-general 1 --chunk-len 128 --kld-out runs/kld_smoke.npz --tag smoke >> runs/kld80.log 2>&1
