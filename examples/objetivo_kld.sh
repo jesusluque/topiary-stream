@@ -9,12 +9,7 @@ LOG=runs/ablation.log
 A=artifacts/qwen80-stream; ORD=artifacts/qwen80-stream/orders_routed.npz
 D=/Users/muriel/luc/nanite-moe/data/calib_general_qwen3/held_out.jsonl
 GGUF=artifacts/unsloth/Qwen3-Next-80B-A3B-Instruct-UD-Q2_K_XL.gguf
-until grep -q "KLD-REFRESH64 COMPLETO" runs/ablation.log 2>/dev/null && ! pgrep -f "eval_stream|llama-" > /dev/null; do sleep 30; done
-echo "=== ABSORB START $(date) ===" >> $LOG
-$PY -u src/eval_stream.py --artifact $A --stage kld --kld-decode --serve-mode absorb --pool-c 240 --pool-k 32 --orders $ORD --data-general $D --chunks-general 1 --chunk-len 128 --kld-out runs/kld_smoke.npz --tag smoke >> runs/kld80.log 2>&1
-[ -f runs/kld_smoke.npz ] || { echo '=== ABSORB HUMO FALLO ===' >> $LOG; exit 1; }; rm -f runs/kld_smoke.npz
-$PY -u src/eval_stream.py --artifact $A --stage kld --kld-decode --serve-mode absorb --pool-c 240 --pool-k 32 --orders $ORD --data-general $D --chunks-general 4 --chunk-len 512 --kld-ref runs/kld80_base_long.npz --tag k80absorb_long >> runs/kld80.log 2>&1 && echo '=== ABSORB OK ===' >> $LOG
-echo "=== ABSORB COMPLETO $(date) ===" >> $LOG
+until grep -q "CAMPANA COMPLETO" runs/ablation.log 2>/dev/null && ! pgrep -f "eval_stream|llama-" > /dev/null; do sleep 60; done
 # --- rival contra la misma referencia ---
 echo "=== RIVAL-KLD START $(date) ===" >> $LOG
 llama-server -m $GGUF -ngl 0 -c 4096 --port 8080 --host 127.0.0.1 > runs/rival_kld_server.log 2>&1 &

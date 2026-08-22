@@ -448,10 +448,10 @@ def stage_kld_remote(tokenizer_path: str, data: str, chunks: int, chunk_len: int
             with urllib.request.urlopen(req, timeout=600) as r:
                 res = json.load(r)
             probs = res["completion_probabilities"][0]
-            top = probs.get("top_probs") or probs.get("probs") or []
-            q = {int(e.get("id", -1)): float(e.get("prob", 0.0)) for e in top}
-            if -1 in q:   # versiones antiguas sin id: por token string
-                q = {tok.convert_tokens_to_ids(e["token"]): float(e["prob"]) for e in top if "token" in e}
+            # llama.cpp b10520: top_logprobs = [{id, token, logprob}, ...]
+            top = probs.get("top_logprobs") or probs.get("top_probs") or []
+            q = {int(e["id"]): float(np.exp(e["logprob"])) if "logprob" in e else float(e.get("prob", 0.0))
+                 for e in top if "id" in e}
             # KL sobre el top-N de la referencia, renormalizado en ambos
             lpr = lp_ref[i]
             idx = np.argpartition(-lpr, n_probs)[:n_probs]
