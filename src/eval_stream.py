@@ -121,6 +121,7 @@ def stage_ppl(model, tokenizer, rt, data_code: str, data_general: str,
 
 OPENAI_BASE: str | None = None   # --openai-base: baseline externo (llama-server)
 GEN_REFRESH: int = 256           # --gen-refresh: cadencia de refresh en generación
+PER_ITEM: dict = {}              # acierto por ítem y bench (para flips)
 BURST_LEN: int = 0               # --burst-len: tokens iniciales con ráfaga (0 = sin ráfaga)
 BURST_EVERY: int = 8             # --burst-every: cadencia dentro de la ráfaga
 
@@ -265,12 +266,15 @@ def stage_bench(model, tokenizer, rt, benches: list[str], n_bench: int,
                         depth -= 1
                     k += 1
                 got = out[i:k + 1]
+            hit = 0
             try:
-                ok += int(got is not None and
+                hit = int(got is not None and
                           mv_verify(mv_parse("\\boxed{" + r["answer"] + "}"),
                                     mv_parse(got)))
             except Exception:
                 pass
+            ok += hit
+            PER_ITEM.setdefault("math500", []).append(hit)
             if (j + 1) % 10 == 0:
                 print(f"  math500 {j + 1}/{len(picked)}: {ok} ok")
         results["math500"] = ok / len(picked)
@@ -286,7 +290,9 @@ def stage_bench(model, tokenizer, rt, benches: list[str], n_bench: int,
             out = _ask(model, tokenizer, rt,
                        q + "\n\nReply with ONLY the letter of the correct answer.", 8)
             m = re.search(r"\b([ABCD])\b", out)
-            ok += int(bool(m) and letters.index(m.group(1)) == r["answer"])
+            hit = int(bool(m) and letters.index(m.group(1)) == r["answer"])
+            ok += hit
+            PER_ITEM.setdefault("mmlu", []).append(hit)
             if (j + 1) % 50 == 0:
                 print(f"  mmlu {j + 1}/{len(rows)}: {ok} ok")
         results["mmlu"] = ok / len(rows)
@@ -307,12 +313,15 @@ def stage_bench(model, tokenizer, rt, benches: list[str], n_bench: int,
                        + "\n\n" + "\n".join(r["test_list"]) + "\nprint('PASS')\n")
             with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as f:
                 f.write(program)
+            hit = 0
             try:
                 res = subprocess.run(["python3", f.name], capture_output=True,
                                      text=True, timeout=15)
-                ok += int("PASS" in res.stdout)
+                hit = int("PASS" in res.stdout)
             except Exception:
                 pass
+            ok += hit
+            PER_ITEM.setdefault("mbpp", []).append(hit)
             if (j + 1) % 10 == 0:
                 print(f"  mbpp {j + 1}/{len(rows)}: {ok} ok")
         results["mbpp"] = ok / len(rows)
@@ -345,9 +354,28 @@ def stage_bench(model, tokenizer, rt, benches: list[str], n_bench: int,
         print(f"[lambada] {ok}/{len(rows)} = {ok / len(rows):.0%}")
 
     results["peak_gb"] = mx.get_peak_memory() / 1e9
+    results["per_item"] = PER_ITEM   # para FLIPS entre configs (Accuracy is Not All You Need)
     Path("runs").mkdir(exist_ok=True)
     Path(f"runs/bench_{tag}.json").write_text(json.dumps(results, indent=2))
     print(f"[mem] peak {results['peak_gb']:.2f} GB")
+
+
+def flips(tag_a: str, tag_b: str) -> dict:
+    """Flips entre dos baterías: ítems que cambian de correcto a incorrecto
+    y viceversa aunque el agregado no se mueva."""
+    a = json.load(open(f"runs/bench_{tag_a}.json")).get("per_item", {})
+    b = json.load(open(f"runs/bench_{tag_b}.json")).get("per_item", {})
+    out = {}
+    for bench in a:
+        if bench not in b:
+            continue
+        pa, pb = a[bench], b[bench]
+        n = min(len(pa), len(pb))
+        c2i = sum(1 for i in range(n) if pa[i] and not pb[i])
+        i2c = sum(1 for i in range(n) if not pa[i] and pb[i])
+        out[bench] = {"n": n, "correct_to_incorrect": c2i, "incorrect_to_correct": i2c,
+                      "flip_rate": (c2i + i2c) / max(n, 1), "mcnemar_p": mcnemar_exact(c2i, i2c)}
+    return out
 
 
 def stage_kld(model, tokenizer, rt, data: str, chunks: int, chunk_len: int,
