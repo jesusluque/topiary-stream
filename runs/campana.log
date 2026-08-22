@@ -1,0 +1,5 @@
+[speed r128] [serve] 255 tokens in 16.5s = 15.4 tok/s · peak 16.97 GB
+[speed r64] [serve] 255 tokens in 20.7s = 12.3 tok/s · peak 17.01 GB
+[speed r32] [serve] 255 tokens in 27.9s = 9.1 tok/s · peak 16.97 GB
+KLD: {'r64': 0.41558191180229187, 'r128': 0.5656236410140991, 'r64abs': 4.198931694030762, 'r32': 0.3026832342147827} | tok/s: {'r128': 15.4, 'r64': 12.3, 'r32': 9.1} | ELEGIDO: r128
+[load] 16.46 GB

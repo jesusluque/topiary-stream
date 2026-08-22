@@ -36,6 +36,7 @@ from common import GROUP, find_moe_blocks
 
 PARTS = ("gate_proj", "up_proj", "down_proj")
 MAX_CHURN = 8
+OVF = 32          # filas del tier de desbordamiento (refresh barato)
 
 
 class PoolLayer:
@@ -63,7 +64,20 @@ class PoolLayer:
         self.pools = {p: {} for p in PARTS}
         self.lookup0 = mx.full((self.n_experts,), -1, dtype=mx.int32)
         self.lookup1 = mx.full((self.n_experts,), -1, dtype=mx.int32)
+        # Tier de DESBORDAMIENTO (refresh barato): OVF filas de P0 donde
+        # entran los expertos nuevos a cadencia fina (copias de ~27 MB en
+        # vez de ~200 MB por proyección); se funden en el pool grande en el
+        # refresh completo (cada `ovf_merge` refreshes rápidos).
+        self.lookup_o = mx.full((self.n_experts,), -1, dtype=mx.int32)
+        self.ovf_members: list[int] = [-1] * OVF
+        self.ovf_next = 0
         self._install(list(np.argsort(-self.ema)[: self.c]))
+        for proj in PARTS:
+            m = self.mm[proj]
+            self.pools[proj]["po"] = mx.zeros((OVF, m["out"], m["p0"].shape[1] // m["out"]), dtype=mx.uint32)
+            self.pools[proj]["so"] = mx.zeros((OVF,) + m["s_shape"], dtype=self.pools[proj]["s0"].dtype)
+            self.pools[proj]["bo"] = mx.zeros((OVF,) + m["s_shape"], dtype=self.pools[proj]["s0"].dtype)
+            mx.eval(self.pools[proj]["po"], self.pools[proj]["so"], self.pools[proj]["bo"])
 
     def _rows(self, proj: str, plane: str, ids: list[int]) -> mx.array:
         m = self.mm[proj]
@@ -101,6 +115,41 @@ class PoolLayer:
                 "s1": self._sb(proj, self.members1)[0],
             }
             mx.eval(*self.pools[proj].values())
+
+    def refresh_fast(self, counts: np.ndarray) -> int:
+        """Refresh BARATO: los expertos que deberían entrar van al tier de
+        desbordamiento (servidos a suelo P0) sin tocar el pool grande."""
+        self.ema = 0.8 * self.ema + counts
+        ideal = np.argsort(-self.ema)[: self.c]
+        in0 = set(self.members0); ino = set(e for e in self.ovf_members if e >= 0)
+        entering = [int(e) for e in ideal if int(e) not in in0 and int(e) not in ino][:MAX_CHURN]
+        if not entering:
+            return 0
+        lo = np.array(self.lookup_o, copy=True)
+        slots = []
+        for e in entering:
+            slot = self.ovf_next % OVF
+            self.ovf_next += 1
+            old_e = self.ovf_members[slot]
+            if old_e >= 0:
+                lo[old_e] = -1
+            self.ovf_members[slot] = e
+            lo[e] = slot
+            slots.append(slot)
+        self.lookup_o = mx.array(lo)
+        pos_mx = mx.array(np.array(slots, dtype=np.int32))
+        for proj in PARTS:
+            p = self.pools[proj]
+            p["po"][pos_mx] = self._rows(proj, "p0", entering)
+            s_new, b_new = self._sb(proj, entering)
+            p["so"][pos_mx] = s_new
+            p["bo"][pos_mx] = b_new + 1.5 * s_new
+            mx.eval(p["po"], p["so"], p["bo"])
+        return len(entering)
+
+    def clear_overflow(self) -> None:
+        self.lookup_o = mx.full((self.n_experts,), -1, dtype=mx.int32)
+        self.ovf_members = [-1] * OVF
 
     def refresh(self, counts: np.ndarray) -> None:
         """Incremental: only entering rows (<= MAX_CHURN) and the P1 rotation
@@ -337,8 +386,22 @@ def patch_pool(model, art_dir: Path, pool_c: int, pool_k: int,
             if hasattr(self, "shared_expert"):
                 y = y + dropped.astype(y.dtype) * self.shared_expert(x_flat)
             return _plus_shared(self, x_flat, y).reshape(shape)
-        else:  # nosync: drop-renormalize outside the pool
-            sv = (pos0 >= 0).astype(scores.dtype)
+        else:  # nosync: drop-renormalize outside the pool (+ tier de desbordamiento)
+            if S.get("ovf_merge", 0):
+                pos_o = st.lookup_o[inds]
+                m_o = ((pos_o >= 0) & (pos0 < 0)).astype(x_flat.dtype)[..., None, None]
+                r_o = mx.maximum(pos_o, 0)
+
+                def ovf_part(proj, xin):
+                    p = st.pools[proj]
+                    return mx.gather_qmm(xin, p["po"], p["so"] * 4, p["bo"],
+                                         rhs_indices=r_o, transpose=True,
+                                         group_size=GROUP, bits=2) * m_o
+                h_o = glu.activation(ovf_part("up_proj", xx), ovf_part("gate_proj", xx))
+                y = y + ovf_part("down_proj", h_o)
+                sv = ((pos0 >= 0) | (pos_o >= 0)).astype(scores.dtype)
+            else:
+                sv = (pos0 >= 0).astype(scores.dtype)
             scores = scores * sv
             scores = scores / mx.maximum(scores.sum(axis=-1, keepdims=True), 1e-9)
 
@@ -356,6 +419,9 @@ def _plus_shared(blk, x_flat, y):
 
 
 def refresh_all() -> None:
+    merge = S.get("ovf_merge", 0)
+    S["calls"] = S.get("calls", 0) + 1
+    fast = merge > 0 and (S["calls"] % merge != 0)
     for bid, st in S["layers"].items():
         pend = S["pending"][bid]
         if not pend:
@@ -365,4 +431,10 @@ def refresh_all() -> None:
         idx_np = idx_np[(idx_np >= 0) & (idx_np < st.n_experts)]
         if len(idx_np) == 0:
             continue
-        st.refresh(np.bincount(idx_np, minlength=st.n_experts).astype(np.float64))
+        counts = np.bincount(idx_np, minlength=st.n_experts).astype(np.float64)
+        if fast:
+            st.refresh_fast(counts)
+        else:
+            st.refresh(counts)
+            if merge > 0:
+                st.clear_overflow()

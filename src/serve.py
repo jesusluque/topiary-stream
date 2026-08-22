@@ -53,6 +53,8 @@ def main() -> None:
     parser.add_argument("--gov-high", type=float, default=7.0,
                         help="governor: grow K above this available-GB")
     parser.add_argument("--refresh", type=int, default=256)
+    parser.add_argument("--ovf-merge", type=int, default=0,
+                        help="refresh barato: N refreshes rápidos (tier de desbordamiento) por cada completo")
     parser.add_argument("--centroid", default="uniform",
                         choices=["uniform", "empirical"])
     parser.add_argument("--p1-frac", default="1.0")
@@ -86,6 +88,7 @@ def main() -> None:
         rt.patch_pool(model, Path(args.artifact), args.pool_c, args.pool_k,
                       orders=args.orders)
         rt.S["mode"] = args.serve_mode
+        rt.S["ovf_merge"] = args.ovf_merge
         if args.serve_mode == "floor2d":
             from common import find_moe_blocks
 

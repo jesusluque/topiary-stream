@@ -539,6 +539,8 @@ def main() -> None:
                         help="KLD en régimen de decode (token a token con caché)")
     parser.add_argument("--gen-refresh", type=int, default=256,
                         help="refresh del pool cada N tokens generados (tareas/bench)")
+    parser.add_argument("--ovf-merge", type=int, default=0,
+                        help="refresh barato: N rápidos (desbordamiento) por cada completo")
     parser.add_argument("--kld-refresh", type=int, default=256,
                         help="cadencia de refresh en decode-KLD (remedio del arranque)")
     parser.add_argument("--openai-base", default=None,
@@ -590,6 +592,8 @@ def main() -> None:
     model, tokenizer, rt = load_runtime(args.artifact, args.pool_c, args.pool_k,
                                         args.serve_mode, args.orders, args.floor,
                                         args.centroid, args.p1_frac)
+    if hasattr(rt, "S"):
+        rt.S["ovf_merge"] = args.ovf_merge
     print(f"[load] {mx.get_active_memory() / 1e9:.2f} GB")
     if args.stage == "ppl":
         stage_ppl(model, tokenizer, rt, args.data_code, args.data_general,

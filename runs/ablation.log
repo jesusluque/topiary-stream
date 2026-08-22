@@ -155,3 +155,7 @@ Peak memory: 17.234 GB
 === RIVAL-KLD START Sat Aug 22 19:07:47 CEST 2026 ===
 === RIVAL-KLD COMPLETO Sat Aug 22 19:08:35 CEST 2026 ===
 === CAMPANA START Sat Aug 22 19:08:39 CEST 2026 ===
+=== CAND r128 OK ===
+=== CAND r64abs OK ===
+=== CAND r32 OK ===
+=== CAMPANA CONFIG: mode=nosync refresh=128 ===
