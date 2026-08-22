@@ -418,10 +418,31 @@ def _plus_shared(blk, x_flat, y):
     return y
 
 
+def _miss_rate(st, idx_np: np.ndarray) -> float:
+    """Fracción de slots enrutados que NO estaban residentes (pool ni
+    desbordamiento) — el sensor de dispersión del gobernador de marchas."""
+    l0 = np.array(st.lookup0)
+    lo = np.array(st.lookup_o)
+    return float(np.mean((l0[idx_np] < 0) & (lo[idx_np] < 0)))
+
+
+def _shift_gear(gear: str) -> None:
+    """Cambio de marcha: reconstruir pools a (C, K) de la marcha. Raro por
+    diseño (histéresis), así que el coste de _install es aceptable."""
+    c, k = S["gear_cfg"][gear]
+    for st in S["layers"].values():
+        st.c, st.k = c, k
+        st._install(list(np.argsort(-st.ema)[:c]))
+        st.clear_overflow()
+    S["gear"] = gear
+    S["gear_dwell"] = 0
+
+
 def refresh_all() -> None:
     merge = S.get("ovf_merge", 0)
     S["calls"] = S.get("calls", 0) + 1
     fast = merge > 0 and (S["calls"] % merge != 0)
+    misses = []
     for bid, st in S["layers"].items():
         pend = S["pending"][bid]
         if not pend:
@@ -431,6 +452,8 @@ def refresh_all() -> None:
         idx_np = idx_np[(idx_np >= 0) & (idx_np < st.n_experts)]
         if len(idx_np) == 0:
             continue
+        if S.get("gear_cfg"):
+            misses.append(_miss_rate(st, idx_np))
         counts = np.bincount(idx_np, minlength=st.n_experts).astype(np.float64)
         if fast:
             st.refresh_fast(counts)
@@ -438,3 +461,16 @@ def refresh_all() -> None:
             st.refresh(counts)
             if merge > 0:
                 st.clear_overflow()
+    # Gobernador de DOS MARCHAS: dispersión alta → marcha 2-bit amplia (C alto,
+    # K≈0); dispersión baja → marcha 4-bit focal. Histéresis + permanencia.
+    if S.get("gear_cfg") and misses:
+        m = float(np.mean(misses))
+        S["miss_rate"] = m
+        S["gear_dwell"] = S.get("gear_dwell", 0) + 1
+        if S["gear_dwell"] >= S.get("gear_min_dwell", 2):
+            if S["gear"] == "lo" and m > S["gear_hi_thr"]:
+                _shift_gear("hi")
+                S["gear_events"] = S.get("gear_events", []) + [("hi", m)]
+            elif S["gear"] == "hi" and m < S["gear_lo_thr"]:
+                _shift_gear("lo")
+                S["gear_events"] = S.get("gear_events", []) + [("lo", m)]

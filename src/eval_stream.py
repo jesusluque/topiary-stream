@@ -121,6 +121,8 @@ def stage_ppl(model, tokenizer, rt, data_code: str, data_general: str,
 
 OPENAI_BASE: str | None = None   # --openai-base: baseline externo (llama-server)
 GEN_REFRESH: int = 256           # --gen-refresh: cadencia de refresh en generación
+BURST_LEN: int = 0               # --burst-len: tokens iniciales con ráfaga (0 = sin ráfaga)
+BURST_EVERY: int = 8             # --burst-every: cadencia dentro de la ráfaga
 
 
 def _ask(model, tokenizer, rt, prompt: str, max_tokens: int) -> str:
@@ -153,7 +155,10 @@ def _ask(model, tokenizer, rt, prompt: str, max_tokens: int) -> str:
                              sampler=make_sampler(temp=0.0)):
         pieces.append(r.text)
         n += 1
-        if GEN_REFRESH and n % GEN_REFRESH == 0:
+        # RÁFAGA de arranque: refresh frecuente en los primeros BURST_LEN
+        # tokens (el pool aún no conoce el tema), luego cadencia normal.
+        if (BURST_LEN and n <= BURST_LEN and n % BURST_EVERY == 0) or \
+           (GEN_REFRESH and n % GEN_REFRESH == 0):
             rt.refresh_all()
     rt.refresh_all()
     return "".join(pieces)
@@ -384,7 +389,8 @@ def stage_kld(model, tokenizer, rt, data: str, chunks: int, chunk_len: int,
                 mx.eval(lp)
                 lps.append(np.array(lp, dtype=np.float16))
                 step += 1
-                if step % refresh_every == 0:
+                j = t - k0 + 1   # posición dentro del decode de este chunk
+                if (j <= BURST_LEN and j % BURST_EVERY == 0) or step % refresh_every == 0:
                     rt.refresh_all()
             if lps:
                 all_lp.append(np.stack(lps))
@@ -524,6 +530,13 @@ def stage_traj(model, tokenizer, rt, n_prompts: int, gen_len: int,
           f"{exact / len(trajs):.0%} · divergencia media en token "
           f"{np.mean(first_div):.1f}")
 
+def _setup_gear(rt, gear: str | None, hi: float, lo: float) -> None:
+    if not gear or not hasattr(rt, "S"):
+        return
+    (clo, klo), (chi, khi) = [tuple(int(v) for v in g.split(":")) for g in gear.split(",")]
+    rt.S.update({"gear_cfg": {"lo": (clo, klo), "hi": (chi, khi)}, "gear": "lo",
+                 "gear_hi_thr": hi, "gear_lo_thr": lo, "gear_dwell": 0})
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Quality accounting for Stream artifacts")
@@ -541,6 +554,13 @@ def main() -> None:
                         help="refresh del pool cada N tokens generados (tareas/bench)")
     parser.add_argument("--ovf-merge", type=int, default=0,
                         help="refresh barato: N rápidos (desbordamiento) por cada completo")
+    parser.add_argument("--burst-len", type=int, default=0,
+                        help="ráfaga de refresh en los primeros N tokens generados (0=no)")
+    parser.add_argument("--burst-every", type=int, default=8)
+    parser.add_argument("--gear", default=None,
+                        help="gobernador de dos marchas 'Clo:Klo,Chi:Khi' (p.ej. 240:32,290:1)")
+    parser.add_argument("--gear-hi", type=float, default=0.25, help="tasa de misses que sube de marcha")
+    parser.add_argument("--gear-lo", type=float, default=0.10, help="tasa de misses que baja de marcha")
     parser.add_argument("--kld-refresh", type=int, default=256,
                         help="cadencia de refresh en decode-KLD (remedio del arranque)")
     parser.add_argument("--openai-base", default=None,
@@ -571,8 +591,9 @@ def main() -> None:
     args = parser.parse_args()
 
     set_seeds(1234)
-    global GEN_REFRESH
+    global GEN_REFRESH, BURST_LEN, BURST_EVERY
     GEN_REFRESH = args.gen_refresh
+    BURST_LEN, BURST_EVERY = args.burst_len, args.burst_every
     if args.stage == "kldremote":
         stage_kld_remote(args.artifact, args.data_general, args.chunks_general,
                          args.chunk_len, args.kld_ref, args.openai_base, args.tag)
@@ -594,17 +615,22 @@ def main() -> None:
                                         args.centroid, args.p1_frac)
     if hasattr(rt, "S"):
         rt.S["ovf_merge"] = args.ovf_merge
+    _setup_gear(rt, args.gear, args.gear_hi, args.gear_lo)
     print(f"[load] {mx.get_active_memory() / 1e9:.2f} GB")
     if args.stage == "ppl":
         stage_ppl(model, tokenizer, rt, args.data_code, args.data_general,
                   (args.chunks_code, args.chunks_general), args.chunk_len, args.tag)
     elif args.stage == "bench":
         stage_bench(model, tokenizer, rt, args.bench.split(","), args.n, args.tag)
+        if hasattr(rt, "S") and rt.S.get("gear_cfg"):
+            print("[gear] eventos:", rt.S.get("gear_events", []), "| marcha final:", rt.S.get("gear"))
     elif args.stage == "kld":
         stage_kld(model, tokenizer, rt, args.data_general,
                   args.chunks_general, args.chunk_len,
                   args.kld_ref, args.kld_out, args.tag, args.kld_decode,
                   args.kld_refresh)
+        if hasattr(rt, "S") and rt.S.get("gear_cfg"):
+            print("[gear] eventos:", rt.S.get("gear_events", []), "| marcha final:", rt.S.get("gear"))
     elif args.stage == "traj":
         stage_traj(model, tokenizer, rt, args.n, args.gen_len,
                    args.kld_ref, args.kld_out, args.tag)

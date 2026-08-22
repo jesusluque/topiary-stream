@@ -52,7 +52,14 @@ def main() -> None:
                         help="governor: shrink K below this available-GB")
     parser.add_argument("--gov-high", type=float, default=7.0,
                         help="governor: grow K above this available-GB")
+    parser.add_argument("--gear", default=None,
+                        help="gobernador de dos marchas 'Clo:Klo,Chi:Khi' (p.ej. 240:32,290:1)")
+    parser.add_argument("--gear-hi", type=float, default=0.25, help="tasa de misses que sube de marcha")
+    parser.add_argument("--gear-lo", type=float, default=0.10, help="tasa de misses que baja de marcha")
     parser.add_argument("--refresh", type=int, default=256)
+    parser.add_argument("--burst-len", type=int, default=0,
+                        help="ráfaga de refresh en los primeros N tokens (0=no)")
+    parser.add_argument("--burst-every", type=int, default=8)
     parser.add_argument("--ovf-merge", type=int, default=0,
                         help="refresh barato: N refreshes rápidos (tier de desbordamiento) por cada completo")
     parser.add_argument("--centroid", default="uniform",
@@ -89,6 +96,10 @@ def main() -> None:
                       orders=args.orders)
         rt.S["mode"] = args.serve_mode
         rt.S["ovf_merge"] = args.ovf_merge
+        if args.gear:
+            (clo, klo), (chi, khi) = [tuple(int(x) for x in g.split(":")) for g in args.gear.split(",")]
+            rt.S.update({"gear_cfg": {"lo": (clo, klo), "hi": (chi, khi)}, "gear": "lo",
+                         "gear_hi_thr": args.gear_hi, "gear_lo_thr": args.gear_lo, "gear_dwell": 0})
         if args.serve_mode == "floor2d":
             from common import find_moe_blocks
 
@@ -119,7 +130,7 @@ def main() -> None:
             t_dec = time.perf_counter()
         text.append(r.text)
         n += 1
-        if n % args.refresh == 0:
+        if (args.burst_len and n <= args.burst_len and n % args.burst_every == 0) or n % args.refresh == 0:
             if governor:
                 msg = governor()
                 if msg:
