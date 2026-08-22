@@ -1,0 +1,11 @@
+0.00.257.432 I cmn  common_param: common_params_print_info: verbosity = 3 (adjust with the `-lv N` CLI arg)
+0.00.259.728 W srv  llama_server: -----------------
+0.00.259.729 W srv  llama_server: CORS is set to allow all origins ('*') and no API key is set
+0.00.259.729 W srv  llama_server: this can be a security risk (cross-origin attacks)
+0.00.259.729 W srv  llama_server: more info: https://github.com/ggml-org/llama.cpp/pull/25655
+0.00.259.730 W srv  llama_server: -----------------
+0.00.263.098 I srv    load_model: loading model 'artifacts/unsloth/Qwen3-Next-80B-A3B-Instruct-UD-Q2_K_XL.gguf'
+0.00.415.746 W common_fit_params: failed to fit params to free device memory: n_gpu_layers already set by user to 99, abort
+0.00.484.324 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.06.641.205 W ggml_metal_log_allocated_size: warning: current allocated size is greater than the recommended max working set size
+0.06.641.429 W ggml_metal_log_allocated_size: warning: current allocated size is greater than the recommended max working set size

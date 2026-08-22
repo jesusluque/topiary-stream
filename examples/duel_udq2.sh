@@ -7,7 +7,7 @@ PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
 export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
 LOG=runs/ablation.log
 GGUF=artifacts/unsloth/Qwen3-Next-80B-A3B-Instruct-UD-Q2_K_XL.gguf
-until grep -q "KLD-DECODE COMPLETO" runs/ablation.log 2>/dev/null && grep -qE "F48 (OK|FALLO)" runs/ablation.log 2>/dev/null && ! pgrep -f "eval_stream|src/serve.py|f48_persistence|llama-" > /dev/null; do sleep 60; done
+until grep -q "KLD-DECODE COMPLETO" runs/ablation.log 2>/dev/null && grep -q "F48 OK" runs/ablation.log 2>/dev/null && ! pgrep -f "eval_stream|src/serve.py|f48_persistence|llama-" > /dev/null; do sleep 60; done
 sleep $((RANDOM % 15 + 5)); pgrep -f "eval_stream|llama-" > /dev/null && exec "$0"
 echo "=== DUEL START $(date) ===" >> $LOG
 sysctl vm.swapusage >> runs/duel.log
