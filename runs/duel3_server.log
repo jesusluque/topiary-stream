@@ -1336,3 +1336,9 @@
 66.42.765.881 I slot print_timing: id  3 | task 30317 | n_gen =    397, tg =   4.85 t/s, tg_3s =   5.41 t/s
 66.45.935.365 I slot print_timing: id  3 | task 30317 | n_gen =    413, tg =   4.86 t/s, tg_3s =   5.05 t/s
 66.49.010.355 I slot print_timing: id  3 | task 30317 | n_gen =    432, tg =   4.91 t/s, tg_3s =   6.18 t/s
+66.52.142.042 I slot print_timing: id  3 | task 30317 | n_gen =    443, tg =   4.86 t/s, tg_3s =   3.51 t/s
+66.55.198.897 I slot print_timing: id  3 | task 30317 | n_gen =    459, tg =   4.87 t/s, tg_3s =   5.23 t/s
+66.58.407.844 I slot print_timing: id  3 | task 30317 | n_gen =    478, tg =   4.91 t/s, tg_3s =   5.92 t/s
+67.01.464.868 I slot print_timing: id  3 | task 30317 | n_gen =    501, tg =   4.99 t/s, tg_3s =   7.52 t/s
+67.04.581.086 I slot print_timing: id  3 | task 30317 | n_gen =    522, tg =   5.04 t/s, tg_3s =   6.74 t/s
+67.07.728.895 I slot print_timing: id  3 | task 30317 | n_gen =    537, tg =   5.03 t/s, tg_3s =   4.77 t/s
