@@ -338,7 +338,7 @@ def stage_bench(model, tokenizer, rt, benches: list[str], n_bench: int,
 
 def stage_kld(model, tokenizer, rt, data: str, chunks: int, chunk_len: int,
               ref: str | None, out: str | None, tag: str,
-              decode: bool = False) -> None:
+              decode: bool = False, refresh_every: int = 256) -> None:
     """KLD servido-vs-base por token (Accuracy is Not All You Need,
     2407.09141: la PPL media cancela daño por token; KLD no). Dos pasadas:
     con --kld-out guarda log-probs de la referencia (modo exact = la base);
@@ -375,7 +375,7 @@ def stage_kld(model, tokenizer, rt, data: str, chunks: int, chunk_len: int,
                 mx.eval(lp)
                 lps.append(np.array(lp, dtype=np.float16))
                 step += 1
-                if step % 256 == 0:
+                if step % refresh_every == 0:
                     rt.refresh_all()
             if lps:
                 all_lp.append(np.stack(lps))
@@ -479,6 +479,8 @@ def main() -> None:
     parser.add_argument("--gen-len", type=int, default=32)
     parser.add_argument("--kld-decode", action="store_true",
                         help="KLD en régimen de decode (token a token con caché)")
+    parser.add_argument("--kld-refresh", type=int, default=256,
+                        help="cadencia de refresh en decode-KLD (remedio del arranque)")
     parser.add_argument("--openai-base", default=None,
                         help="baseline externo OpenAI-compatible (p.ej. http://127.0.0.1:8080)")
     parser.add_argument("--serve-mode", default="nosync",
@@ -531,7 +533,8 @@ def main() -> None:
     elif args.stage == "kld":
         stage_kld(model, tokenizer, rt, args.data_general,
                   args.chunks_general, args.chunk_len,
-                  args.kld_ref, args.kld_out, args.tag, args.kld_decode)
+                  args.kld_ref, args.kld_out, args.tag, args.kld_decode,
+                  args.kld_refresh)
     elif args.stage == "traj":
         stage_traj(model, tokenizer, rt, args.n, args.gen_len,
                    args.kld_ref, args.kld_out, args.tag)
