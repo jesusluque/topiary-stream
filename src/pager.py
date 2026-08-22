@@ -260,7 +260,7 @@ def patch_pool(model, art_dir: Path, pool_c: int, pool_k: int,
         # serve it at true 4-bit and keep the pool policy for decode only.
         # Removes the teacher-forced/prefill toll (measured +28%/+120% on an
         # 80B) and starts decode from an exact KV.
-        if mode == "exact" or (x_flat.shape[0] > 1 and mode in ("nosync", "floor2d")):
+        if mode == "exact" or (x_flat.shape[0] > 1 and mode in ("nosync", "floor2d", "absorb")):
             inds_np = np.array(inds)
             uniq, inv = np.unique(inds_np, return_inverse=True)
             rme = mx.array(inv.reshape(inds_np.shape).astype(np.int32))
@@ -326,6 +326,17 @@ def patch_pool(model, art_dir: Path, pool_c: int, pool_k: int,
                 h_m = glu.activation(floor_fetch("up_proj", xx),
                                      floor_fetch("gate_proj", xx))
                 y = y + floor_fetch("down_proj", h_m) * mm_mask
+        elif mode == "absorb":
+            # El experto COMPARTIDO absorbe la masa de gate de los caídos:
+            # un suelo universal ya residente y entrenado, a coste cero.
+            sv = (pos0 >= 0).astype(scores.dtype)
+            dropped = (scores * (1 - sv)).sum(axis=-1, keepdims=True)
+            scores = scores * sv
+            y = y.squeeze(-2)
+            y = (y * scores[..., None].astype(y.dtype)).sum(axis=-2)
+            if hasattr(self, "shared_expert"):
+                y = y + dropped.astype(y.dtype) * self.shared_expert(x_flat)
+            return _plus_shared(self, x_flat, y).reshape(shape)
         else:  # nosync: drop-renormalize outside the pool
             sv = (pos0 >= 0).astype(scores.dtype)
             scores = scores * sv

@@ -412,6 +412,55 @@ def stage_kld(model, tokenizer, rt, data: str, chunks: int, chunk_len: int,
           f"p99 {res['kld_p99']:.5f} · max {res['kld_max']:.3f} ({len(kl)} tokens)")
 
 
+def stage_kld_remote(tokenizer_path: str, data: str, chunks: int, chunk_len: int,
+                     ref: str, base_url: str, tag: str, n_probs: int = 100) -> None:
+    """KLD de un baseline externo (llama-server) contra la MISMA referencia
+    (nuestra base exacta guardada): teacher-forced token a token vía
+    /completion con prompt en ids y n_probs. KL truncada al top-N de la
+    referencia (renormalizada en ambos) — aproximación estándar; se reporta
+    como tal."""
+    import urllib.request
+    from transformers import AutoTokenizer
+    tok = AutoTokenizer.from_pretrained(tokenizer_path)
+    rows = [json.loads(l) for l in open(data)][:chunks]
+    refz = np.load(ref)
+    kls = []
+    for ci, row in enumerate(rows):
+        toks = tok.encode(row["text"])[:chunk_len]
+        lp_ref = refz[f"arr_{ci}"].astype(np.float32)      # [T-k0, V] de la base
+        k0 = len(toks) - 1 - lp_ref.shape[0]   # mismas posiciones que la referencia
+        kl_chunk = []
+        for i in range(lp_ref.shape[0]):
+            t = k0 + i
+            body = json.dumps({"prompt": toks[:t + 1], "n_predict": 1, "n_probs": n_probs,
+                               "temperature": 0, "cache_prompt": True}).encode()
+            req = urllib.request.Request(base_url.rstrip("/") + "/completion", data=body,
+                                         headers={"Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=600) as r:
+                res = json.load(r)
+            probs = res["completion_probabilities"][0]
+            top = probs.get("top_probs") or probs.get("probs") or []
+            q = {int(e.get("id", -1)): float(e.get("prob", 0.0)) for e in top}
+            if -1 in q:   # versiones antiguas sin id: por token string
+                q = {tok.convert_tokens_to_ids(e["token"]): float(e["prob"]) for e in top if "token" in e}
+            # KL sobre el top-N de la referencia, renormalizado en ambos
+            lpr = lp_ref[i]
+            idx = np.argpartition(-lpr, n_probs)[:n_probs]
+            pr = np.exp(lpr[idx]); pr = pr / pr.sum()
+            qr = np.array([max(q.get(int(j), 1e-9), 1e-9) for j in idx]); qr = qr / qr.sum()
+            kl_chunk.append(float((pr * (np.log(pr) - np.log(qr))).sum()))
+        kls.append(np.array(kl_chunk))
+        print(f"  remoto chunk {ci + 1}/{len(rows)}: KL media {np.mean(kl_chunk):.4f}")
+    kl = np.concatenate(kls)
+    np.savez_compressed(f"runs/kld_{tag}_curve.npz", *kls)
+    res = {"kld_mean": float(kl.mean()), "kld_p95": float(np.percentile(kl, 95)),
+           "kld_p99": float(np.percentile(kl, 99)), "kld_max": float(kl.max()),
+           "tokens": int(len(kl)), "n_probs": n_probs, "truncated": True}
+    Path(f"runs/kld_{tag}.json").write_text(json.dumps(res, indent=2))
+    print(f"[kld-remote] media {res['kld_mean']:.5f} · p95 {res['kld_p95']:.5f} · "
+          f"p99 {res['kld_p99']:.5f} · max {res['kld_max']:.3f} ({len(kl)} tokens, top-{n_probs})")
+
+
 def stage_traj(model, tokenizer, rt, n_prompts: int, gen_len: int,
                ref: str | None, out: str | None, tag: str) -> None:
     """Divergencia de trayectoria greedy (estilo Divergence-300@32 de
@@ -471,7 +520,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Quality accounting for Stream artifacts")
     parser.add_argument("--artifact", required=True)
     parser.add_argument("--stage", required=True,
-                        choices=["ppl", "tasks", "bench", "kld", "traj"])
+                        choices=["ppl", "tasks", "bench", "kld", "traj", "kldremote"])
     parser.add_argument("--kld-out", default=None,
                         help="guardar log-probs/trayectorias de referencia aquí")
     parser.add_argument("--kld-ref", default=None,
@@ -484,7 +533,7 @@ def main() -> None:
     parser.add_argument("--openai-base", default=None,
                         help="baseline externo OpenAI-compatible (p.ej. http://127.0.0.1:8080)")
     parser.add_argument("--serve-mode", default="nosync",
-                        choices=["exact", "nosync", "floor", "floor2d"])
+                        choices=["exact", "nosync", "floor", "floor2d", "absorb"])
     parser.add_argument("--pool-c", type=int, default=240)
     parser.add_argument("--pool-k", type=int, default=32)
     parser.add_argument("--orders", default=None)
@@ -509,6 +558,10 @@ def main() -> None:
     args = parser.parse_args()
 
     set_seeds(1234)
+    if args.stage == "kldremote":
+        stage_kld_remote(args.artifact, args.data_general, args.chunks_general,
+                         args.chunk_len, args.kld_ref, args.openai_base, args.tag)
+        return
     if args.openai_base:
         # Baseline externo: sin modelo MLX; el stage bench habla con la API.
         global OPENAI_BASE
