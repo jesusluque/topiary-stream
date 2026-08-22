@@ -2,11 +2,9 @@
 
 Bloqueantes antes de enviar a venue (MLSys/EuroSys/ICML systems track):
 
-1. **Segunda familia de modelos** con router balanceado (OLMoE-1B-7B es el
-   candidato: ya usado como banco en el programa; alternativa Mixtral-8x7B).
-   Umbral: si suelo + leyes de cobertura se sostienen → generalidad
-   defendida; si no → acotar el claim a "MoE con localidad de decode alta"
-   y demostrarlo con Gini/skew del routing.
+1. (retirado por directiva: el programa es solo-Qwen; la generalidad entre
+   familias queda declarada como limitación en el paper, no como tarea.)
+
 2. **n≥300 por benchmark** con IC bootstrap (hoy: n=15/25/50/100; solo las
    igualdades de PPL son estadísticamente fuertes). McNemar solo entonces.
 3. **Baselines directos en el mismo M5 Pro**: (a) mixed-precision estilo
@@ -32,8 +30,7 @@ Fuertemente recomendado:
    esperando reinicio).
 5. **Vendorizar `_gather_sort`** (es pequeña) para inmunizar frente a
    mlx-lm 3.x. CI ya pinneado a mlx 0.32.0 / mlx-lm 0.31.3.
-6. **Ablación EMA bajo router balanceado** (tamaño de refresh N, K) para
-   acotar thrashing.
+6. (retirado: iba unida a la segunda familia.)
 
 Hecho el 2026-08-19 mismo (de la misma revisión): log-softmax estable en
 token_nll, page-size parseado, pins de versión, nota del fold 1.5s
@@ -119,5 +116,5 @@ universal da 0.131 — bajo el 2-bit: el invariante funciona.
 
 **Siguientes (orden sugerido):** n≥300 en MATH/MBPP (el ±5 del duelo no se
 cierra sin esto) → consolidación escrita (paper/README/web/cards, pendiente
-desde el 20) → segunda familia OLMoE (1) → B residencia guiada por daño →
+desde el 20) → B residencia guiada por daño →
 D máster imatrix afín (el P0 uniforme es el peor suelo posible).
