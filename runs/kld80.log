@@ -82,3 +82,7 @@ ValueError: [convert] Only length-1 arrays can be converted to Python scalars.
 [kld] referencia guardada: runs/kld80_base_long.npz (4 chunks)
 [load] 16.46 GB
 [kld] media 0.77389 · p95 4.40317 · p99 9.01970 · max 14.952 (1980 tokens)
+[load] 22.50 GB
+[kld] referencia guardada: runs/kld_smoke.npz (1 chunks)
+[load] 22.50 GB
+[load] 15.70 GB
