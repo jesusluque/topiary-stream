@@ -84,3 +84,40 @@ G. **Porte CUDA en AWS (generalidad del método + upstream)**. La jerarquía
    1-2 semanas. Contribuciones upstream independientes del porte: biases
    dinámicos como PR a vLLM/FusedMoE, y suelo Q8_0→2×Q4_0 (¡el split porta
    a GGUF por arriba, simétrico sin fold!) al RFC llama.cpp #24528.
+
+## Estado 2026-08-23 (tras el duelo y la campaña de KLD)
+
+**Cerrado esta semana (del roadmap):** 3a baseline Unsloth UD-Q2 (duelo
+completo); 3b KLD/trayectorias (TF 0.000, decode 0.77→0.30 por cadencia,
+traj 36%@32, curvas por posición); 4 cold-boot (35B); A dial C como perfil
+de tarea (n=500); C medida de persistencia del 235B (78% a W=8).
+
+**Objetivo activo — "superar la tabla del rival"** (69/86/86.2 en
+MATH/MBPP/MMLU; 12.6 tok/s; 30 GB). Posición: 65/81/86 @ 15.4 tok/s, 17 GB.
+Listón KLD (tabla Unsloth, Gemma-27B, wiki vs BF16): Q2_K_XL 0.221,
+Q4_K_XL 0.024 → objetivo 80B ≤0.20 vs base con ≥12.6 tok/s (hoy 0.303 a
+cadencia 32 pero 9.1 tok/s; 0.566 a 128 con 15.4).
+
+**Hallazgos que reorientan:** (i) la cadencia del refresh es LA palanca de
+KLD (256→32: 0.77→0.30) pero NO mueve tareas focales (65/81); (ii) el peaje
+de tareas parece de COBERTURA (drops al 47%); (iii) el suelo universal fino
+(25%) no rescata (1.35) y C=340 no cabe (20.7 GB); (iv) absorb (shared
+como suelo) es negativo rotundo (7.17); (v) el 30B-Stream con suelo
+universal da 0.131 — bajo el 2-bit: el invariante funciona.
+
+**En cola / en marcha (examples/*.sh, automático):**
+- H. **Refresh barato — tier de desbordamiento** (OVF=32 filas P0, merge
+  cada N): ¿cadencia 32 a ≥15 tok/s? (ovf_test.sh). Si sí → producción.
+- I. **Batería de tareas en modo 2-bit C=290** (57%): ¿la cobertura
+  recupera los 5 puntos en MATH/MBPP? (bench_c290.sh).
+- J. **KLD del rival contra nuestra base exacta** (kldremote, top-100):
+  la misma columna para ambos (objetivo_kld.sh).
+- K. Ráfaga de refresh tras el prompt (arranque ~64 tokens a 0.5–0.6 KLD):
+  refresh cada 8–16 en los primeros 64 tokens.
+- L. Gobernador de dos marchas (K↔C por tasa de misses) — validado el
+  escalón (C=290: −25%), falta el conmutador.
+
+**Siguientes (orden sugerido):** n≥300 en MATH/MBPP (el ±5 del duelo no se
+cierra sin esto) → consolidación escrita (paper/README/web/cards, pendiente
+desde el 20) → segunda familia OLMoE (1) → B residencia guiada por daño →
+D máster imatrix afín (el P0 uniforme es el peor suelo posible).
