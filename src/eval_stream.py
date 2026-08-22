@@ -120,6 +120,7 @@ def stage_ppl(model, tokenizer, rt, data_code: str, data_general: str,
 
 
 OPENAI_BASE: str | None = None   # --openai-base: baseline externo (llama-server)
+GEN_REFRESH: int = 256           # --gen-refresh: cadencia de refresh en generación
 
 
 def _ask(model, tokenizer, rt, prompt: str, max_tokens: int) -> str:
@@ -135,7 +136,7 @@ def _ask(model, tokenizer, rt, prompt: str, max_tokens: int) -> str:
                                      data=body, headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=600) as r:
             return json.load(r)["choices"][0]["message"]["content"]
-    from mlx_lm import generate
+    from mlx_lm.generate import stream_generate
     from mlx_lm.sample_utils import make_sampler
 
     kwargs = {"add_generation_prompt": True, "tokenize": False}
@@ -144,10 +145,18 @@ def _ask(model, tokenizer, rt, prompt: str, max_tokens: int) -> str:
         text = tokenizer.apply_chat_template(msgs, enable_thinking=False, **kwargs)
     except TypeError:
         text = tokenizer.apply_chat_template(msgs, **kwargs)
-    out = generate(model, tokenizer, text, max_tokens=max_tokens,
-                   sampler=make_sampler(temp=0.0))
+    # Refresh INTRA-generación cada GEN_REFRESH tokens, como en serve.py
+    # (antes el pool solo se actualizaba entre ítems: una respuesta de ~500
+    # tokens iba a pool congelado — la KLD mostró que la cadencia importa).
+    pieces, n = [], 0
+    for r in stream_generate(model, tokenizer, text, max_tokens=max_tokens,
+                             sampler=make_sampler(temp=0.0)):
+        pieces.append(r.text)
+        n += 1
+        if GEN_REFRESH and n % GEN_REFRESH == 0:
+            rt.refresh_all()
     rt.refresh_all()
-    return out
+    return "".join(pieces)
 
 
 def stage_tasks(model, tokenizer, rt, n_humaneval: int, n_gsm: int, tag: str) -> None:
@@ -528,6 +537,8 @@ def main() -> None:
     parser.add_argument("--gen-len", type=int, default=32)
     parser.add_argument("--kld-decode", action="store_true",
                         help="KLD en régimen de decode (token a token con caché)")
+    parser.add_argument("--gen-refresh", type=int, default=256,
+                        help="refresh del pool cada N tokens generados (tareas/bench)")
     parser.add_argument("--kld-refresh", type=int, default=256,
                         help="cadencia de refresh en decode-KLD (remedio del arranque)")
     parser.add_argument("--openai-base", default=None,
@@ -558,6 +569,8 @@ def main() -> None:
     args = parser.parse_args()
 
     set_seeds(1234)
+    global GEN_REFRESH
+    GEN_REFRESH = args.gen_refresh
     if args.stage == "kldremote":
         stage_kld_remote(args.artifact, args.data_general, args.chunks_general,
                          args.chunk_len, args.kld_ref, args.openai_base, args.tag)
