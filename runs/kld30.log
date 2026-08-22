@@ -1,0 +1,10 @@
+[per-layer] active: moe 576-704x48
+[load] 9.17 GB
+[kld] referencia guardada: runs/kld_smoke.npz (1 chunks)
+[per-layer] active: moe 576-704x48
+[load] 14.46 GB
+[kld] referencia guardada: runs/kld30_base_long.npz (4 chunks)
+[per-layer] active: moe 576-704x48
+[load] 9.17 GB
+[kld] por tramo de posición: {'pos_0-64': 0.2277, 'pos_64-128': 0.1218, 'pos_128-256': 0.1322, 'pos_256-448': 0.1116}
+[kld] media 0.13116 · p95 0.51792 · p99 2.25643 · max 8.241 (1980 tokens)

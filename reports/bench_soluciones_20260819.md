@@ -155,3 +155,20 @@ en calidad a un estático bien calibrado que necesita 30.
   universal viable → sirve prompts y tareas a nivel base; NO prosa general
   larga. Pendientes: control drops C=120, modo 2-bit C=340, curva por
   posición, KLD del 30B-Stream (suelo universal real).
+
+### 6b. La prueba del invariante: 30B-Stream (suelo universal)
+
+Mismo test (wiki 4×512, prefijo exacto 64, token a token) sobre el 30B-Stream
+(K=32 con P1; **P0 residente para los 128 expertos**) contra su propio taper
+nativo: KLD media **0.131**, p95 0.52, p99 2.26 — **6× menor que el 80B con
+drops (0.774)** a cobertura comparable de detalle. El suelo universal
+convierte la catástrofe en un peaje moderado (los expertos fuera de K se
+sirven a 2-bit: el precio del suelo, no del cero).
+
+**Curva por posición** (media por tramo tras el prefijo): 0.228 (0–64) →
+0.122 (64–128) → 0.132 (128–256) → 0.112 (256–448). El daño **no se
+acumula con la longitud**: es un efecto de arranque (el pool aún no ha
+aprendido el tema) que se estabiliza en ~0.12 tras los primeros ~64 tokens.
+Remedio barato: refresh temprano tras el prompt; remedio de calidad: K mayor
+para el régimen estacionario. Esto retira la hipótesis de "envenenamiento de
+la caché KV" para el 30B; queda por ver la curva del 80B (en cola).
