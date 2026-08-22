@@ -180,7 +180,7 @@ la caché KV" para el 30B; queda por ver la curva del 80B (en cola).
 | C=120 drops | 23% | 1.563 | 10.7 | 2.09 → 1.26 (decrece) |
 | C=120 + suelo 25% | 23% (+suelo fino) | 1.354 | 9.5 | — |
 | C=240 drops (producción) | 47% | 0.774 | 9.0 | en cola |
-| C=290 todo P0 ("modo 2-bit"; C=340 no cabe: 20.7 GB) | 57% | en cola | | |
+| C=290 todo P0 ("modo 2-bit"; C=340 no cabe: 20.7 GB) | 57% | **0.582** | 7.5 | 0.63 → 0.51 (decrece) |
 | 30B-Stream, suelo universal | 100% P0 | **0.131** | 2.3 | 0.23 → 0.11 |
 
 Lecturas: (1) la cobertura manda — la mitad de pool dobla el daño; (2) el

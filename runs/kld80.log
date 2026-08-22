@@ -92,3 +92,7 @@ ValueError: [convert] Only length-1 arrays can be converted to Python scalars.
 [kld] media 1.56349 · p95 6.91401 · p99 10.71789 · max 20.427 (1980 tokens)
 [load] 20.66 GB
 [load] 17.83 GB
+[kld] referencia guardada: runs/kld_smoke.npz (1 chunks)
+[load] 17.83 GB
+[kld] por tramo de posición: {'pos_0-64': 0.6329, 'pos_64-128': 0.7208, 'pos_128-256': 0.5789, 'pos_256-448': 0.5068}
+[kld] media 0.58197 · p95 3.33812 · p99 7.45189 · max 12.273 (1980 tokens)
