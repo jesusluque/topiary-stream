@@ -73,10 +73,6 @@ def load_runtime(artifact: str, pool_c: int, pool_k: int, serve_mode: str,
         mx.eval(model.parameters())
         return model, tokenizer, _PlainRT
     if layout == "resident-p0":
-        if args.serve_mode == "exact" and args.kld_decode:
-            print("[warn] resident-p0 has no exact T=1 path: --serve-mode exact is ignored "
-                  "(the fast-path pool serves decode). For an exact decode reference use a "
-                  "full-memmap artifact with --serve-mode exact.", flush=True)
         import fastpath as rt
         from mlx_lm import load
 
@@ -662,6 +658,12 @@ def main() -> None:
         from huggingface_hub import snapshot_download
 
         args.artifact = snapshot_download(args.artifact)
+    _cfg = Path(args.artifact) / "config.json"
+    if (_cfg.exists() and json.load(open(_cfg)).get("stream_layout") == "resident-p0"
+            and args.serve_mode == "exact" and args.kld_decode):
+        print("[warn] resident-p0 has no exact T=1 path: --serve-mode exact is ignored "
+              "(the fast-path pool serves decode). For an exact decode reference use a "
+              "full-memmap artifact with --serve-mode exact.", flush=True)
 
     set_seeds(1234)
     global GEN_REFRESH, BURST_LEN, BURST_EVERY

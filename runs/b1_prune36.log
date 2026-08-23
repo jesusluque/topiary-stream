@@ -1,0 +1,75 @@
+vm.swapusage: total = 2048.00M  used = 802.75M  free = 1245.25M  (encrypted)
+vm.swapusage: total = 3072.00M  used = 1367.56M  free = 1704.44M  (encrypted)
+  model-00001-of-00004.safetensors: 26 expert tensors
+  model-00002-of-00004.safetensors: 34 expert tensors
+  model-00003-of-00004.safetensors: 34 expert tensors
+  model-00004-of-00004.safetensors: 26 expert tensors
+[out] artifacts/qwen36-memmap: skeleton 2.29 GB · memmaps 18.12 GB · 40 MoE layers
+[load] 15.23 GB
+[kld] referencia guardada: runs/kld36_base_long.npz (4 chunks)
+Traceback (most recent call last):
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 719, in <module>
+    main()
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 686, in main
+    model, tokenizer, rt = load_runtime(args.artifact, args.pool_c, args.pool_k,
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 76, in load_runtime
+    if args.serve_mode == "exact" and args.kld_decode:
+       ^^^^
+NameError: name 'args' is not defined
+Traceback (most recent call last):
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 719, in <module>
+    main()
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 686, in main
+    model, tokenizer, rt = load_runtime(args.artifact, args.pool_c, args.pool_k,
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 76, in load_runtime
+    if args.serve_mode == "exact" and args.kld_decode:
+       ^^^^
+NameError: name 'args' is not defined
+[salience] 40 layers · 256 experts · width 512
+  1536 tokens (78s)
+  layer 0 done
+  layer 10 done
+  layer 20 done
+  layer 30 done
+[out] /Users/muriel/luc/topiary-bonsai/runs/orders36_general.npz  (2560 tokens)
+[salience] 40 layers · 256 experts · width 512
+  1536 tokens (79s)
+  3072 tokens (163s)
+  layer 0 done
+  layer 10 done
+  layer 20 done
+  layer 30 done
+[out] /Users/muriel/luc/topiary-bonsai/runs/orders36_code.npz  (3072 tokens)
+[out] runs/keepset_pop128.npz: 40 layers × 128 experts (popularity) · general/code Jaccard 0.46
+[out] runs/keepset_pop96.npz: 40 layers × 96 experts (popularity) · general/code Jaccard 0.30
+[out] runs/keepset_mass96.npz: 40 layers × 96 experts (gate_mass) · general/code Jaccard 0.31
+[out] runs/keepset_mass64.npz: 40 layers × 64 experts (gate_mass) · general/code Jaccard 0.17
+  model-00001-of-00004.safetensors: written (0 expert/router tensors so far)
+  model-00002-of-00004.safetensors: written (0 expert/router tensors so far)
+  model-00003-of-00004.safetensors: written (0 expert/router tensors so far)
+  model-00004-of-00004.safetensors: written (0 expert/router tensors so far)
+[out] models/q36-all: 20.40 GB · experts 256 -> 256 per layer · 0 tensors rewritten
+  model-00001-of-00004.safetensors: written (105 expert/router tensors so far)
+  model-00002-of-00004.safetensors: written (240 expert/router tensors so far)
+  model-00003-of-00004.safetensors: written (378 expert/router tensors so far)
+  model-00004-of-00004.safetensors: written (480 expert/router tensors so far)
+[out] /Users/muriel/luc/topiary-bonsai/models/q36-pop128: 11.33 GB · experts 256 -> 128 per layer · 480 tensors rewritten
+[load] 10.44 GB
+[q36_pop128] PPL code: 3.0150 (4s)
+[q36_pop128] PPL general: 11.4879 (3s)
+[mem] peak 11.71 GB
+[load] 10.44 GB
+[kld] por tramo de posición: {'pos_0-64': 0.5087, 'pos_64-128': 0.4809, 'pos_128-256': 0.4461, 'pos_256-448': 0.668}
+[kld] media 0.54278 · p95 2.69017 · p99 6.85144 · max 12.739 (1980 tokens)
+[load] 10.44 GB
+  math500 10/100: 0 ok
+  math500 20/100: 0 ok
+  math500 30/100: 0 ok
+  math500 40/100: 1 ok
+  math500 50/100: 1 ok
+  math500 60/100: 1 ok
+  math500 70/100: 1 ok
+  math500 80/100: 1 ok
+  math500 90/100: 2 ok

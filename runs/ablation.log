@@ -189,3 +189,25 @@ C=64: [serve] 255 tokens in 5.9s = 43.5 tok/s · peak 10.19 GB
 === REF DL OK gemma-4-e4b-it-4bit 17:30 ===
 === MAT36 KLD K32: 0.0 p99 0.0 ===
 === REF DL OK granite-4.1-8b-4bit 17:37 ===
+=== REF DL OK Phi-4-mini-instruct-4bit 17:41 ===
+=== REF DL OK gemma-3-12b-it-qat-4bit 17:52 ===
+=== REF DL OK gpt-oss-20b-MXFP4-Q8 18:08 ===
+=== REF DL OK Qwen3.5-0.8B-4bit 18:09 ===
+=== REF DL OK gemma-3-1b-it-4bit 18:10 ===
+=== REF DL OK LFM2-700M-4bit 18:11 ===
+=== REF DL OK LFM2-1.2B-4bit 18:12 ===
+=== REF DL COMPLETO Sun Aug 23 18:12:07 CEST 2026 ===
+=== MAT36 HARD K32 OK ===
+=== MAT36 WIDE K32 FALLO ===
+=== MAT36 COMPLETO Sun Aug 23 18:33:22 CEST 2026 ===
+=== B1 START Sun Aug 23 18:34:27 CEST 2026 ===
+=== MAT36 NATIVO rc=1 : RuntimeError: [METAL] Command buffer execution failed: Insufficient Memory (00000008:kIOGPUCommandBufferCallbackErrorOutOfMemory).  ===
+=== B1 KLD-REF EXACT (memmap) OK ===
+=== B1 ORDERS GENERAL OK ===
+=== B1 ORDERS CODE OK ===
+=== B1 KEEPSETS OK ===
+=== B1 CONTROL keep-all: 12/12 tensores de la capa 0 identicos ===
+=== B1 PRUNE pop128 OK:  11G ===
+=== B1 SMOKE pop128 rc=0 Generation: 32 tokens, 106.696 tokens-per-sec Peak memory: 10.575 GB  ===
+=== B1 PPL pop128: {'ppl_code': 3.015, 'ppl_general': 11.4879} ===
+=== B1 KLD pop128: 0.5428 p99 6.851 ===

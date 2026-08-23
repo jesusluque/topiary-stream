@@ -1,1 +1,23 @@
-./examples/material36.sh:23: command not found: timeout
+==========
+[WARNING] Generating with a model that requires 18605 MB which is close to the maximum recommended size of 18186 MB. This can be slow. See the documentation for possible work-arounds: https://github.com/ml-explore/mlx-lm/tree/main#large-models
+""!!ки""!]==ки]==!"кики]==]==!]==/B]==/B]=="L]==!]=="]=="Sкики]==ки]==кикикики]=="ки"""]==]==/B]==киh]=="кики]==ки""кики"Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/__main__.py", line 6, in <module>
+    cli.main()
+  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/cli.py", line 40, in main
+    submodule.main()
+  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/generate.py", line 2072, in main
+    response = generate(
+               ^^^^^^^^^
+  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/generate.py", line 779, in generate
+    for response in stream_generate(model, tokenizer, prompt, **kwargs):
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/generate.py", line 714, in stream_generate
+    with wired_limit(model, [generation_stream]):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muriel/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/generate.py", line 263, in wired_limit
+    mx.synchronize(s)
+RuntimeError: [METAL] Command buffer execution failed: Insufficient Memory (00000008:kIOGPUCommandBufferCallbackErrorOutOfMemory).
