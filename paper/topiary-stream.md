@@ -127,6 +127,18 @@ real available memory and resizes K stepwise between bounds. Measured under
 an adversarial 8 GB allocation: four automatic shrink steps (K 32→4, active
 memory tracking down 13.7→12.8 GB) with generation completing cleanly.
 
+The governor is one instance of a more general property: the artifact is a
+single file, and the *operating point* is chosen at runtime. The same 80B
+artifact serves a knowledge profile (C=120: 10.2 GB, 28.1 tok/s, MMLU 86.0
+and LAMBADA 78.2 intact, long-form reasoning broken), a reasoning profile
+(C=240/K=32: 17 GB, 17–21 tok/s, MATH 64–65 / MBPP 81) and a prose gear
+(C=290 all-P0: decode KLD −25%), and its refresh cadence trades prose
+fidelity for speed continuously (KLD 0.774 → 0.303 at 17 → 9 tok/s, §2.7).
+A static quantization fixes one of these points at build time; an
+SSD-streaming engine fixes one per model. Because residency decisions are
+just-in-time and free (§1.3), moving between points costs a refresh, not a
+rebuild.
+
 ## 2. Results
 
 ### 2.1 The flagship: serving the unservable (35B, 1.1× RAM)

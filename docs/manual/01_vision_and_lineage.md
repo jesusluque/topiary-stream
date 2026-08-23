@@ -91,3 +91,30 @@ static that needs 30.*
 | **Orders / routed salience** | `E[h²]·‖W_down[:,i]‖²` per (layer, expert, neuron), computed through the pager without a checkpoint; pool prior and floor input. |
 | **Decode KLD** | KL(base ‖ served) token by token with a live KV cache, exact 16-token prefix, refresh at production cadence. The hostile metric of the pool's toll. |
 | **Coverage law** | Measured relation between the fraction of resident experts and damage: 23% breaks long reasoning; 47% serves; 100% at P0 (universal floor) reduces KLD 6×. |
+
+## 1.6 What is distinctive (and what is not)
+
+Not distinctive: paging cold experts. The 42 → 17.6 GB of the 80B is MoE
+sparsity and decode locality, the same fact flash-moe, MoE-Infinity and
+every offloader exploit.
+
+Distinctive, and measured:
+
+- **The operating point is chosen at runtime, from one artifact.** Coverage
+  C, detail K, refresh cadence, salient prefix and the governor are dials;
+  the same file serves a knowledge profile (C=120: −40% RAM, +62% tok/s,
+  MMLU intact), a reasoning profile (C=240), a prose gear (C=290, KLD −25%).
+  A static quantization fixes one point at build time.
+- **Residency decisions are just-in-time and free**: the router scores
+  experts before their bytes are read, per layer and per token. Nothing is
+  predicted, nothing is prefetched — and therefore a miss cannot be waited
+  for; it must be served.
+- **A miss serves the floor.** Never a stall (streaming engines block on
+  the SSD), never garbage (a naked drop of a dominant expert collapses the
+  model, §6.9).
+- **It breathes.** The governor resizes residency under real memory
+  pressure while generating (four retreats under an 8 GB balloon,
+  generation completed at 49.3 tok/s; with the governor on, the 35B ran
+  faster — 51.1 vs 47.6 tok/s — by shrinking an oversized pool by itself).
+- **Exact prompt and published tolls** for every point, including the
+  losing ones (§7).

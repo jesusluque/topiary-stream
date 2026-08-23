@@ -32,7 +32,7 @@ from pathlib import Path
 import mlx.core as mx
 import numpy as np
 
-from common import GROUP, find_moe_blocks
+from common import GROUP, add_shared, block_top_k, find_moe_blocks, route
 
 PARTS = ("gate_proj", "up_proj", "down_proj")
 MAX_CHURN = 8
@@ -249,12 +249,14 @@ def maybe_patch_skeleton(model_path: str) -> bool:
     import mlx_lm.models.qwen3_moe as qm
 
     make(qm.Qwen3MoeSparseMoeBlock)
-    try:
-        import mlx_lm.models.qwen3_next as qn
-
-        make(qn.Qwen3NextSparseMoeBlock)
-    except ImportError:
-        pass
+    for modname, clsname in (("qwen3_next", "Qwen3NextSparseMoeBlock"),
+                             ("deepseek_v2", "DeepseekV2MoE"),
+                             ("mixtral", "MixtralSparseMoeBlock")):
+        try:
+            mod = __import__(f"mlx_lm.models.{modname}", fromlist=[clsname])
+            make(getattr(mod, clsname))
+        except (ImportError, AttributeError):
+            pass
     return True
 
 
@@ -296,10 +298,11 @@ def patch_pool(model, art_dir: Path, pool_c: int, pool_k: int,
         st = S["layers"][id(self)]
         shape = x.shape
         x_flat = x.reshape(-1, shape[-1]) if x.ndim > 2 else x
-        gates = mx.softmax(self.gate(x_flat).astype(mx.float32), axis=-1, precise=True)
-        k = self.top_k
+        k = block_top_k(self)
         near_n = S.get("prewarm", 0)
         if near_n or S.get("gear_sensor") == "margin":
+            # solo para gates lineales (Qwen/Mixtral): hace falta el vector completo
+            gates = mx.softmax(self.gate(x_flat).astype(mx.float32), axis=-1, precise=True)
             # top-(k+near) una sola vez; el top-k EXACTO se recupera ordenando
             # dentro (mismo conjunto que argpartition(k)): routing intacto.
             kk = k + max(near_n, 1)
@@ -311,12 +314,12 @@ def patch_pool(model, art_dir: Path, pool_c: int, pool_k: int,
             inds = cand[..., :k]
             near = cand[..., k:k + near_n] if near_n else None
             margin = (cg[..., k - 1] - cg[..., k]) if S.get("gear_sensor") == "margin" else None
+            scores = mx.take_along_axis(gates, inds, axis=-1)
+            if getattr(self, "norm_topk_prob", type(self).__name__.startswith("Mixtral")):
+                scores = scores / scores.sum(axis=-1, keepdims=True)
         else:
-            inds = mx.stop_gradient(mx.argpartition(-gates, kth=k - 1, axis=-1)[..., :k])
+            inds, scores = route(self, x_flat)   # family-agnostic; routing untouched
             near, margin = None, None
-        scores = mx.take_along_axis(gates, inds, axis=-1)
-        if getattr(self, "norm_topk_prob", False):
-            scores = scores / scores.sum(axis=-1, keepdims=True)
         if x_flat.shape[0] > 1:
             mx.eval(inds)          # prefill pin (garbage-index hardening)
         if S.get("ema_mass"):
@@ -444,9 +447,7 @@ def patch_pool(model, art_dir: Path, pool_c: int, pool_k: int,
 
 
 def _plus_shared(blk, x_flat, y):
-    if hasattr(blk, "shared_expert"):
-        y = y + mx.sigmoid(blk.shared_expert_gate(x_flat)) * blk.shared_expert(x_flat)
-    return y
+    return add_shared(blk, x_flat, y)
 
 
 def _miss_rate(st, idx_np: np.ndarray) -> float:

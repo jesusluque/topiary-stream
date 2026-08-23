@@ -31,7 +31,7 @@ from pathlib import Path
 import mlx.core as mx
 import numpy as np
 
-from common import GROUP, find_moe_blocks
+from common import GROUP, add_shared, find_moe_blocks, route
 
 PARTS = ("gate_proj", "up_proj", "down_proj")
 
@@ -176,12 +176,7 @@ def patch_fast(model, art_dir: Path, pool_k: int,
         st = STATE["layers"][id(self)]
         shape = x.shape
         x_flat = x.reshape(-1, shape[-1]) if x.ndim > 2 else x
-        gates = mx.softmax(self.gate(x_flat).astype(mx.float32), axis=-1, precise=True)
-        k = self.top_k
-        inds = mx.stop_gradient(mx.argpartition(-gates, kth=k - 1, axis=-1)[..., :k])
-        scores = mx.take_along_axis(gates, inds, axis=-1)
-        if getattr(self, "norm_topk_prob", False):
-            scores = scores / scores.sum(axis=-1, keepdims=True)
+        inds, scores = route(self, x_flat)   # family-agnostic; routing untouched
         if x_flat.shape[0] > 1:
             mx.eval(inds)   # prefill: pin now — lazy inds under memory
                             # pressure have produced garbage indices
@@ -215,9 +210,7 @@ def patch_fast(model, art_dir: Path, pool_k: int,
             h = glu.activation(pfx("up_proj", xxp), pfx("gate_proj", xxp))
             y = pfx("down_proj", h).squeeze(-2)
             y = (y * scores[..., None].astype(y.dtype)).sum(axis=-2)
-            if hasattr(self, "shared_expert"):
-                y = y + mx.sigmoid(self.shared_expert_gate(x_flat)) * self.shared_expert(x_flat)
-            return y.reshape(shape)
+            return add_shared(self, x_flat, y).reshape(shape)
 
         xx = mx.expand_dims(x_flat, (-2, -3))
         do_sort = inds.size >= 64
@@ -251,9 +244,7 @@ def patch_fast(model, art_dir: Path, pool_k: int,
             y = sl._scatter_unsort(y, inv_order, inds.shape)
         y = y.squeeze(-2)
         y = (y * scores[..., None].astype(y.dtype)).sum(axis=-2)
-        if hasattr(self, "shared_expert"):
-            y = y + mx.sigmoid(self.shared_expert_gate(x_flat)) * self.shared_expert(x_flat)
-        return y.reshape(shape)
+        return add_shared(self, x_flat, y).reshape(shape)
 
     block_cls.__call__ = patched
 

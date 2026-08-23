@@ -152,3 +152,58 @@ def unpack_bits(wq: mx.array, bits: int) -> np.ndarray:
     mask = (1 << bits) - 1
     cols = [(words >> (bits * j)) & mask for j in range(per_word)]
     return np.stack(cols, axis=-1).reshape(words.shape[0], -1).astype(np.uint16)
+
+
+# ------------------------------------------------------------ routing families
+
+
+def block_top_k(blk) -> int:
+    """k of a MoE block across families (Qwen: top_k; Mixtral: num_experts_per_tok;
+    DeepSeek: the gate's own top_k)."""
+    for name in ("top_k", "num_experts_per_tok"):
+        v = getattr(blk, name, None)
+        if isinstance(v, int):
+            return v
+    g = getattr(blk, "gate", None)
+    if g is not None and isinstance(getattr(g, "top_k", None), int):
+        return g.top_k
+    raise AttributeError(f"cannot determine top_k of {type(blk).__name__}")
+
+
+def route(blk, x_flat: mx.array):
+    """(inds [T,k], scores [T,k]) exactly as the block's own forward would
+    compute them, for every family the runtime supports:
+
+      Qwen3 / Qwen3.5 / Qwen3-Next  gate = Linear; softmax over all experts,
+                                    top-k, renormalised iff norm_topk_prob
+      Mixtral                       gate = Linear; softmax over the selected
+                                    logits (== renormalised top-k probs)
+      DeepSeek-V2                   gate = MoEGate returning (inds, scores)
+                                    (its own top-k, group limits and scaling)
+
+    Routing is never altered by the runtime: only *what is served* changes.
+    """
+    k = block_top_k(blk)
+    out = blk.gate(x_flat)
+    if isinstance(out, (tuple, list)):
+        inds, scores = out
+        return mx.stop_gradient(inds), scores.astype(mx.float32)
+    gates = mx.softmax(out.astype(mx.float32), axis=-1, precise=True)
+    inds = mx.stop_gradient(mx.argpartition(-gates, kth=k - 1, axis=-1)[..., :k])
+    scores = mx.take_along_axis(gates, inds, axis=-1)
+    renorm = getattr(blk, "norm_topk_prob", None)
+    if renorm is None:
+        renorm = type(blk).__name__.startswith("Mixtral")
+    if renorm:
+        scores = scores / scores.sum(axis=-1, keepdims=True)
+    return inds, scores
+
+
+def add_shared(blk, x_flat: mx.array, y: mx.array) -> mx.array:
+    """Shared-expert term per family: Qwen (sigmoid-gated `shared_expert`),
+    DeepSeek (ungated `shared_experts`), Mixtral (none)."""
+    if hasattr(blk, "shared_expert"):
+        return y + mx.sigmoid(blk.shared_expert_gate(x_flat)) * blk.shared_expert(x_flat)
+    if hasattr(blk, "shared_experts"):
+        return y + blk.shared_experts(x_flat)
+    return y

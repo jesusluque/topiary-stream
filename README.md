@@ -31,6 +31,27 @@ Qwen3-30B: 92% / 94%) while beating it on general knowledge (WikiText PPL
 served by **stock MLX quantized kernels**: no custom Metal, no dedicated
 inference engine.
 
+## What is actually new here
+
+The memory saving (42 → 17.6 GB for the 80B) is MoE sparsity and decode
+locality at work — known. What this runtime adds is that the artifact is a
+**live dial, not a file**:
+
+- **Just-in-time, free residency decisions** — the router scores experts
+  before their bytes are read, per layer and per token; nothing to predict.
+- **A miss serves the floor** — never a stall (streaming engines wait for
+  the disk), never garbage (a dropped dominant expert collapses output).
+- **It breathes** — a governor reads real memory pressure and resizes
+  residency while generating (four automatic retreats under an 8 GB
+  balloon, generation completing at 49.3 tok/s).
+- **Several operating points from one artifact** — a knowledge profile
+  (C=120: −40% RAM, +62% tok/s, MMLU intact), a reasoning profile (C=240),
+  a 2-bit prose gear (C=290: decode KLD −25%), a refresh cadence that buys
+  prose fidelity with speed (0.774 → 0.303 at 17 → 9 tok/s) — all switchable
+  at runtime.
+- **Exact prompt, measured tolls** — every operating point is reported with
+  its PPL, decode KLD and task scores, including the ones that lost.
+
 ## The idea, in three steps
 
 1. **Split every expert into bit planes.** A 4-bit affine tensor is exactly

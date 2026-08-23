@@ -96,3 +96,30 @@ calidad a un estático bien calibrado que necesita 30.*
 | **Orders / saliencia enrutada** | `E[h²]·‖W_down[:,i]‖²` por (capa, experto, neurona), calculada a través del pager sin checkpoint; prior del pool y entrada del suelo. |
 | **KLD en decode** | KL(base ‖ servido) token a token con caché KV viva, prefijo exacto de 16 tokens, refresh a cadencia de producción. La métrica hostil del peaje del pool. |
 | **Ley de cobertura** | Relación medida entre fracción de expertos residentes y daño: 23 % rompe razonamiento largo; 47 % sirve; 100 % a P0 (suelo universal) reduce la KLD 6×. |
+
+## 1.6 Qué es distintivo (y qué no)
+
+No es distintivo: paginar expertos fríos. Los 42 → 17.6 GB del 80B son
+esparsidad MoE y localidad de decode, el mismo hecho que explotan flash-moe,
+MoE-Infinity y cualquier offloader.
+
+Distintivo, y medido:
+
+- **El punto de operación se elige en runtime, desde un solo artefacto.**
+  Cobertura C, detalle K, cadencia de refresh, prefijo saliente y gobernador
+  son diales; el mismo fichero sirve un perfil de conocimiento (C=120: −40 %
+  RAM, +62 % tok/s, MMLU intacto), un perfil de razonamiento (C=240) y una
+  marcha de prosa (C=290, KLD −25 %). Un estático fija un punto al construir.
+- **Las decisiones de residencia son just-in-time y gratis**: el router
+  puntúa a los expertos antes de leer sus bytes, por capa y por token. No se
+  predice ni se prefetchea nada — y por eso un miss no se puede esperar; hay
+  que servirlo.
+- **Un miss sirve el suelo.** Nunca un bloqueo (los motores de streaming
+  esperan al SSD), nunca basura (un drop desnudo de un experto dominante
+  colapsa el modelo, §6.9).
+- **Respira.** El gobernador redimensiona la residencia bajo presión real
+  de memoria mientras genera (cuatro repliegues bajo un globo de 8 GB,
+  generación completada a 49.3 tok/s; con el gobernador activo el 35B fue
+  más rápido — 51.1 vs 47.6 tok/s — por encoger solo un pool sobrado).
+- **Prompt exacto y peajes publicados** para cada punto, incluidos los que
+  perdieron (§7).

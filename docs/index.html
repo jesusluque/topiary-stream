@@ -60,6 +60,34 @@ alive on disk and lets your RAM hold only the branches the wind is moving.</p>
 <strong>What it demonstrates:</strong> a 24&nbsp;GB MacBook serves a 35B and an 80B it cannot load, at their true-base perplexity and task scores, with an exact prompt — and a 235B it cannot serve at all, mapped honestly.<br>
 <strong>What it costs:</strong> decode-side fidelity on general prose (KLD 0.77 vs 0.20 for a calibrated static 2-bit of the same 80B) and ~5 points on generative tasks at n=100; in exchange 17&nbsp;GB instead of 30, 40–70% more tok/s, a guaranteed floor and an elastic governor.</p>
 </div>
+<div class="card">
+<h3>What is actually new here — the runtime is a live dial, not a file</h3>
+<p>A static quantization picks one point on the quality/memory/speed surface
+at build time and ships it. An SSD-streaming engine picks one point per
+model and blocks on every miss. Topiary Stream keeps <strong>one artifact</strong>
+and moves along that surface <em>while generating</em>:</p>
+<ul>
+<li><strong>Residency decisions are just-in-time and free.</strong> The router
+scores every expert before a single expert byte is read, layer by layer, token
+by token — so there is no prediction to get wrong and nothing to prefetch.</li>
+<li><strong>A miss serves the floor, never a stall, never garbage.</strong> Every
+expert has a resident half-byte plane; an absent detail plane costs one
+blurry token, and the pool learns it at the next refresh. (Streaming engines
+wait for the disk; static quants cannot miss because they cannot adapt.)</li>
+<li><strong>It breathes.</strong> The governor reads real memory pressure and
+resizes residency live — four automatic retreats under an 8&nbsp;GB
+external allocation, generation completing at 49.3 tok/s; with the
+governor on, the 35B ran <em>faster</em> (51.1 vs 47.6 tok/s) because it
+shrank an oversized pool on its own.</li>
+<li><strong>Same artifact, several operating points</strong> (table below):
+a knowledge profile at −40% RAM and +62% tok/s with MMLU intact, a
+reasoning profile, a 2-bit prose gear, a refresh cadence that buys prose
+fidelity with speed — all switchable at runtime, none requiring a new file.</li>
+<li><strong>The prompt is always exact</strong> and every operating point
+ships with its measured toll (PPL, decode KLD, tasks), including the ones
+that lost.</li>
+</ul>
+</div>
 <h2>A 24&nbsp;GB laptop, serving models it cannot load</h2>
 <p>The router of a mixture-of-experts model scores its experts <em>before</em>
 their weights are read — residency decisions are free. Topiary Stream splits
@@ -162,6 +190,19 @@ memory pressure and resizes the pool. From the measured demo — an external
 <p class="caption">Four automatic retreats, no crash, and — because a smaller
 pool reads fewer planes — the elastic dial trades quality for memory
 <em>and</em> speed at once.</p>
+<h3>One artifact, several operating points (80B and 35B, all measured)</h3>
+<table>
+<tr><th>Dial</th><th>Setting</th><th>RAM</th><th>tok/s</th><th>What it keeps / costs</th></tr>
+<tr><td>Coverage C (80B)</td><td>C=240 K=32 (reasoning profile)</td><td>17.0–17.9 GB</td><td>17–21</td><td>MATH 64–65 · MBPP 81 · MMLU 85.2</td></tr>
+<tr><td></td><td>C=120 (knowledge profile)</td><td>10.2–11.8 GB</td><td>28.1</td><td>MMLU 86.0 · LAMBADA 78.2 intact; MATH 44 (long reasoning breaks)</td></tr>
+<tr><td></td><td>C=290 all-P0 (prose gear)</td><td>19.8 GB</td><td>~17</td><td>decode KLD −25% (0.774→0.582); MATH 52</td></tr>
+<tr><td>Refresh cadence (80B)</td><td>256 → 128 → 64 → 32 tokens</td><td>17 GB</td><td>17.1 → 15.4 → 12.3 → 9.1</td><td>decode KLD 0.774 → 0.566 → 0.416 → 0.303; tasks unchanged</td></tr>
+<tr><td>Detail pool K (35B)</td><td>K=4 / 32 / 64</td><td>12.9 / 13.9 / 15.0 GB</td><td>54.8 / 47.6 / 44.5</td><td>more detail, fewer misses</td></tr>
+<tr><td>Salient prefix (30B-Stream)</td><td>0:0:4 emergency</td><td>10.4 GB peak</td><td>—</td><td>MATH 64 vs 67 at full P1; a memory dial, not a free lunch</td></tr>
+<tr><td>Governor</td><td>K 32 → 4 under pressure</td><td>13.7 → 12.8 GB</td><td>49.3</td><td>generation completes; no swap, no crash</td></tr>
+</table>
+<p class="caption">Every row is the same file on disk. The runtime picks the
+point; a static quantization would need a different artifact for each.</p>
 </section>
 
 <section id="limits">

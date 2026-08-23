@@ -23,7 +23,7 @@ import mlx.core as mx
 import numpy as np
 
 import pager
-from common import GROUP, find_moe_blocks, load_corpus, set_seeds
+from common import GROUP, find_moe_blocks, load_corpus, route, set_seeds
 
 
 def main() -> None:
@@ -58,9 +58,7 @@ def main() -> None:
         st = pager.S["layers"][id(self)]
         li = layer_of[id(self)]
         x_flat = x.reshape(-1, x.shape[-1]) if x.ndim > 2 else x
-        gates = mx.softmax(self.gate(x_flat).astype(mx.float32), axis=-1, precise=True)
-        k = self.top_k
-        inds = mx.argpartition(-gates, kth=k - 1, axis=-1)[..., :k]
+        inds, _ = route(self, x_flat)
         inds_np = np.array(inds)
         uniq, inv = np.unique(inds_np, return_inverse=True)
         rme = mx.array(inv.reshape(inds_np.shape).astype(np.int32))
