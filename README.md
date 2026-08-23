@@ -36,7 +36,8 @@ inference engine.
 1. **Split every expert into bit planes.** A 4-bit affine tensor is exactly
    two 2-bit tensors (`q4 = 4·q_hi + q_lo`), each valid for `gather_qmm` as
    shipped. P0 (high bits, with a centroid bias fold) is a servable floor at
-   half the bytes; P0+P1 is bit-exact 4-bit. The pyramid is *anchored* at the
+   half the bytes; P0+P1 is the 4-bit tensor, exact to float accumulation
+   order (2.6e-7 through the kernel; teacher-forced KLD 0.000). The pyramid is *anchored* at the
    serving level — refining upward is measured-free, truncating downward is
    only sound under gate protection (deriving levels top-down wins on weight
    L2 and max error yet loses ~20× end-to-end; the error lands on salient
@@ -121,7 +122,7 @@ speed here (hybrid mamba at batch-1 + a 248k-vocab head).
   term; refresh cadence is the second (256→32 tokens: 0.774→0.303, at
   −10/−28/−47% tok/s) and it does *not* move focal tasks. Against [Unsloth's
   UD-Q2_K_XL](https://huggingface.co/unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF) of the same 80B
-  ([Dynamic 3.0](https://unsloth.ai/docs/basics/dynamic-3.0-ggufs)) on the same machine (30.1 GB, CPU-only at
+  (Dynamic 2.0 lineage per its card; [Dynamic 3.0 write-up](https://unsloth.ai/docs/basics/dynamic-3.0-ggufs) for the methodology) on the same machine (30.1 GB, CPU-only at
   12.6 tok/s): MATH-500 65 vs 69, MBPP 81 vs 86, MMLU 85.2 vs 86.2 — at par
   on knowledge, ~5 points behind on generative tasks (n=100), while Stream
   fits in 17 GB, runs 40–70% faster and serves the prompt exactly. Four
@@ -129,7 +130,8 @@ speed here (hybrid mamba at batch-1 + a 248k-vocab head).
   at 5.8 tok/s; 25%-width floor 1.354; the 2-bit gear scores MATH 52%).
   The residue is the quality of the 2-bit plane itself — we stopped
   modifying the runtime there rather than chase the gap without a clear
-  return.
+  return. Not yet dueled: flash-moe/Anemll (SSD-streamed experts on Apple
+  Silicon), the strongest platform-native rival — queued.
 - **The 235B has no servable middle on 24 GB.** Four modes measured:
   drop-renormalize = fast but collapsed output; universal 16.7%-width floor =
   degenerate (salience too flat: 53.5% captured); blocking floor = perfect

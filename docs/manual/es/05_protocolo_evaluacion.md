@@ -116,7 +116,7 @@ espera `/health`, humo con una petición de chat, y `eval_stream --stage bench
 (`-ngl 99`) murió por OOM de Metal; v2 (`--cpu-moe`) murió tras cargar. En
 serie con lo nuestro: sus 30 GB paginados más nuestros 17 GB no caben juntos.
 
-Rival: GGUF Dynamic 3.0 de Unsloth, https://huggingface.co/unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF (`-ngl 0`, b10520).
+Rival: GGUF de Unsloth de linaje Dynamic 2.0 (según su card; el texto de Dynamic 3.0 es la referencia metodológica), https://huggingface.co/unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF (`-ngl 0`, b10520).
 
 ## 5.8 Tests (`pytest -q`, sin modelos)
 

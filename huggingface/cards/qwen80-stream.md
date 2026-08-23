@@ -59,7 +59,7 @@ knowledge (MMLU 85.2 vs 86.2, n.s.), ~5 points behind on generative tasks
 (n=100, directional), and clearly behind on general-prose fidelity (KLD
 0.774 vs 0.195 — a pool miss drops an expert; a calibrated 2-bit never
 does). What it buys is system-level: it fits in 17 GB where the static needs
-30, runs 40–70% faster on the GPU, serves the prompt bit-exact, and has a
+30, runs 40–70% faster on the GPU, serves the prompt exact (teacher-forced KLD 0.000), and has a
 floor and an elastic governor. Choose it for tasks and interactive use on a
 24 GB machine; do not choose it for long general-prose fidelity.
 

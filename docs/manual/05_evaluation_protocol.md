@@ -117,7 +117,7 @@ waits for `/health`, smoke test with one chat request, and `eval_stream --stage 
 (`-ngl 99`) died of a Metal OOM; v2 (`--cpu-moe`) died after loading. Run
 in series with ours: its 30 GB paged plus our 17 GB do not fit together.
 
-Rival: Unsloth Dynamic 3.0 GGUF, https://huggingface.co/unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF (`-ngl 0`, b10520).
+Rival: Unsloth GGUF of Dynamic 2.0 lineage (per its model card; the Dynamic 3.0 write-up is the methodology reference), https://huggingface.co/unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF (`-ngl 0`, b10520).
 
 ## 5.8 Tests (`pytest -q`, no models)
 

@@ -16,6 +16,13 @@ Bloqueantes antes de enviar a venue (MLSys/EuroSys/ICML systems track):
    domina al downsizing estático a igualdad de memoria. Simetría honesta:
    su 2-bit machaca a nuestro P0 desnudo; la defensa es que P0 casi nunca
    se sirve.
+3c. **Duelo contra flash-moe / Anemll** (expertos streameados desde SSD en
+   Apple Silicon; Metal propio; sin suelo en el miss): el rival nativo de
+   plataforma más fuerte, señalado por el análisis externo del 23/08. Es
+   MEDIDA, no modificación: mismo M5, mismos prompts. Requiere disco externo
+   (GGUF Q3 del 80B) y comprobar que soporte Qwen3-Next. Si no le ganamos
+   claramente en calidad-por-GB a throughput comparable, el argumento de
+   plataforma se debilita y el diferenciador queda en suelo + contabilidad.
 3b. **KLD servido-vs-base + divergencia de trayectoria greedy** (estilo
    Divergence-300@32 de Unsloth, motivado por arXiv:2407.09141): nuestra
    evidencia fuerte es igualdad de PPL, exactamente la métrica que esa
@@ -85,7 +92,10 @@ G. **Porte CUDA en AWS (generalidad del método + upstream)**. La jerarquía
 ## Estado 2026-08-23 (tras el duelo y la campaña de KLD) — CAMPAÑA CERRADA
 
 **Cerrado esta semana (del roadmap):** 3a baseline Unsloth UD-Q2 (duelo
-completo); 3b KLD/trayectorias (TF 0.000, decode 0.77→0.30 por cadencia,
+completo; corrección 23/08: el GGUF del 80B es de linaje Dynamic 2.0 según
+su card, el texto 3.0 es solo referencia metodológica); citas añadidas tras
+el análisis externo: MorphServe, flash-moe/Anemll, ELDR, ReMoE (todas
+verificadas); 3b KLD/trayectorias (TF 0.000, decode 0.77→0.30 por cadencia,
 traj 36%@32, curvas por posición); 4 cold-boot (35B); A dial C como perfil
 de tarea (n=500); C medida de persistencia del 235B (78% a W=8).
 

@@ -56,6 +56,6 @@ model, not proven equal. Throughput is now measured from a clean reboot (47.2 to
 
 Split deterministically from the community 4-bit conversion of
 Qwen/Qwen3.5-35B-A3B with `split.py --layout resident-p0`; plane arithmetic
-verified bit-exact against stock kernels in the repo's CI. Full measurement
+verified exact (2.6e-7, float accumulation order) against stock kernels in the repo's CI. Full measurement
 history including negative results:
 https://github.com/jesusluque/topiary-stream

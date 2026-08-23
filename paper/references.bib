@@ -208,11 +208,54 @@
   author = {{Unsloth AI}},
   year   = {2026},
   howpublished = {\url{https://huggingface.co/unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF}},
-  note   = {Dynamic 3.0 imatrix GGUF, 30.1 GB; the static 2-bit rival of the duel (\S2.7)}
+  note   = {Unsloth Dynamic 2.0 lineage per its model card (imatrix GGUF, 30.1 GB); the static 2-bit rival of the duel (\S2.7). The Dynamic 3.0 write-up [unslothdynamic2026] is cited for methodology only}
 }
 
 @misc{unslothdynamic2026,
   title = {Unsloth Dynamic 3.0 GGUFs},
   year  = {2026},
   note  = {unsloth.ai/docs/basics/dynamic-3.0-ggufs, accessed 2026-08-20. Bits por capa/tensor vía imatrix, sin QAT; metodología Divergence-300@32}
+}
+
+@misc{morphserve2025,
+  title  = {MorphServe: Efficient and Workload-Aware LLM Serving via Runtime Quantized Layer Swapping and KV Cache Resizing},
+  author = {Su, Zhaoyuan and Zhang, Zeyu and Lan, Tingfeng and Wang, Zirui and Shen, Haiying and Yang, Juncheng and Cheng, Yue},
+  year   = {2025},
+  eprint = {2506.02006},
+  archivePrefix = {arXiv},
+  note   = {Quality-elastic serving under load: quantized layer swapping + pressure-aware KV resizing (dense models, GPU)}
+}
+
+@misc{flashmoe2026,
+  title  = {flash-moe: running a big model on a small laptop},
+  author = {Woods, Dan},
+  year   = {2026},
+  howpublished = {\url{https://github.com/danveloper/flash-moe}},
+  note   = {C/Metal engine streaming Qwen3.5-397B-A17B experts from SSD on a 48 GB M3 Max (experts 2-bit, 4.4--5.5 tok/s); after LLM-in-a-flash. Accessed 2026-08-23}
+}
+
+@misc{anemllflashmoe2026,
+  title  = {Anemll/flash-moe: Flash-MoE sidecar slot-bank runtime for large GGUF MoE models on Apple Silicon},
+  author = {{Anemll}},
+  year   = {2026},
+  howpublished = {\url{https://github.com/Anemll/flash-moe}},
+  note   = {llama.cpp-lineage fork of flash-moe; GGUF-compatible expert streaming from SSD, dense weights resident. Accessed 2026-08-23}
+}
+
+@misc{eldr2026,
+  title  = {ELDR: Expert-Locality-Aware Decode Routing for PD-Disaggregated MoE Serving},
+  author = {Choi, Sangjin and others},
+  year   = {2026},
+  eprint = {2607.00466},
+  archivePrefix = {arXiv},
+  note   = {Per-request expert activation signatures from prefill drive decode worker assignment; documents decode-routing locality}
+}
+
+@misc{remoe2026,
+  title  = {ReMoE: Boosting Expert Reuse through Router Fine-Tuning in Memory-Constrained MoE LLM Inference},
+  author = {Zhu, Xiongwei and others},
+  year   = {2026},
+  eprint = {2605.27081},
+  archivePrefix = {arXiv},
+  note   = {ICML 2026. Biases routers toward recently selected experts for cache locality; evidence that stock routers are less local than residency would like}
 }

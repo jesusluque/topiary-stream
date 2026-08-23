@@ -29,6 +29,12 @@
   lento (run abandonado). Los tiers lentos son para lecturas en refresh,
   nunca en el camino caliente.
 
+- **Baseline del duelo.** Solo-CPU es la única forma de correr el GGUF de
+  30 GB en 24 GB, pero el rival más fuerte nativo de Apple (flash-moe /
+  Anemll, expertos streameados desde SSD, Metal propio, sin suelo en el
+  miss) aún no se ha medido. Un 15/15 a n=15 solo acota el fallo por debajo
+  del ~20 %.
+
 ## 8.2 Reglas duras de memoria
 
 1. Comprobar RAM libre antes de cargar; abortar con mensaje claro si no hay

@@ -42,8 +42,9 @@ of the 2-bit plane itself.
 
 A 4-bit affine tensor with codes q4 splits exactly into two 2-bit planes,
 q4 = 4·q_hi + q_lo, giving w = [4s]·q_hi + [s]·q_lo + β. Each plane is a
-*valid affine tensor* for MLX's `gather_qmm`: level-4 reads P0+P1 (bit-exact,
-verified to 2.6e-7 through the kernel); the floor reads P0 alone with a
+*valid affine tensor* for MLX's `gather_qmm`: level-4 reads P0+P1 (exact up to
+float accumulation order — 2.6e-7 through the kernel — and teacher-forced
+KLD 0.000 over 2,278 tokens, §2.7); the floor reads P0 alone with a
 centroid-folded bias (β+1.5s). A scoping note: the exact plane split requires
 *flat affine* quantization (w = s·q + β per group). It does not port to
 GGUF's strong formats — K-quants nest 6-bit scales inside superblocks and
@@ -81,7 +82,10 @@ patch) makes the model loadable without its 40–122 GB of experts.
 ### 1.3 Gate-governed pool, sync-free
 
 The router's scores exist before any expert bytes are read — residency
-decisions are free. A per-layer pool holds K experts' P1 (resident-P0 layout)
+decisions are free. They are also *just-in-time*, not look-ahead: layer
+L's hidden state exists only after layer L−1 completes, so without
+cross-layer prediction there is no window in which to fetch a missing
+expert. That is why a miss must be *served*, not awaited. A per-layer pool holds K experts' P1 (resident-P0 layout)
 or C experts' P0 plus K of them with P1 (full-memmap). Membership is encoded
 in a *dynamic biases tensor* — pool members carry β, others β+1.5s — so one
 kernel call serves hot and cold with no per-token CPU/GPU synchronization.
@@ -139,7 +143,11 @@ With exact prefill (§2.2) the fast-path's teacher-forced PPL equals the base
 
 ### 2.2 Scaling up: 80B (1.8×) and the true-base control
 
-The 80B serves at 20–21.5 tok/s / 17.6 GB. Exact-mode evaluation — every slot
+The 80B serves at 20–21.5 tok/s / 17.6 GB. The memory reduction itself
+(42 → 17.6 GB) is MoE sparsity and decode locality at work — 47% of the
+experts resident, the rest paged — and is not the contribution; what this
+work adds is what happens on a miss (a floor, never a stall), the
+stock-kernel planes, and the published accounting. Exact-mode evaluation — every slot
 served P0+P1 straight from memmaps at 4.3 GB peak — measures the true base of
 a model that cannot be loaded: PPL 2.228/5.557, the strongest base on this
 hardware. Under pool-served prefill the teacher-forced toll was heavy in
@@ -261,7 +269,12 @@ the dispersed domain where recency-based residency is weakest.
 **Coverage is the first-order term.** On the 80B, per-token KLD against the
 exact base is 1.563 at C=120 (23% of experts resident), 0.774 at the
 production C=240 (47%), and 0.582 with the whole pool spent on P0 (C=290,
-57%, no detail plane). The 30B-Stream, whose P0 covers every expert (the
+57%, no detail plane). That an all-P0 pool diverges *less* than the mixed
+production pool is not a paradox: a miss outside the pool drops the expert
+entirely, and a dropped expert costs far more than a 2-bit one, so ten
+points of coverage outweigh the detail plane on dispersed prose. On focal
+tasks the ordering reverses — the 2-bit gear loses 13 MATH points (iv
+below). The 30B-Stream, whose P0 covers every expert (the
 universal floor), measures 0.131 at comparable detail coverage — six times
 lower than the 80B with drops. The per-position curves *decrease* with
 length (80B C=240: 0.88 → 0.68 over 0–64 → 256–448 tokens; 30B-Stream
@@ -342,7 +355,22 @@ engines (flash-moe, SwiftLM, mlx-moe) serves oversized MoE at whole-expert
 granularity with custom pipelines and no published quality accounting —
 precisely the two gaps (sub-expert planes on stock kernels; measured floors
 and tolls) this work fills; the lineage runs back to LLM-in-a-flash
-[llmflash2024]. HOBBIT [hobbit2024], MoE-Infinity [moeinfinity2024],
+[llmflash2024]. The strongest Apple-native baseline is flash-moe
+[flashmoe2026] — Qwen3.5-397B-A17B streamed from SSD on a 48 GB M3 Max at
+4.4–5.5 tok/s with 2-bit experts and a custom C/Metal pipeline — and its
+Anemll fork [anemllflashmoe2026] with GGUF-compatible 3-bit experts.
+Neither has a miss-time floor (a miss waits for the SSD) nor published
+quality accounting, and we have not yet dueled against them (§4).
+Quality-elastic serving under pressure has a GPU-side analogue in
+MorphServe [morphserve2025], which swaps less impactful dense layers for
+quantized copies and resizes the KV cache under load; our governor resizes
+*expert residency* — bit planes, not layers — on a single device. The
+decode-routing locality our coverage laws rest on is independently
+documented in the Qwen family: ELDR [eldr2026] exploits per-request expert
+signatures for disaggregated serving, and ReMoE [remoe2026] fine-tunes
+routers toward recently used experts (26% more reuse) — evidence that
+stock routers are *less* local than residency would like, which is the
+caveat our laws carry. HOBBIT [hobbit2024], MoE-Infinity [moeinfinity2024],
 ExpertFlow [expertflow2024], ProMoE [promoe2024], Fiddler [fiddler2025],
 KTransformers [ktransformers2025] and MoE-Lightning [moelightning2025]
 offload whole experts on CUDA/x86. **The nested-quantization lineage** ("one model, many precisions") is
@@ -372,7 +400,10 @@ banks per expert and reportedly pays a host sync to split indices — the
 design point our single-kernel path avoids.
 
 **Static salience-guided quantization as the deployment rival.** Unsloth's
-Dynamic 3.0 GGUFs [unslothdynamic2026] allocate bits per layer/tensor from
+Dynamic GGUFs — the 80B artifact we duel is of Dynamic 2.0 lineage per its
+model card [unslothqwen3next80b2026]; the Dynamic 3.0 write-up
+[unslothdynamic2026] is the methodology reference — allocate bits per
+layer/tensor from
 imatrix calibration (no QAT), producing a family of artifacts whose
 quality/size point is chosen at download time and whose loss is permanent
 and uniform in time. For the 80B-on-24GB user the honest alternative is
@@ -430,7 +461,16 @@ or publisher on 2026-08-19.
 
 ## 4. Limitations
 
-**Statistical power.** Task accuracies at n=15/25/50 carry wide intervals
+**The duel's baseline.** CPU-only is the only way the 30 GB GGUF runs on
+24 GB, so its 12.6 tok/s is near that file's realistic ceiling here rather
+than a straw man — but the strongest Apple-native rival for this exact
+problem, flash-moe/Anemll (SSD-streamed experts), has not been dueled; that
+measurement is queued and could weaken the platform argument, leaving the
+floor guarantee and the accounting as the differentiators.
+
+**Statistical power.** A 15/15 at n=15 bounds the failure rate only below
+~20% (rule of three): it is a "no detected degradation" statement, not
+evidence of parity. Task accuracies at n=15/25/50 carry wide intervals
 (95% CI ≈ ±11 points at 92%/n=25, ≈ ±7.5 at n=50): they support
 *indistinguishability* claims and large effects (the −20-point coverage
 break), not fine rankings. Perplexity equalities (base matched to four

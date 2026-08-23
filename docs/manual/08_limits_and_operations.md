@@ -26,6 +26,11 @@
 - **Cold storage**: paging the floor from a USB disk was >4× slower (run
   abandoned). Slow tiers are for refresh-time reads, never on the hot path.
 
+- **Duel baseline.** CPU-only is the only way the 30 GB GGUF runs on 24 GB,
+  but the strongest Apple-native rival (flash-moe / Anemll, SSD-streamed
+  experts, custom Metal, no miss-time floor) has not been dueled yet. A
+  15/15 at n=15 only bounds the failure rate below ~20%.
+
 ## 8.2 Hard memory rules
 
 1. Check free RAM before loading; abort with a clear message if there is no
