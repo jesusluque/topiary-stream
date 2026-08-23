@@ -55,6 +55,11 @@ alive on disk and lets your RAM hold only the branches the wind is moving.</p>
 </header>
 
 <section>
+<div class="card">
+<p><strong>What it is:</strong> a residency runtime for quantized MoE models on Apple Silicon — experts split into bit planes that stock MLX kernels read, a gate-governed pool in RAM, the rest paged from disk.<br>
+<strong>What it demonstrates:</strong> a 24&nbsp;GB MacBook serves a 35B and an 80B it cannot load, at their true-base perplexity and task scores, with an exact prompt — and a 235B it cannot serve at all, mapped honestly.<br>
+<strong>What it costs:</strong> decode-side fidelity on general prose (KLD 0.77 vs 0.20 for a calibrated static 2-bit of the same 80B) and ~5 points on generative tasks at n=100; in exchange 17&nbsp;GB instead of 30, 40–70% more tok/s, a guaranteed floor and an elastic governor.</p>
+</div>
 <h2>A 24&nbsp;GB laptop, serving models it cannot load</h2>
 <p>The router of a mixture-of-experts model scores its experts <em>before</em>
 their weights are read — residency decisions are free. Topiary Stream splits
@@ -62,18 +67,24 @@ every expert into <strong>bit planes that stock MLX kernels read directly</stron
 (P0 = a servable half-byte floor, P0+P1 = bit-exact 4-bit), keeps the hot
 planes in a gate-governed pool, and guarantees that a cache miss serves the
 floor — blurry for one frame — never nothing, never a stall.</p>
-<pre>model                    4-bit size   served peak   HumanEval  GSM8K   tok/s
-Qwen3-30B-topiary (†)      14.5 GB      9.2–11.3 GB      —        —     47.9
-Qwen3.5-35B-A3B            19.5 GB*    12.5–14 GB       92%      92%    44.5
-Qwen3-Next-80B-A3B         42   GB     17.6  GB       15/15    15/15    20.1
+<pre>model                    4-bit size   served peak‡  HumanEval  GSM8K   tok/s§
+Qwen3-30B-topiary (†)      14.5 GB      9.2 GB       not run  not run   47.9
+Qwen3.5-35B-A3B            19.5 GB*    14.0 GB         92%      92%    47.2
+Qwen3-Next-80B-A3B         42   GB     17.6 GB       15/15    15/15    20.1
 Qwen3-235B-A22B           132   GB     — no servable middle at 24 GB (measured)
  * loads, but Metal OOMs on generation: unservable whole
- † the static sibling's champion (natively 92%/94%), Stream-served in 9.2 GB:
-   indistinguishable from its native run on 3 of 4 solutions-bench axes
-   (MBPP 82 vs 81, MMLU 69.4 vs 68.2, LAMBADA 60.0 vs 60.2; MATH 67 vs 72 at
-   the edge of n=100 significance) — fits 16 GB machines</pre>
-<p class="caption">Apple M5 Pro, 24 GB. The 35B matches the best model that
-does fit (92/94) and beats it on general knowledge (WikiText PPL 7.11 vs 10.27).</p>
+ † the static sibling's champion (natively 92%/94% on HumanEval/GSM8K, not
+   re-run under Stream), Stream-served in 9.2 GB: indistinguishable from its
+   native run on 3 of 4 solutions-bench axes (MBPP 82 vs 81, MMLU 69.4 vs
+   68.2, LAMBADA 60.0 vs 60.2; MATH 67 vs 72 at the edge of n=100
+   significance) — fits 16 GB machines
+ ‡ peak memory of the one serving config shown (K=32 pool, exact prefill);
+   the solutions bench below reports the RANGE across every config it ran
+ § 35B: 47.2 = median after a clean reboot, swap-free (the citable figure);
+   44.5 was the warm K=64 run used for the task battery. 80B and 30B: warm</pre>
+<p class="caption">Apple M5 Pro, 24 GB. The 35B's 92/92 is indistinguishable
+(n=25/50) from the best model that does fit (the 30B champion's 92/94) and
+beats it on general knowledge (WikiText PPL 7.11 vs 10.27).</p>
 </section>
 
 <section id="results">
@@ -130,9 +141,11 @@ routed working set doesn't degrade; it <em>breaks</em>, and it breaks
 reasoning first. Falsifiable prediction unchanged: at 48–64 GB the same
 stack serves the 235B.</p>
 </div>
-<p class="caption">Cross-family columns are directional (Qwen3 / 3.5 / Next
-mix technique with model); the original↔pruned and pruned↔Stream pairs are
-same-model controlled. Full protocol: paper §2.4–2.6.</p>
+<p class="caption">"Served RAM" here is the range of peak memory across the
+configurations each column ran (hard and wide batteries, K/C dials); the hero
+table shows the single serving config. Cross-family columns are directional
+(Qwen3 / 3.5 / Next mix technique with model); the original↔pruned and
+pruned↔Stream pairs are same-model controlled. Full protocol: paper §2.4–2.6.</p>
 </section>
 
 <section>
@@ -166,7 +179,7 @@ with its universal floor 0.131 — coverage first, refresh cadence second
 tasks). Duel against <a href="https://huggingface.co/unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF">Unsloth's UD-Q2_K_XL</a> (<a href="https://unsloth.ai/docs/basics/dynamic-3.0-ggufs">Dynamic 3.0</a>) of the same 80B on the same
 machine (30.1&nbsp;GB, CPU-only, 12.6 tok/s): MATH-500 65 vs 69, MBPP 81 vs
 86, MMLU 85.2 vs 86.2 — at par on knowledge, ~5 points behind on generative
-tasks (n=100), from 17&nbsp;GB at 40–70% higher throughput with an exact
+tasks (n=100), from 17.6&nbsp;GB peak at 40–70% higher throughput with an exact
 prompt. Four cheaper fixes were measured and retired (absorb, overflow tier,
 thin floor, 2-bit gear in tasks: MATH 52%). The residue is the quality of
 the 2-bit plane itself; we stopped there rather than chase the gap without a
