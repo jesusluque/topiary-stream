@@ -1,2 +1,15 @@
 [load] 1.37 GB (skeleton)
 [pool] C=240 K=32 mode=nosync (17.97 GB)
+[warmup] pool adapted to the prompt
+Here is a Python function that merges two sorted lists into one sorted list:
+
+```python
+def merge_sorted_lists(list1, list2):
+    """
+    Merges two sorted lists into one sorted list.
+    
+    Args:
+        list1: First sorted list (iterable)
+        list2: Second sorted list
+
+[serve] 63 tokens in 10.9s = 5.8 tok/s · peak 18.51 GB

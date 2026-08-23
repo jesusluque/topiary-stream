@@ -116,3 +116,4 @@ ValueError: [convert] Only length-1 arrays can be converted to Python scalars.
 [load] 16.46 GB
 [kld] por tramo de posición: {'pos_0-64': 0.5089, 'pos_64-128': 0.3744, 'pos_128-256': 0.1834, 'pos_256-448': 0.2954}
 [kld] media 0.30268 · p95 1.37404 · p99 4.28930 · max 13.578 (1980 tokens)
+[load] 17.97 GB
