@@ -74,6 +74,10 @@ def main() -> None:
                         choices=["uniform", "empirical"])
     parser.add_argument("--p1-frac", default="1.0")
     args = parser.parse_args()
+    if not Path(args.artifact).exists():   # HF repo id -> local snapshot
+        from huggingface_hub import snapshot_download
+
+        args.artifact = snapshot_download(args.artifact)
 
     set_seeds(1234)
     layout = json.load(open(Path(args.artifact) / "config.json")).get("stream_layout")

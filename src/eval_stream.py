@@ -654,6 +654,10 @@ def main() -> None:
                              "uniforme o 'gate,up,down' (p.ej. '0.5,0.5,1.0')")
     parser.add_argument("--tag", default="run")
     args = parser.parse_args()
+    if not Path(args.artifact).exists():   # HF repo id -> local snapshot
+        from huggingface_hub import snapshot_download
+
+        args.artifact = snapshot_download(args.artifact)
 
     set_seeds(1234)
     global GEN_REFRESH, BURST_LEN, BURST_EVERY
