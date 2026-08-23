@@ -1,0 +1,22 @@
+vm.swapusage: total = 2048.00M  used = 629.50M  free = 1418.50M  (encrypted)
+vm.swapusage: total = 2048.00M  used = 629.50M  free = 1418.50M  (encrypted)
+  model-00001-of-00004.safetensors done
+  model-00002-of-00004.safetensors done
+  model-00003-of-00004.safetensors done
+  model-00004-of-00004.safetensors done
+[out] artifacts/qwen36-stream: resident 12.35 GB · P1 memmaps 8.05 GB
+[load] 12.46 GB
+[q36exact] PPL code: 2.3145 (473s)
+[q36exact] PPL general: 7.2600 (413s)
+[mem] peak 15.89 GB
+[load] 12.46 GB
+[kld] referencia guardada: runs/kld36_base_long.npz (4 chunks)
+[load] 12.46 GB
+[q36k32] PPL code: 2.3145 (508s)
+[q36k32] PPL general: 7.2600 (448s)
+[mem] peak 15.89 GB
+[load] 12.46 GB
+[kld] por tramo de posición: {'pos_0-64': 0.0, 'pos_64-128': 0.0, 'pos_128-256': 0.0, 'pos_256-448': 0.0}
+[kld] media 0.00000 · p95 0.00000 · p99 0.00000 · max 0.000 (1980 tokens)
+[load] 12.46 GB
+  math500 10/100: 10 ok

@@ -177,3 +177,15 @@ Peak memory: 17.234 GB
 === RIVAL-KLD COMPLETO Sun Aug 23 12:28:35 CEST 2026 ===
 === RIVAL-KLD OK (relanzado a mano; parser: EOS/UTF-8 parcial => posicion saltada) Sun Aug 23 12:37:38 CEST 2026 ===
 C=64: [serve] 255 tokens in 5.9s = 43.5 tok/s · peak 10.19 GB
+=== MAT36 START Sun Aug 23 16:56:02 CEST 2026 ===
+=== MAT36 NATIVO rc=127 :  ===
+=== MAT36 SPLIT OK ===
+=== MAT36 SERVE K=32: [serve] 255 tokens in 5.3s = 48.2 tok/s · peak 14.86 GB ===
+=== REF DL OK Qwen3.8-27B-4bit 17:10 ===
+=== MAT36 PPL EXACT OK ===
+=== MAT36 KLD-REF OK ===
+=== REF DL OK Qwen3.5-9B-4bit 17:23 ===
+=== MAT36 PPL K32 OK ===
+=== REF DL OK gemma-4-e4b-it-4bit 17:30 ===
+=== MAT36 KLD K32: 0.0 p99 0.0 ===
+=== REF DL OK granite-4.1-8b-4bit 17:37 ===
