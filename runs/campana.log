@@ -40,3 +40,6 @@ KLD: {'r64': 0.41558191180229187, 'r128': 0.5656236410140991, 'r64abs': 4.198931
 [mmlu] 425/500 = 85%
 [mem] peak 19.01 GB
 [speed ovf r32] [serve] 255 tokens in 45.0s = 5.7 tok/s · peak 18.49 GB
+[speed2 ovf_r32] [serve] 255 tokens in 44.3s = 5.8 tok/s · peak 18.49 GB
+[speed2 r32] [serve] 255 tokens in 30.2s = 8.5 tok/s · peak 18.49 GB
+[speed2 r256] [serve] 255 tokens in 14.9s = 17.1 tok/s · peak 18.49 GB

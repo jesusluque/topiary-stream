@@ -213,3 +213,16 @@ ya seguía al routing y el peaje de tareas no es de cadencia. El rival sigue
 69/86. Hipótesis abierta: el peaje de tareas viene de la cobertura (drops
 al 47%), no del refresh → probar C=290 (modo 2-bit) en tareas y el refresh
 barato (tier de desbordamiento) que permita cadencia 32 a ≥15 tok/s.
+
+### 7b. Refresh barato v1 — tier de desbordamiento: NEGATIVO (2026-08-23)
+
+Idea: los expertos entrantes van a 32 filas pequeñas (copias ~27 MB) y el pool
+grande solo se refresca cada 8 refreshes rápidos. Medido a cadencia 32
+(wiki, C=240): **KLD 0.517** (vs 0.303 del refresh 32 plano y 0.566 del 128)
+y **5.8 tok/s** limpios (vs 8.5 plano a 32, 17.1 a 256). Dos lecciones:
+(1) el beneficio de la cadencia viene de refrescar el pool GRANDE (membresía
+y detalle P1), no de tener al entrante a suelo en un tier aparte; (2) el
+tier añade un gather_qmm por proyección y token, y 7 refreshes rápidos
+(144 setitem+eval) por cada completo no salen gratis. Retirado de producción
+(flag `--ovf-merge` queda a 0). Siguiente intento: refresh SELECTIVO por
+capa (`--refresh-min-miss`): cadencia para todas, copias solo donde hay misses.

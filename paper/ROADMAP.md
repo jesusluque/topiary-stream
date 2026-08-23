@@ -103,8 +103,9 @@ como suelo) es negativo rotundo (7.17); (v) el 30B-Stream con suelo
 universal da 0.131 — bajo el 2-bit: el invariante funciona.
 
 **En cola / en marcha (examples/*.sh, automático):**
-- H. **Refresh barato — tier de desbordamiento** (OVF=32 filas P0, merge
-  cada N): ¿cadencia 32 a ≥15 tok/s? (ovf_test.sh). Si sí → producción.
+- H. **Refresh barato — tier de desbordamiento**: NEGATIVO medido (KLD 0.517,
+  5.8 tok/s a cadencia 32). Sustituido por H2: refresh SELECTIVO por capa
+  (`--refresh-min-miss`), test encolado.
 - I. **Batería de tareas en modo 2-bit C=290** (57%): ¿la cobertura
   recupera los 5 puntos en MATH/MBPP? (bench_c290.sh).
 - J. **KLD del rival contra nuestra base exacta** (kldremote, top-100):
