@@ -80,8 +80,8 @@ first batteries ran with the pool frozen throughout each answer
 
 Saved references: `runs/kld80_base_long.npz` (80B exact base, wiki 4×512,
 495 positions per chunk), `runs/kld30_base*.npz` (30B-Stream vs its taper).
-Corpus: `nanite-moe/data/calib_general_qwen3/held_out.jsonl` (held-out,
-never used for `orders`).
+Corpus: a held-out WikiText-2 slice as jsonl (`{"text": ...}` per line),
+never used to compute `orders`.
 
 ## 5.5 Flips and statistics
 

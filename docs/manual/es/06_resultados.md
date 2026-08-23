@@ -9,8 +9,8 @@ significativo al n indicado.
 | Control | Resultado | Fuente |
 |---|---|---|
 | P0+P1 == 4-bit a través del kernel | error 2.6e-7 | `tests/test_stream.py` |
-| Q8 = ancla + refinamiento vs máster verdadero | PPL 3.9209 vs 3.9213 | lab, informe 09 |
-| Q2 derivado por truncación vs Q2 nativo (OLMoE-7B) | ~20× peor PPL | lab, informe 09 |
+| Q8 = ancla + refinamiento vs máster verdadero | PPL 3.9209 vs 3.9213 | medidas del diseño de la pirámide (paper §1.1) |
+| Q2 derivado por truncación vs Q2 nativo (OLMoE-7B) | ~20× peor PPL | medidas del diseño de la pirámide (paper §1.1) |
 | Pager τ=0 vs base 35B (TF-512) | 2.3614 vs 2.3623 (sin diferencia medible), pico 12.22 GB | README §Results |
 | Modo exacto del 80B (base verdadera de un modelo que no cabe) | PPL 2.228 código / 5.557 general a 4.3 GB de pico | paper §2.2 |
 | KLD teacher-forced con prefill exacto | 0.000 en 2278 tokens | `runs/kld_k80served.json` |
@@ -152,15 +152,14 @@ Dial K en el 30B-Stream: K=4 65/75, MMLU 66.4 (10.6 GB); K=64 69/84, MMLU
 | suelo bloqueante | texto perfecto a 0.2 tok/s (94 sincronizaciones/token) |
 | exacto | solo batch |
 | retry-on-miss por token | falsado el mismo día: 99 % de reintentos (condición real `L·k·P(miss) ≪ 1`) |
-| persistencia del routing (f48) | W8 77.7 %, W16 86.8 % (el pool de seguimiento es viable en índices; sin suelo universal los ceros destruyen) |
+| persistencia token a token del routing | W8 77.7 %, W16 86.8 % (el pool de seguimiento es viable en índices; sin suelo universal los ceros destruyen) |
 
 Tres muros convergentes: cobertura 11–16 % ≪ working set de 30–60
 expertos/capa; presupuesto de suelo bajo el precipicio de anchura; saliencia
 plana. Predicción falsable: con 48–64 GB (cobertura ≈50 %) esta misma pila lo
-sirve. Fuente: lab `runs/f44_*`, `f45_*`, `f47_*`, `f48_235b.log`.
+sirve. Fuente: paper §2.3.
 
 ## 6.10 Gobernador
 
 Globo externo de 8 GB sobre el 35B: cuatro repliegues automáticos (K 32→4,
-memoria activa 13.7→12.8 GB), generación completada a 49.3 tok/s. Fuente:
-lab `runs/f46_balloon*.log`.
+memoria activa 13.7→12.8 GB), generación completada a 49.3 tok/s. Fuente: paper §1.5; reproducible con `examples/balloon.py` (§9.8).

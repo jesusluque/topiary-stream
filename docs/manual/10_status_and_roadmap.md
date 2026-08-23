@@ -7,7 +7,7 @@
   all of them. Tests green; CI pinned.
 - **Closed evidence**: pyramid controls; 35B/80B badges; 5×4 bench;
   coverage law on the same model (C=120/240/290); P1 subsampling
-  (8 points); 235B mapped (4 modes + f48); hostile metrics (TF KLD,
+  (8 points); 235B mapped (4 modes + routing persistence); hostile metrics (TF KLD,
   decode, curves, trajectories); full duel against Unsloth including its
   KLD against our base; governor demonstrated; 35B cold boot.
 - **"Beat the table" campaign**: cancelled on 23/08 by user decision after

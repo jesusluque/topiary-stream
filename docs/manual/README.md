@@ -12,7 +12,7 @@ Language: English is the reference version; identifiers, flags and file names ap
 
 | Ch. | File | Contents |
 |---|---|---|
-| 1 | [01_vision_and_lineage.md](01_vision_and_lineage.md) | Mission, lineage (nanite-moe → Topiary → Stream), corrected thesis, glossary |
+| 1 | [01_vision_and_lineage.md](01_vision_and_lineage.md) | Mission, lineage (Topiary → Stream), corrected thesis, glossary |
 | 2 | [02_method.md](02_method.md) | Anchored pyramid, artifacts, gate-governed pool, exact prefill, modes, governor |
 | 3 | [03_runtime_internals.md](03_runtime_internals.md) | Code walkthrough: `common`, `fastpath`, `pager`, `serve` — state, patched forward, refresh, memory |
 | 4 | [04_building_artifacts.md](04_building_artifacts.md) | `split`, `salience`, `floor`, `pyramid`, `protect`: commands, disk/time costs, artifact inventory |
@@ -23,7 +23,7 @@ Language: English is the reference version; identifiers, flags and file names ap
 | 9 | [09_reproduce.md](09_reproduce.md) | Claim-by-claim reproduction guide |
 | 10 | [10_status_and_roadmap.md](10_status_and_roadmap.md) | Status as of 2026-08-23 and roadmap summary |
 
-Honesty convention, inherited from the lab: **every figure has a file in
+Honesty convention: **every figure has a file in
 `runs/` and a command that regenerates it**; what was not measured is
 declared as not measured; negatives are documented with the same rigor as
 the positives.

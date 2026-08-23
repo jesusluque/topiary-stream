@@ -7,7 +7,7 @@
   en todos. Tests verdes; CI fijado.
 - **Evidencia cerrada**: controles de la pirámide; insignias 35B/80B; banco
   5×4; ley de cobertura en el mismo modelo (C=120/240/290); subsampling P1
-  (8 puntos); 235B mapeado (4 modos + f48); métricas hostiles (KLD TF,
+  (8 puntos); 235B mapeado (4 modos + persistencia del routing); métricas hostiles (KLD TF,
   decode, curvas, trayectorias); duelo completo contra Unsloth incluida su
   KLD contra nuestra base; gobernador demostrado; cold-boot del 35B.
 - **Campaña "superar la tabla"**: cancelada el 23/08 por decisión del

@@ -23,27 +23,20 @@ Metal, no dedicated inference engine.
 
 ## 1.2 Lineage
 
-The project has three layers, each with its own repository:
+Two public projects, one after the other:
 
-1. **nanite-moe** (the lab, private). It was born as "hierarchical expert
-   LOD by gate", inspired by Nanite: camera = hidden state, distance =
-   router score, LOD = the precision at which the expert is read. Phases
-   F0–F48 with numbered reports in `reports/` (architectures, routing
-   locality, dual-precision quality, rank axis, width, nesting, clusters,
-   composition, scale, runtime, final suite, prior art, audit, simulated
-   streaming, external confrontations). That is where the laws Stream
-   exploits were measured: routing locality in decode, exact decomposition
-   of a 4-bit tensor into two 2-bit planes, the correct direction for
-   building the pyramid, token-to-token persistence of the routing (f48).
-2. **Topiary** (public: code and `qwen3-30b-topiary*` checkpoints on HF).
-   Static sculpting by salience: expert-width pruning with channels
-   reordered by salience (the "taper"). It produces smaller and somewhat
-   faster checkpoints; its price, measured afterwards, is knowledge
-   (−10 MMLU), not reasoning.
-3. **Topiary Stream** (this repository; private as of today). The residency
-   runtime. It inherits from Topiary the salience ordering of channels
-   (which makes the "salient prefix" of the P1 plane contiguous) and from
-   the lab the anchored pyramid and the router telemetry.
+1. **Topiary** (code and the `qwen3-30b-topiary*` checkpoints on HF). Static
+   sculpting by salience: pruning of expert width with channels reordered by
+   salience (the "taper"). It produces smaller, somewhat faster checkpoints;
+   its price, measured later, is knowledge (−10 MMLU), not reasoning.
+2. **Topiary Stream** (this repository). The residency runtime. It inherits
+   from Topiary the salience-ordered channels (what makes the "salient
+   prefix" of the P1 plane a contiguous slice) and builds on three facts
+   established before this repository existed and re-verified here: the
+   decode-time locality of MoE routing, the exact decomposition of a 4-bit
+   tensor into two 2-bit planes, and the correct construction direction of
+   the pyramid (§2.1). The 235B measurements that map the serving boundary
+   (§6.9) were taken with the same stack and are reported in the paper.
 
 ## 1.3 The thesis, and its correction
 

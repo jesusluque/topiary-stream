@@ -79,8 +79,8 @@ primeras baterías corrían con el pool congelado durante cada respuesta
 
 Referencias guardadas: `runs/kld80_base_long.npz` (80B base exacta, wiki
 4×512, 495 posiciones por chunk), `runs/kld30_base*.npz` (30B-Stream vs su
-taper). Corpus: `nanite-moe/data/calib_general_qwen3/held_out.jsonl`
-(held-out, nunca usado para `orders`).
+taper). Corpus: un trozo held-out de WikiText-2 en jsonl (`{"text": ...}`
+por línea), nunca usado para calcular `orders`.
 
 ## 5.5 Flips y estadística
 

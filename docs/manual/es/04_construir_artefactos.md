@@ -2,8 +2,8 @@
 
 Todo parte de un checkpoint 4-bit de `mlx-community` (cuantización afín,
 `group_size 64`, `bits 4`; los routers ya vienen a 8 bits por override del
-propio checkpoint). El entorno es el `.venv` del laboratorio
-(`$LAB/.venv`, mlx 0.32.0 / mlx-lm 0.31.3) y los
+propio checkpoint). El entorno es el `.venv` del repositorio
+(`uv venv && uv pip install -e .`; mlx 0.32.0 / mlx-lm 0.31.3) y los
 comandos se lanzan desde la raíz de `topiary-stream`.
 
 ## 4.1 `split.py` — checkpoint → artefacto servible
@@ -34,15 +34,15 @@ de chat, `model*.safetensors`, `p1_manifest.json` o `stream_manifest.json`,
 y los `.bin`.
 
 Para un checkpoint **Topiary** (anchos por capa, taper) el runtime necesita
-el shim `dense_loader.maybe_patch_per_layer` del laboratorio:
-`PYTHONPATH=$LAB/src`. `examples/build30stream.sh`
+el shim público `per_layer.maybe_patch` del repositorio de Topiary:
+`PYTHONPATH=<topiary>/src`. `examples/build30stream.sh`
 documenta la construcción completa del 30B-Stream (split + humo + suite).
 
 ## 4.2 `salience.py` — prior del pool y entrada del suelo
 
 ```bash
 python src/salience.py --artifact artifacts/qwen80-stream \
-    --data $LAB/data/calib_general_qwen3/calib.jsonl \
+    --data data/calib.jsonl   # jsonl con {"text", "n_tokens"} por línea \
     --tokens 6000 --out artifacts/qwen80-stream/orders_routed.npz
 ```
 
@@ -119,17 +119,15 @@ claro, no".
 | Artefacto | Layout | Tamaño | Origen | Notas |
 |---|---|---|---|---|
 | `artifacts/qwen30-stream` | resident-p0 | 13 GB | `qwen3-30b-topiary` (taper, checkpoint propio) | campeón en 9.2 GB; canales ordenados por saliencia |
-| `artifacts/qwen35-stream` | resident-p0 | — | `mlx-community/Qwen3.5-35B-A3B-4bit` | movido a `/Volumes/Untitled/qwen35-stream-artifact` (sha256 verificado contra HF) |
+| `artifacts/qwen35-stream` | resident-p0 | — | `mlx-community/Qwen3.5-35B-A3B-4bit` | reconstruido desde el checkpoint de la comunidad con `split.py`; publicado en HF |
 | `artifacts/qwen80-stream` | full-memmap | 42 GB | `mlx-community/Qwen3-Next-80B-A3B-Instruct-4bit` | + `orders_routed.npz`; 96 overrides en config (routers 8-bit) |
 | `artifacts/qwen80-floor128.safetensors` | suelo 2D | 5.6 GB | floor.py k=128 | no cabe junto a C=240 |
 | `artifacts/qwen80-prot`, `-prot8` | full-memmap (symlinks) | 1.3 / 2.4 GB | protect.py | sin medir |
-| `artifacts/qwen235-stream` | full-memmap | 134 GB | `mlx-community/Qwen3-235B-A22B-Instruct-2507-4bit-DWQ` (shards DWQ mezclados con hermanos 4-bit planos) | completo; P0 respaldado en `/Volumes/Untitled/qwen235-stream-p0` |
+| `artifacts/qwen235-stream` | full-memmap | 134 GB | `mlx-community/Qwen3-235B-A22B-Instruct-2507-4bit-DWQ` (shards DWQ mezclados con hermanos 4-bit planos) | completo |
 | `artifacts/qwen235-stream-kit` | esqueleto + floor256 + orders | 15 GB | — | lo que se sube a HF: el usuario regenera los planos con `split.py` |
 | `artifacts/unsloth/…UD-Q2_K_XL.gguf` | GGUF (rival) | 28 GB | `unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF` | solo corre con `-ngl 0` en 24 GB |
 
-Disco interno: ~16 GB libres tras mover el 35B al externo. Regla: las
-decisiones de borrado son del usuario; el runtime nunca borra salvo
-`--consume` explícito.
+Regla: el runtime nunca borra nada salvo con `--consume` explícito.
 
 ## 4.8 Publicación en Hugging Face
 

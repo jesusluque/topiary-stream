@@ -16,7 +16,14 @@ Bloqueantes antes de enviar a venue (MLSys/EuroSys/ICML systems track):
    domina al downsizing estático a igualdad de memoria. Simetría honesta:
    su 2-bit machaca a nuestro P0 desnudo; la defensa es que P0 casi nunca
    se sirve.
-3c. **Duelo contra flash-moe / Anemll** (expertos streameados desde SSD en
+3c. **Duelo contra flash-moe / Anemll — BLOQUEADO same-model (23/08):** ambos
+   motores solo soportan Qwen3.5-397B-A17B (arquitectura cableada); no hay
+   camino para el 80B ni el 35B; un cruce 397B-en-su-motor vs 80B-en-Stream
+   mediría plataformas, no métodos. Documentado en el paper §4 con sus
+   cifras publicadas (4.4–12.9 tok/s; I/O de expertos bloqueante = 47 % del
+   tiempo por token; sin PPL/KLD). Opción abierta (decisión usuario): correr
+   su 397B en nuestro M5 de 24 GB como dato de plataforma (~150 GB de disco
+   externo, horas). Texto original del punto: (expertos streameados desde SSD en
    Apple Silicon; Metal propio; sin suelo en el miss): el rival nativo de
    plataforma más fuerte, señalado por el análisis externo del 23/08. Es
    MEDIDA, no modificación: mismo M5, mismos prompts. Requiere disco externo

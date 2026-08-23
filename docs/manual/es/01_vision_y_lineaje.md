@@ -25,28 +25,21 @@ propio, sin motor de inferencia dedicado.
 
 ## 1.2 Lineaje
 
-El proyecto tiene tres capas, cada una con su repositorio:
+Dos proyectos públicos, uno detrás del otro:
 
-1. **nanite-moe** (laboratorio, privado). Nació como "LOD jerárquico de
-   expertos por gate" inspirado en Nanite: cámara = estado oculto, distancia
-   = score del router, LOD = precisión con la que se lee el experto. Fases
-   F0–F48 con informes numerados en `reports/` (arquitecturas, localidad del
-   routing, calidad dual-precisión, eje de rango, anchura, anidado,
-   clusters, composición, escala, runtime, suite final, prior art,
-   auditoría, streaming simulado, confrontaciones externas). Allí se
-   midieron las leyes que Stream explota: localidad del routing en decode,
-   descomposición exacta de un tensor 4-bit en dos planos de 2 bits,
-   dirección correcta de construcción de la pirámide, persistencia
-   token-a-token del routing (f48).
-2. **Topiary** (público: código y checkpoints `qwen3-30b-topiary*` en HF).
-   Esculpido estático por saliencia: poda de anchura de expertos con
-   canales reordenados por saliencia (el "taper"). Produce checkpoints más
-   pequeños y algo más rápidos; su precio, medido después, es conocimiento
-   (−10 MMLU) y no razonamiento.
-3. **Topiary Stream** (este repositorio; privado a fecha de hoy). El
-   runtime de residencia. Hereda de Topiary el orden de canales por
-   saliencia (lo que hace contiguo el "prefijo saliente" del plano P1) y del
-   laboratorio la pirámide anclada y la telemetría del router.
+1. **Topiary** (código y checkpoints `qwen3-30b-topiary*` en HF). Esculpido
+   estático por saliencia: poda de anchura de expertos con canales
+   reordenados por saliencia (el "taper"). Produce checkpoints más pequeños y
+   algo más rápidos; su precio, medido después, es conocimiento (−10 MMLU) y
+   no razonamiento.
+2. **Topiary Stream** (este repositorio). El runtime de residencia. Hereda de
+   Topiary el orden de canales por saliencia (lo que hace contiguo el
+   "prefijo saliente" del plano P1) y se apoya en tres hechos establecidos
+   antes de que existiera este repositorio y reverificados aquí: la
+   localidad del routing en decode, la descomposición exacta de un tensor
+   4-bit en dos planos de 2 bits y la dirección correcta de construcción de
+   la pirámide (§2.1). Las medidas del 235B que mapean la frontera de
+   servicio (§6.9) se tomaron con la misma pila y están en el paper.
 
 ## 1.3 La tesis, y su corrección
 

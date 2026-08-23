@@ -9,8 +9,8 @@ stated n.
 | Control | Result | Source |
 |---|---|---|
 | P0+P1 == 4-bit through the kernel | error 2.6e-7 | `tests/test_stream.py` |
-| Q8 = anchor + refinement vs true master | PPL 3.9209 vs 3.9213 | the lab, report 09 |
-| Q2 derived by truncation vs native Q2 (OLMoE-7B) | ~20× worse PPL | the lab, report 09 |
+| Q8 = anchor + refinement vs true master | PPL 3.9209 vs 3.9213 | pyramid design measurements (paper §1.1) |
+| Q2 derived by truncation vs native Q2 (OLMoE-7B) | ~20× worse PPL | pyramid design measurements (paper §1.1) |
 | Pager τ=0 vs 35B base (TF-512) | 2.3614 vs 2.3623 (no measurable difference), peak 12.22 GB | README §Results |
 | 80B exact mode (true base of a model that does not fit) | PPL 2.228 code / 5.557 general at 4.3 GB peak | paper §2.2 |
 | Teacher-forced KLD with exact prefill | 0.000 over 2278 tokens | `runs/kld_k80served.json` |
@@ -151,15 +151,13 @@ K dial on the 30B-Stream: K=4 65/75, MMLU 66.4 (10.6 GB); K=64 69/84, MMLU
 | blocking floor | perfect text at 0.2 tok/s (94 syncs/token) |
 | exact | batch-only |
 | token-level retry-on-miss | falsified the same day: 99% retries (real condition `L·k·P(miss) ≪ 1`) |
-| routing persistence (f48) | W8 77.7%, W16 86.8% (the tracking pool is viable on indices; without a universal floor the zeros destroy) |
+| token-to-token routing persistence | W8 77.7%, W16 86.8% (the tracking pool is viable on indices; without a universal floor the zeros destroy) |
 
 Three converging walls: coverage 11–16% ≪ working set of 30–60
 experts/layer; floor budget below the width cliff; flat salience. Falsifiable
-prediction: with 48–64 GB (coverage ≈50%) this same stack serves it. Source:
-the lab `runs/f44_*`, `f45_*`, `f47_*`, `f48_235b.log`.
+prediction: with 48–64 GB (coverage ≈50%) this same stack serves it. Source: paper §2.3.
 
 ## 6.10 Governor
 
 External 8 GB balloon on the 35B: four automatic shrink steps (K 32→4,
-active memory 13.7→12.8 GB), generation completed at 49.3 tok/s. Source:
-the lab `runs/f46_balloon*.log`.
+active memory 13.7→12.8 GB), generation completed at 49.3 tok/s. Source: paper §1.5; reproducible with `examples/balloon.py` (§9.8).

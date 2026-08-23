@@ -4,7 +4,7 @@ Each entry: the idea, the measurement that killed it, and the lesson. The
 negatives are documented with the same rigor as the positives because they
 bound the design space just as well.
 
-## 7.1 Truncation-derived pyramid (the lab)
+## 7.1 Truncation-derived pyramid
 
 - **Idea**: derive Q4/Q2 from a Q8 master by bit shifting (a single copy,
   nested levels for free).

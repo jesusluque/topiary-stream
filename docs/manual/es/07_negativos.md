@@ -4,7 +4,7 @@ Cada entrada: la idea, la medida que la mató, y la lección. Los negativos
 están documentados con el mismo rigor que los positivos porque acotan el
 espacio de diseño tan bien como ellos.
 
-## 7.1 Pirámide derivada por truncación (laboratorio)
+## 7.1 Pirámide derivada por truncación
 
 - **Idea**: derivar Q4/Q2 de un máster Q8 por desplazamiento de bits (una
   sola copia, niveles anidados gratis).

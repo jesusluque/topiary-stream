@@ -1,15 +1,16 @@
 # 9. Reproducir, afirmación por afirmación
 
 Prerrequisitos: M5 Pro 24 GB (o Apple Silicon ≥24 GB), macOS, `.venv` con
-mlx 0.32.0 / mlx-lm 0.31.3, `PYTHONPATH=$LAB/src`
-para checkpoints Topiary, `llama.cpp` b10520 (brew) para el rival. Todo
+mlx 0.32.0 / mlx-lm 0.31.3 (`uv venv && uv pip install -e .`); el repositorio de
+Topiary en `PYTHONPATH` solo para checkpoints Topiary; `llama.cpp` b10520 (brew)
+para el rival. Todo desde la raíz de `topiary-stream`. Tiempos aproximados en
+esa máquina.
 desde la raíz de `topiary-stream`. Tiempos aproximados en esa máquina.
 
 ```bash
-export LAB=<ruta al laboratorio nanite-moe>   # privado; solo necesario para checkpoints Topiary y los corpus de calibración
-export PY=$LAB/.venv/bin/python
-export PYTHONPATH=$LAB/src
-export D=$LAB/data/calib_general_qwen3/held_out.jsonl
+export PY=.venv/bin/python
+export PYTHONPATH=<topiary>/src          # solo para checkpoints Topiary (anchos por capa)
+export D=data/held_out_wiki.jsonl        # trozo held-out de WikiText-2, {"text": ...} por línea
 ```
 
 ## 9.1 "P0+P1 es bit-exacto y el suelo es el fold 1.5·s" (segundos)
@@ -94,7 +95,6 @@ $PY src/split.py --src mlx-community/Qwen3-235B-A22B-Instruct-2507-4bit-DWQ --ou
 $PY src/salience.py --artifact artifacts/qwen235-stream --data <calib> --out artifacts/qwen235-stream/orders_routed.npz
 $PY src/floor.py --artifact artifacts/qwen235-stream --orders artifacts/qwen235-stream/orders_routed.npz --k-floor 256 --out artifacts/qwen235-stream/floor256.safetensors
 $PY src/serve.py --artifact artifacts/qwen235-stream --pool-c 64 --pool-k 8 --serve-mode nosync|floor|floor2d --floor artifacts/qwen235-stream/floor256.safetensors
-# persistencia token a token: nanite-moe/src/f48_persistence.py (lab)
 ```
 
 ## 9.10 Ficheros de verdad

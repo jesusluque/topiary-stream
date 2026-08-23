@@ -464,9 +464,17 @@ or publisher on 2026-08-19.
 **The duel's baseline.** CPU-only is the only way the 30 GB GGUF runs on
 24 GB, so its 12.6 tok/s is near that file's realistic ceiling here rather
 than a straw man — but the strongest Apple-native rival for this exact
-problem, flash-moe/Anemll (SSD-streamed experts), has not been dueled; that
-measurement is queued and could weaken the platform argument, leaving the
-floor guarantee and the accounting as the differentiators.
+problem, flash-moe/Anemll (SSD-streamed experts), has not been dueled. A same-model duel is
+not currently possible: both engines are single-architecture (Qwen3.5-397B-
+A17B only: 60 layers, 45 GatedDeltaNet + 15 attention, 512 experts), with
+no path for a Qwen3-Next-80B or a 35B; a cross-model comparison (their 397B
+streamed from SSD on our 24 GB machine) would measure platforms, not
+methods. What can be stated from their published numbers: 4.4–5.5 tok/s
+(original, 48 GB M3 Max, 2-bit experts) to 12.9 tok/s (Anemll fork, Q3
+experts, 128 GB M5 Max), expert I/O blocking on every miss (47% of per-token
+decode time), and quality reported qualitatively ("breaks JSON/tool calling"
+at 2-bit) — no perplexity or KLD. The platform argument therefore rests on
+those three structural differences, not on a head-to-head.
 
 **Statistical power.** A 15/15 at n=15 bounds the failure rate only below
 ~20% (rule of three): it is a "no detected degradation" statement, not

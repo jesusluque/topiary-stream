@@ -38,7 +38,7 @@
 2. Log `mx.get_active_memory()` / `mx.get_peak_memory()` after each phase.
 3. **Swap = 0 always**; if a benchmark triggers swapouts, the result is
    discarded and the run is marked invalid. Real incidents: the duel launched
-   on top of f48 (11 GB of swap); OVF measured with 3–6 GB of swap (5.7 tok/s
+   on top of a running measurement (11 GB of swap); OVF measured with 3–6 GB of swap (5.7 tok/s
    contaminated → clean re-measurement 5.8).
 4. The 80B's pools fit up to C=290 (19.8 GB); C=340 (20.7 GB) does not.
    floor2d at C=240 (pool 16.5 + floor 6) thrashes.
@@ -53,8 +53,8 @@ chunk before any multi-hour run, `OK`/`FALLO` marker per stage.
 
 Lessons paid for:
 
-- **Stale markers open gates** (three incidents: an old `F48 FALLO`
-  launched the duel on top of f48; the previous day's `RIVAL-KLD COMPLETO`
+- **Stale markers open gates** (three incidents: an old failure marker
+  launched the duel on top of a running measurement; the previous day's `RIVAL-KLD COMPLETO`
   started the OVF early; a stale `objetivo_kld` waiter started llama-server
   during the OVF). Remedy: gates with marker counts (≥2) or dated markers;
   kill obsolete waiters when reconfiguring the queue.
@@ -83,11 +83,8 @@ Lessons paid for:
 
 ## 8.5 Disk
 
-- Deletion decisions belong to the user. When an `rm -rf` of the 35B
-  artifact was blocked, it was moved to the external disk and its sha256
-  verified against HF.
-- The external disk disconnects sometimes: nothing on the hot path can live
-  there.
+- Deletion decisions belong to the user; the runtime never deletes.
+- Removable disks disconnect: nothing on the hot path can live on one.
 - Inventory and free space in §4.7.
 
 ## 8.6 What not to do (summary for the next person who touches this)

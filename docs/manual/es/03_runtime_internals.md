@@ -134,8 +134,8 @@ completa de pools a la (C, K) de la marcha).
 
 1. Lee `stream_layout` del `config.json` del artefacto y elige runtime.
 2. resident-p0: `mlx_lm.load`, `patch_fast`, gobernador opcional. Si el
-   checkpoint tiene anchos por capa (taper de Topiary), `dense_loader.
-   maybe_patch_per_layer` del laboratorio (vía `PYTHONPATH`) lo adapta.
+   checkpoint tiene anchos por capa (taper de Topiary), el `per_layer.maybe_patch`
+   público de Topiary (vía `PYTHONPATH`) lo adapta.
 3. full-memmap: `pager.load_model`, `patch_pool(C, K, orders)`, modo y
    flags en `rt.S`, suelo opcional para `floor2d`.
 4. Doble prefill: `model(prompt)` + `refresh_all()`; luego `stream_generate`

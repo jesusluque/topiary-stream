@@ -13,7 +13,7 @@ nombres de ficheros en inglés tal como aparecen en el código.
 
 | Cap. | Fichero | Contenido |
 |---|---|---|
-| 1 | [01_vision_y_lineaje.md](01_vision_y_lineaje.md) | Misión, lineaje (nanite-moe → Topiary → Stream), tesis corregida, glosario |
+| 1 | [01_vision_y_lineaje.md](01_vision_y_lineaje.md) | Misión, lineaje (Topiary → Stream), tesis corregida, glosario |
 | 2 | [02_metodo.md](02_metodo.md) | Pirámide anclada, artefactos, pool gobernado por gate, prefill exacto, modos, gobernador |
 | 3 | [03_runtime_internals.md](03_runtime_internals.md) | Recorrido por el código: `common`, `fastpath`, `pager`, `serve` — estado, forward parcheado, refresh, memoria |
 | 4 | [04_construir_artefactos.md](04_construir_artefactos.md) | `split`, `salience`, `floor`, `pyramid`, `protect`: comandos, costes de disco/tiempo, inventario de artefactos |
@@ -24,7 +24,7 @@ nombres de ficheros en inglés tal como aparecen en el código.
 | 9 | [09_reproducir.md](09_reproducir.md) | Guía de reproducción afirmación por afirmación |
 | 10 | [10_estado_y_roadmap.md](10_estado_y_roadmap.md) | Estado a 2026-08-23 y resumen del roadmap |
 
-Convención de honestidad, heredada del laboratorio: **cada cifra tiene un
+Convención de honestidad: **cada cifra tiene un
 fichero en `runs/` y un comando que la regenera**; lo no medido se declara
 como no medido; los negativos se documentan con el mismo rigor que los
 positivos.

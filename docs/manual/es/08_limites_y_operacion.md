@@ -42,7 +42,7 @@
 2. Loggear `mx.get_active_memory()` / `mx.get_peak_memory()` tras cada fase.
 3. **Swap = 0 siempre**; si un benchmark provoca swapouts, el resultado se
    descarta y el run se marca inválido. Incidentes reales: duelo lanzado
-   encima de f48 (11 GB de swap); OVF medido con 3–6 GB de swap (5.7 tok/s
+   encima de una medida en curso (11 GB de swap); OVF medido con 3–6 GB de swap (5.7 tok/s
    contaminado → re-medida limpia 5.8).
 4. Los pools del 80B caben hasta C=290 (19.8 GB); C=340 (20.7 GB) no.
    floor2d a C=240 (pool 16.5 + suelo 6) hace thrashing.
@@ -57,8 +57,8 @@ antes de cualquier run de horas, marcador `OK`/`FALLO` por etapa.
 
 Lecciones pagadas:
 
-- **Marcadores viejos abren puertas** (tres incidentes: `F48 FALLO` antiguo
-  lanzó el duelo encima de f48; `RIVAL-KLD COMPLETO` del día anterior
+- **Marcadores viejos abren puertas** (tres incidentes: un marcador de fallo antiguo
+  lanzó el duelo encima de una medida en curso; `RIVAL-KLD COMPLETO` del día anterior
   adelantó al OVF; un waiter viejo de `objetivo_kld` arrancó llama-server
   durante el OVF). Remedio: gates con recuento de marcadores (≥2) o
   marcadores con fecha; matar waiters obsoletos al reconfigurar la cola.
@@ -87,11 +87,8 @@ Lecciones pagadas:
 
 ## 8.5 Disco
 
-- Las decisiones de borrado son del usuario. Cuando un `rm -rf` del
-  artefacto del 35B fue bloqueado, se movió al disco externo y se verificó
-  el sha256 contra HF.
-- El externo se desconecta a veces: nada en el camino caliente puede vivir
-  allí.
+- Las decisiones de borrado son del usuario; el runtime nunca borra.
+- Los discos extraíbles se desconectan: nada del camino caliente puede vivir en uno.
 - Inventario y libres en §4.7.
 
 ## 8.6 Qué no hacer (resumen para el próximo que toque esto)

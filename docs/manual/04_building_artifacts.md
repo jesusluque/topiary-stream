@@ -2,8 +2,8 @@
 
 Everything starts from an `mlx-community` 4-bit checkpoint (affine
 quantization, `group_size 64`, `bits 4`; the routers already come at 8 bits
-via the checkpoint's own override). The environment is the lab's `.venv`
-(`$LAB/.venv`, mlx 0.32.0 / mlx-lm 0.31.3) and the
+via the checkpoint's own override). The environment is the repo's `.venv`
+(`uv venv && uv pip install -e .`; mlx 0.32.0 / mlx-lm 0.31.3) and the
 commands are run from the root of `topiary-stream`.
 
 ## 4.1 `split.py` — checkpoint → servable artifact
@@ -34,15 +34,15 @@ template, `model*.safetensors`, `p1_manifest.json` or `stream_manifest.json`,
 and the `.bin` files.
 
 For a **Topiary** checkpoint (per-layer widths, taper) the runtime needs the
-lab's `dense_loader.maybe_patch_per_layer` shim:
-`PYTHONPATH=$LAB/src`. `examples/build30stream.sh`
+public `per_layer.maybe_patch` shim from the Topiary repo:
+`PYTHONPATH=<topiary>/src`. `examples/build30stream.sh`
 documents the full build of the 30B-Stream (split + smoke test + suite).
 
 ## 4.2 `salience.py` — pool prior and floor input
 
 ```bash
 python src/salience.py --artifact artifacts/qwen80-stream \
-    --data $LAB/data/calib_general_qwen3/calib.jsonl \
+    --data data/calib.jsonl   # jsonl with {"text", "n_tokens"} per line \
     --tokens 6000 --out artifacts/qwen80-stream/orders_routed.npz
 ```
 
@@ -120,17 +120,16 @@ itself (§6.6); parked for disk reasons (it needs the BF16 master) and by the
 | Artifact | Layout | Size | Origin | Notes |
 |---|---|---|---|---|
 | `artifacts/qwen30-stream` | resident-p0 | 13 GB | `qwen3-30b-topiary` (taper, own checkpoint) | champion at 9.2 GB; channels ordered by salience |
-| `artifacts/qwen35-stream` | resident-p0 | — | `mlx-community/Qwen3.5-35B-A3B-4bit` | moved to `/Volumes/Untitled/qwen35-stream-artifact` (sha256 verified against HF) |
+| `artifacts/qwen35-stream` | resident-p0 | — | `mlx-community/Qwen3.5-35B-A3B-4bit` | rebuilt from the community checkpoint with `split.py`; published on HF |
 | `artifacts/qwen80-stream` | full-memmap | 42 GB | `mlx-community/Qwen3-Next-80B-A3B-Instruct-4bit` | + `orders_routed.npz`; 96 overrides in config (8-bit routers) |
 | `artifacts/qwen80-floor128.safetensors` | 2D floor | 5.6 GB | floor.py k=128 | does not fit alongside C=240 |
 | `artifacts/qwen80-prot`, `-prot8` | full-memmap (symlinks) | 1.3 / 2.4 GB | protect.py | unmeasured |
-| `artifacts/qwen235-stream` | full-memmap | 134 GB | `mlx-community/Qwen3-235B-A22B-Instruct-2507-4bit-DWQ` (DWQ shards mixed with plain 4-bit siblings) | complete; P0 backed up at `/Volumes/Untitled/qwen235-stream-p0` |
+| `artifacts/qwen235-stream` | full-memmap | 134 GB | `mlx-community/Qwen3-235B-A22B-Instruct-2507-4bit-DWQ` (DWQ shards mixed with plain 4-bit siblings) | complete |
 | `artifacts/qwen235-stream-kit` | skeleton + floor256 + orders | 15 GB | — | what gets uploaded to HF: the user regenerates the planes with `split.py` |
 | `artifacts/unsloth/…UD-Q2_K_XL.gguf` | GGUF (the rival) | 28 GB | `unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF` | only runs with `-ngl 0` on 24 GB |
 
-Internal disk: ~16 GB free after moving the 35B to the external drive.
-Rule: deletion decisions belong to the user; the runtime never deletes
-except under an explicit `--consume`.
+Rule: the runtime never deletes anything except under an explicit
+`--consume`.
 
 ## 4.8 Publishing on Hugging Face
 

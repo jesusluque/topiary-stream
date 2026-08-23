@@ -133,8 +133,8 @@ pools at the gear's (C, K)).
 1. Reads `stream_layout` from the artifact's `config.json` and picks the
    runtime.
 2. resident-p0: `mlx_lm.load`, `patch_fast`, optional governor. If the
-   checkpoint has per-layer widths (Topiary taper), the lab's `dense_loader.
-   maybe_patch_per_layer` (via `PYTHONPATH`) adapts it.
+   checkpoint has per-layer widths (Topiary taper), Topiary's public
+   `per_layer.maybe_patch` (via `PYTHONPATH`) adapts it.
 3. full-memmap: `pager.load_model`, `patch_pool(C, K, orders)`, mode and
    flags in `rt.S`, optional floor for `floor2d`.
 4. Double prefill: `model(prompt)` + `refresh_all()`; then `stream_generate`
