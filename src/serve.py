@@ -40,7 +40,7 @@ def main() -> None:
     parser.add_argument("--pool-c", type=int, default=240,
                         help="full-memmap only: experts per layer held at P0")
     parser.add_argument("--serve-mode", default="nosync",
-                        choices=["nosync", "floor", "floor2d"],
+                        choices=["nosync", "floor", "floor2d", "exact"],
                         help="full-memmap only (resident-p0 has its own policy)")
     parser.add_argument("--floor", default=None,
                         help="floor2d: universal floor safetensors (floor.py)")
