@@ -1,6 +1,0 @@
-==========
-Certainly! You can use the `sorted()` function in Python, which is a built-in function that returns a new sorted list from the elements of any iterable. Here's a Python function that merges two sorted lists into one sorted list
-==========
-Prompt: 21 tokens, 23.374 tokens-per-sec
-Generation: 48 tokens, 144.324 tokens-per-sec
-Peak memory: 8.952 GB

@@ -250,7 +250,6 @@ def maybe_patch_skeleton(model_path: str) -> bool:
 
     make(qm.Qwen3MoeSparseMoeBlock)
     for modname, clsname in (("qwen3_next", "Qwen3NextSparseMoeBlock"),
-                             ("deepseek_v2", "DeepseekV2MoE"),
                              ("mixtral", "MixtralSparseMoeBlock")):
         try:
             mod = __import__(f"mlx_lm.models.{modname}", fromlist=[clsname])

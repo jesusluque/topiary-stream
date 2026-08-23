@@ -176,14 +176,4 @@ Peak memory: 17.234 GB
 === RIVAL-KLD START Sun Aug 23 12:27:49 CEST 2026 ===
 === RIVAL-KLD COMPLETO Sun Aug 23 12:28:35 CEST 2026 ===
 === RIVAL-KLD OK (relanzado a mano; parser: EOS/UTF-8 parcial => posicion saltada) Sun Aug 23 12:37:38 CEST 2026 ===
-=== GEN-DSV2 START Sun Aug 23 13:55:31 CEST 2026 ===
-=== GEN-DSV2 SPLIT OK ===
-=== GEN-DSV2 CONTROL stock-vs-exact: 27 tokens(words) identicos de 39 ===
-=== GEN-DSV2 ORDERS OK ===
-=== GEN-DSV2 KLD-BASE OK ===
-=== GEN-DSV2 PPL-BASE OK ===
 C=64: [serve] 255 tokens in 5.9s = 43.5 tok/s · peak 10.19 GB
-=== GEN-DSV2 KLD C=64 OK ===
-=== GEN-DSV2 (a) INTERRUMPIDA Sun Aug 23 14:42:12 CEST 2026: controles primero (KLD exacto-vs-base, MATH exacto) ===
-=== GEN-DSV2-B START Sun Aug 23 14:42:13 CEST 2026 ===
-=== GEN-DSV2-B PARADA por el usuario Sun Aug 23 14:44:38 CEST 2026 ===

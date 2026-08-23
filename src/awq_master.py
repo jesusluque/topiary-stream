@@ -5,7 +5,7 @@ ANTES de cuantizar y pliega la inversa en la capa previa — el resultado sigue
 siendo afín plano por grupo → el split en planos (P0/P1) y `gather_qmm` se
 conservan, y el suelo P0 hereda la protección (deja de ser el peor 2-bit).
 
-mlx-lm trae AWQ con soporte MoE (deepseek_v2) pero no registra `qwen3_moe`:
+mlx-lm trae AWQ con soporte MoE para otras familias pero no registra `qwen3_moe`:
 aquí se añade (atención tipo llama + switch_mlp sin shared expert).
 
 Usage (desde un BF16):

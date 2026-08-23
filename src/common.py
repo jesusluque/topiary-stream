@@ -158,8 +158,8 @@ def unpack_bits(wq: mx.array, bits: int) -> np.ndarray:
 
 
 def block_top_k(blk) -> int:
-    """k of a MoE block across families (Qwen: top_k; Mixtral: num_experts_per_tok;
-    DeepSeek: the gate's own top_k)."""
+    """k of a MoE block across families (Qwen: top_k; Mixtral:
+    num_experts_per_tok; otherwise the gate's own top_k)."""
     for name in ("top_k", "num_experts_per_tok"):
         v = getattr(blk, name, None)
         if isinstance(v, int):
@@ -178,8 +178,8 @@ def route(blk, x_flat: mx.array):
                                     top-k, renormalised iff norm_topk_prob
       Mixtral                       gate = Linear; softmax over the selected
                                     logits (== renormalised top-k probs)
-      DeepSeek-V2                   gate = MoEGate returning (inds, scores)
-                                    (its own top-k, group limits and scaling)
+      gate modules returning        (inds, scores) are used as-is
+      their own selection
 
     Routing is never altered by the runtime: only *what is served* changes.
     """
@@ -201,7 +201,7 @@ def route(blk, x_flat: mx.array):
 
 def add_shared(blk, x_flat: mx.array, y: mx.array) -> mx.array:
     """Shared-expert term per family: Qwen (sigmoid-gated `shared_expert`),
-    DeepSeek (ungated `shared_experts`), Mixtral (none)."""
+    ungated `shared_experts` where a family has them, Mixtral (none)."""
     if hasattr(blk, "shared_expert"):
         return y + mx.sigmoid(blk.shared_expert_gate(x_flat)) * blk.shared_expert(x_flat)
     if hasattr(blk, "shared_experts"):
