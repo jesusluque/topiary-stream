@@ -585,6 +585,8 @@ def main() -> None:
     parser.add_argument("--burst-len", type=int, default=0,
                         help="ráfaga de refresh en los primeros N tokens generados (0=no)")
     parser.add_argument("--burst-every", type=int, default=8)
+    parser.add_argument("--ema-mass", action="store_true",
+                        help="EMA del pool ponderada por masa de gate (no por cuenta)")
     parser.add_argument("--gear", default=None,
                         help="gobernador de dos marchas 'Clo:Klo,Chi:Khi' (p.ej. 240:32,290:1)")
     parser.add_argument("--gear-hi", type=float, default=0.25, help="tasa de misses que sube de marcha")
@@ -643,6 +645,7 @@ def main() -> None:
                                         args.centroid, args.p1_frac)
     if hasattr(rt, "S"):
         rt.S["ovf_merge"] = args.ovf_merge
+        rt.S["ema_mass"] = args.ema_mass
     _setup_gear(rt, args.gear, args.gear_hi, args.gear_lo)
     print(f"[load] {mx.get_active_memory() / 1e9:.2f} GB")
     if args.stage == "ppl":

@@ -295,7 +295,10 @@ def patch_pool(model, art_dir: Path, pool_c: int, pool_k: int,
             scores = scores / scores.sum(axis=-1, keepdims=True)
         if x_flat.shape[0] > 1:
             mx.eval(inds)          # prefill pin (garbage-index hardening)
-        S["pending"][id(self)].append(inds)
+        if S.get("ema_mass"):
+            S["pending"][id(self)].append((inds, scores))   # masa de gate, no cuenta
+        else:
+            S["pending"][id(self)].append(inds)
 
         pos0 = st.lookup0[inds]
         pos1 = st.lookup1[inds]
@@ -447,14 +450,26 @@ def refresh_all() -> None:
         pend = S["pending"][bid]
         if not pend:
             continue
-        idx_np = np.concatenate([np.array(p).reshape(-1) for p in pend])
+        if S.get("ema_mass"):
+            idx_np = np.concatenate([np.array(p[0]).reshape(-1) for p in pend])
+            w_np = np.concatenate([np.array(p[1]).reshape(-1) for p in pend]).astype(np.float64)
+        else:
+            idx_np = np.concatenate([np.array(p).reshape(-1) for p in pend])
+            w_np = None
         S["pending"][bid] = []
-        idx_np = idx_np[(idx_np >= 0) & (idx_np < st.n_experts)]
+        ok = (idx_np >= 0) & (idx_np < st.n_experts)
+        idx_np = idx_np[ok]
+        if w_np is not None:
+            w_np = w_np[ok]
         if len(idx_np) == 0:
             continue
         if S.get("gear_cfg"):
             misses.append(_miss_rate(st, idx_np))
-        counts = np.bincount(idx_np, minlength=st.n_experts).astype(np.float64)
+        # EMA por cuenta (default) o por MASA de gate (el daño de un miss es
+        # proporcional a su gate: retener lo que importa perder)
+        counts = np.bincount(idx_np, weights=w_np, minlength=st.n_experts).astype(np.float64)
+        if w_np is not None:
+            counts *= len(idx_np) / max(w_np.sum(), 1e-9)   # misma escala que la cuenta
         if fast:
             st.refresh_fast(counts)
         else:

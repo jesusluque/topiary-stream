@@ -52,6 +52,8 @@ def main() -> None:
                         help="governor: shrink K below this available-GB")
     parser.add_argument("--gov-high", type=float, default=7.0,
                         help="governor: grow K above this available-GB")
+    parser.add_argument("--ema-mass", action="store_true",
+                        help="EMA del pool ponderada por masa de gate (no por cuenta)")
     parser.add_argument("--gear", default=None,
                         help="gobernador de dos marchas 'Clo:Klo,Chi:Khi' (p.ej. 240:32,290:1)")
     parser.add_argument("--gear-hi", type=float, default=0.25, help="tasa de misses que sube de marcha")
@@ -96,6 +98,7 @@ def main() -> None:
                       orders=args.orders)
         rt.S["mode"] = args.serve_mode
         rt.S["ovf_merge"] = args.ovf_merge
+        rt.S["ema_mass"] = args.ema_mass
         if args.gear:
             (clo, klo), (chi, khi) = [tuple(int(x) for x in g.split(":")) for g in args.gear.split(",")]
             rt.S.update({"gear_cfg": {"lo": (clo, klo), "hi": (chi, khi)}, "gear": "lo",
