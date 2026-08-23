@@ -125,7 +125,7 @@ D máster imatrix afín (el P0 uniforme es el peor suelo posible).
 |---|---|---|
 | KLD + flips como métrica | stages kld/kld-decode/traj; **flips por ítem** (per_item + `flips()`, McNemar) | ✅ |
 | Divergence-300@32 | stage traj (300 prompts math/mmlu/mbpp, greedy 32) | ✅ |
-| Router nunca cuantizado | **router a BF16** por rangos HTTP del repo oficial (`protect.py --router`) → `qwen80-prot` | ✅ construido; test en cola |
+| Router nunca cuantizado | **Corrección:** mlx-community ya deja el router a 8 bits (override en config); `protect.py --router` lo sube a BF16 (8→16) → `qwen80-prot` — mejora esperada ≈0, test barato en cola | ✅ construido |
 | Capas sensibles a más bits | **esqueleto no-experto a 8 bits** desde mlx-community-8bit por rangos (`--skeleton8`) → `qwen80-prot8`; overrides por ruta en `config.quantization` | 🟡 construyendo; test en cola |
 | Calibración con chat-template, no solo texto | prior de residencia (orders_routed) recalculado con prompts chat-formateados | ⏳ pendiente (GPU) |
 | imatrix / bits dentro del tensor | máster AWQ afín (`awq_master.py`, config qwen3_moe) | ⏸ aparcado por el usuario (disco) |
