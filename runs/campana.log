@@ -43,3 +43,15 @@ KLD: {'r64': 0.41558191180229187, 'r128': 0.5656236410140991, 'r64abs': 4.198931
 [speed2 ovf_r32] [serve] 255 tokens in 44.3s = 5.8 tok/s · peak 18.49 GB
 [speed2 r32] [serve] 255 tokens in 30.2s = 8.5 tok/s · peak 18.49 GB
 [speed2 r256] [serve] 255 tokens in 14.9s = 17.1 tok/s · peak 18.49 GB
+[load] 19.34 GB
+  math500 10/100: 7 ok
+  math500 20/100: 16 ok
+  math500 30/100: 23 ok
+  math500 40/100: 31 ok
+  math500 50/100: 35 ok
+  math500 60/100: 38 ok
+  math500 70/100: 43 ok
+  math500 80/100: 45 ok
+  math500 90/100: 48 ok
+  math500 100/100: 52 ok
+[math500] 52/100 = 52%

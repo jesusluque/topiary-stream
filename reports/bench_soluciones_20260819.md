@@ -226,3 +226,16 @@ tier añade un gather_qmm por proyección y token, y 7 refreshes rápidos
 (144 setitem+eval) por cada completo no salen gratis. Retirado de producción
 (flag `--ovf-merge` queda a 0). Siguiente intento: refresh SELECTIVO por
 capa (`--refresh-min-miss`): cadencia para todas, copias solo donde hay misses.
+
+### 7c. Modo 2-bit (C=290, K=1) en tareas: NEGATIVO (2026-08-23)
+
+MATH-500 n=100 con refresh 128 intra-gen: **52%** (C=240+K=32: 65%; rival
+UD-Q2: 69%). La cobertura extra (57% vs 47%) a costa del detalle P1 **no
+recupera tareas focales** — al contrario, −13. Conclusión: el peaje de
+tareas del 80B frente al estático no es de cadencia (vuelta 1) ni de
+cobertura-a-2-bits (vuelta 2). El modo 2-bit queda como marcha para texto
+general (KLD 0.774→0.582), no para razonamiento. Lo que queda en pie como
+explicación: la calidad del 2-bit que sirven los misses (P0 uniforme, el
+peor suelo) — la dirección del máster protegido por saliencia (AWQ),
+aparcada — o aceptar la frontera: a 24 GB el 80B empata en conocimiento y
+gana en sistema, pero cede ~5 puntos en generativos.
