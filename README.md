@@ -116,8 +116,7 @@ speed here (hybrid mamba at batch-1 + a 248k-vocab head).
   +6–11% PPL on the 35B and +28%/+120% on the 80B — flat prefill routing
   defeats recency — which is why the split exists.
 - **The decode-side toll, measured hostile and head-to-head.** Token-by-token
-  KLD against the exact base with a live KV cache (WikiText 4×512, exact
-  64-token prefix): 80B at production C=240 **0.774**, all-P0 C=290 0.582,
+  KLD against the exact base with a live KV cache (WikiText 4×512, exact 16-token prefix): 80B at production C=240 **0.774**, all-P0 C=290 0.582,
   30B-Stream with its universal floor **0.131**. Coverage is the first-order
   term; refresh cadence is the second (256→32 tokens: 0.774→0.303, at
   −10/−28/−47% tok/s) and it does *not* move focal tasks. Against Unsloth's
@@ -162,7 +161,8 @@ speed here (hybrid mamba at batch-1 + a 248k-vocab head).
 src/          the eight tools above + common.py (plane arithmetic, discovery)
 tests/        pure-logic suite (planes, pool state machine, governor) — CI on macos-14
 examples/     balloon.py (governor pressure demo)
-paper/        write-up draft
+paper/        write-up, bibliography, roadmap
+docs/manual/  detailed technical manual (Spanish): method, internals, protocol, results, negatives, reproduction
 huggingface/  model-card template + hardened upload script
 ```
 

@@ -254,7 +254,7 @@ weights matter (salience), not *what values* they share.
 Exact prefill makes the teacher-forced KLD zero by construction (0.000 over
 2,278 tokens), so the honest question moves to decode: what does the pool
 cost when the served model must feed on its own tokens? We measure it
-token-by-token with a live KV cache (exact prefix of 64 tokens, then one
+token-by-token with a live KV cache (exact prefix of 16 tokens, then one
 token at a time, refresh on the production cadence), on WikiText 4×512 —
 the dispersed domain where recency-based residency is weakest.
 

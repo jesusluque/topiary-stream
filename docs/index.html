@@ -156,8 +156,7 @@ governs decode only. Before this fix the prefill toll measured +6–11% PPL on
 the 35B and +28%/+120% on the 80B (flat prefill routing defeats recency);
 that measurement is why the design changed.</li>
 <li><strong>The decode-side toll, measured hostile and head-to-head.</strong>
-Token-by-token KLD against the exact base with a live cache (WikiText, exact
-64-token prefix): 80B at production C=240 0.774, all-P0 0.582, 30B-Stream
+Token-by-token KLD against the exact base with a live cache (WikiText, exact 16-token prefix): 80B at production C=240 0.774, all-P0 0.582, 30B-Stream
 with its universal floor 0.131 — coverage first, refresh cadence second
 (256→32: 0.774→0.303 at up to −47% tok/s, and cadence does not move focal
 tasks). Duel against Unsloth's UD-Q2_K_XL of the same 80B on the same

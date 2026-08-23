@@ -146,7 +146,7 @@ en calidad a un estático bien calibrado que necesita 30.
 - Trayectorias greedy 300@32 (80B C=240 vs base exacta): exact-match 36%,
   divergencia media en el token 19.9 (Unsloth: su UD-Q2_K_XL ≈25% vs BF16).
 - **KLD en decode (token a token, caché KV)**: LAMBADA (80 tok, prefijo 16):
-  media 0.118, p99 1.83. **Wiki 4×512 (prefijo exacto 64): media 0.774,
+  media 0.118, p99 1.83. **Wiki 4×512 (prefijo exacto 16 (k0=16 en el código; los tramos 0–64… cuentan desde ahí)): media 0.774,
   p95 4.40, p99 9.02** — el "+120% wiki" del peaje TF reaparece en decode:
   en dominio disperso los DROPS (fuera de C no hay suelo) destruyen. Suelo
   universal 2D del 80B (25% anchura, 6 GB, captura 61.6% de saliencia) a
@@ -158,7 +158,7 @@ en calidad a un estático bien calibrado que necesita 30.
 
 ### 6b. La prueba del invariante: 30B-Stream (suelo universal)
 
-Mismo test (wiki 4×512, prefijo exacto 64, token a token) sobre el 30B-Stream
+Mismo test (wiki 4×512, prefijo exacto 16, token a token) sobre el 30B-Stream
 (K=32 con P1; **P0 residente para los 128 expertos**) contra su propio taper
 nativo: KLD media **0.131**, p95 0.52, p99 2.26 — **6× menor que el 80B con
 drops (0.774)** a cobertura comparable de detalle. El suelo universal
