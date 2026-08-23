@@ -242,3 +242,31 @@ gana en sistema, pero cede ~5 puntos en generativos.
 
 Cierre C=290 (12:24): **MATH 52% · MBPP 70%** (pico 19.8 GB). Frente a
 C=240+K32: −13 / −11. Veredicto definitivo: negativo en generativos.
+
+### 6e. KLD del rival contra NUESTRA base exacta (2026-08-23, 12:50)
+
+Unsloth UD-Q2_K_XL vía llama-server (CPU, `-ngl 0`), teacher-forced token a
+token sobre los mismos wiki 4×512 y la misma referencia (base exacta del
+80B guardada), KL truncada al top-100 de la referencia (aprox. estándar; 4
+posiciones saltadas por UTF-8 parcial en el borde del prompt):
+
+| | KLD media | p95 | p99 | tok/s | GB |
+|---|---|---|---|---|---|
+| UD-Q2_K_XL (estático, 30 GB, CPU) | **0.195** (0.189 en pos ≥64) | 0.91 | 1.94 | 12.6 | 30 |
+| 80B Stream C=240, refresh 256 (producción) | 0.774 | 4.40 | 9.02 | 17–21 | 17 |
+| 80B Stream, refresh 128 | 0.566 | 3.11 | 7.56 | 15.4 | 17 |
+| 80B Stream, refresh 32 | 0.303 | 1.37 | 4.29 | 9.1 | 17 |
+| 30B-Stream, suelo universal (otro modelo) | 0.131 | 0.52 | 2.26 | — | 11.8 |
+
+Curva del rival por tramos (0–64 → 256–448): 0.270 → 0.221 → 0.152 → 0.176
+(plana: no tiene "arranque" porque no tiene pool que aprender).
+
+**Veredicto honesto:** en KLD de prosa el estático calibrado gana con
+claridad — 4× a nuestra cadencia de producción y 1.6× a nuestra mejor
+cadencia (que cuesta la mitad de la velocidad). Las colas (p99 1.9 vs 9.0)
+son la diferencia real: nuestros DROPS fuera del pool producen tokens
+catastróficos; su 2-bit calibrado nunca. Solo el suelo universal (30B-Stream,
+0.131) baja de su cifra, y es otro modelo. Esto cierra la columna: el 80B a
+24 GB es competitivo en tareas y superior en sistema, pero NO en fidelidad de
+texto general. Nota de método: la KL truncada al top-100 subestima frente a
+la KL completa de nuestras cifras; la diferencia no cambia el orden.

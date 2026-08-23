@@ -114,8 +114,10 @@ cobertura → la calidad del propio plano 2-bit servido en los misses (P0 de
 ancla uniforme). Única palanca no probada: máster protegido por saliencia
 (D, AWQ/imatrix afín) — aparcada por disco y por la regla anterior.
 
-**Queda en marcha:** J (KLD del rival vs nuestra base, medida, no
-modificación) — cierra la columna del paper.
+**J cerrado (12:50):** KLD del rival vs nuestra base exacta = **0.195**
+(p99 1.94) frente a nuestro 0.774 (producción) / 0.303 (cadencia 32). En
+fidelidad de prosa el estático gana 4×/1.6×; las colas (drops) son la
+diferencia. Columna del paper cerrada (§2.7). Nada queda en marcha.
 
 **Siguientes:** consolidación escrita (paper §2.7 hecho; README/web/cards)
 → n≥300 solo si se retoma la comparación → B/D cuando el usuario lo decida.

@@ -305,6 +305,19 @@ gear in tasks*: C=290 all-P0 cuts KLD by 25% on prose but scores MATH-500
 10–13 points on reasoning. The 2-bit configuration is a gear for general
 text, not for focal generation.
 
+**The rival's KLD on the same reference.** Feeding UD-Q2_K_XL the same
+WikiText tokens through llama-server and scoring it against our stored exact
+base (top-100-truncated KL, the standard approximation), the static 2-bit
+measures **0.195** mean / 0.91 p95 / 1.94 p99 (0.189 on the positions our
+curves use), flat along the sequence (0.27 → 0.18). Against our 0.774 at
+production cadence and 0.303 at the cadence that halves our speed, the
+calibrated static artifact is clearly more faithful on general prose; the
+tails tell why (p99 1.9 versus 9.0): a drop outside the pool produces a
+catastrophic token, a calibrated 2-bit never does. Only the universal floor
+(30B-Stream, 0.131) goes below it — on a different model. The honest column
+is therefore: at 24 GB the 80B is competitive on tasks and better as a
+system, and *not* competitive on general-text fidelity.
+
 Taken together, the ~5-point generative toll of the 80B at 24 GB is
 explained neither by cadence nor by coverage-at-2-bits. What remains is the
 quality of the 2-bit plane served on misses — P0 is a uniform-anchor plane,

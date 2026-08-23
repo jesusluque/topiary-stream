@@ -1,0 +1,8 @@
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+  [remoto] t=386 intento 1: HTTPError HTTP Error 500: Internal Server Error · claves=['content', 'generation_settings', 'has_new_line', 'id_slot', 'index', 'model'] · error=None
+  remoto chunk 1/4: KL media 0.1596 (2 posiciones sin probs)
+  remoto chunk 2/4: KL media 0.2073 (0 posiciones sin probs)
+  remoto chunk 3/4: KL media 0.1520 (0 posiciones sin probs)
+  [remoto] t=332 intento 1: HTTPError HTTP Error 500: Internal Server Error · claves=['content', 'generation_settings', 'has_new_line', 'id_slot', 'index', 'model'] · error=None
+  remoto chunk 4/4: KL media 0.2604 (2 posiciones sin probs)
+[kld-remote] media 0.19479 · p95 0.90603 · p99 1.93700 · max 4.598 (1976 tokens, top-100)

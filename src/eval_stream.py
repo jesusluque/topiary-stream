@@ -130,7 +130,7 @@ def _ask(model, tokenizer, rt, prompt: str, max_tokens: int) -> str:
     if OPENAI_BASE:
         # Baseline externo vía API OpenAI-compatible (p.ej. llama-server con
         # el UD-Q2 de Unsloth): mismos prompts, greedy, mismo parser.
-        import urllib.request
+        import urllib.request, urllib.error
 
         body = json.dumps({"model": "baseline", "temperature": 0.0,
                            "max_tokens": max_tokens,
@@ -462,7 +462,7 @@ def stage_kld_remote(tokenizer_path: str, data: str, chunks: int, chunk_len: int
     /completion con prompt en ids y n_probs. KL truncada al top-N de la
     referencia (renormalizada en ambos) — aproximación estándar; se reporta
     como tal."""
-    import urllib.request
+    import urllib.request, urllib.error
     from transformers import AutoTokenizer
     tok = AutoTokenizer.from_pretrained(tokenizer_path)
     rows = [json.loads(l) for l in open(data)][:chunks]
@@ -479,9 +479,30 @@ def stage_kld_remote(tokenizer_path: str, data: str, chunks: int, chunk_len: int
                                "temperature": 0, "cache_prompt": True}).encode()
             req = urllib.request.Request(base_url.rstrip("/") + "/completion", data=body,
                                          headers={"Content-Type": "application/json"})
-            with urllib.request.urlopen(req, timeout=600) as r:
-                res = json.load(r)
-            probs = res["completion_probabilities"][0]
+            probs = None
+            for attempt in range(4):  # el servidor puede responder sin probs de forma transitoria
+                try:
+                    with urllib.request.urlopen(req, timeout=600) as r:
+                        res = json.load(r)
+                    if "completion_probabilities" not in res and "content" in res:
+                        probs = "skip"  # llama-server omite probs cuando muestrea EOS/stop
+                        break
+                    probs = res["completion_probabilities"][0]
+                    break
+                except (KeyError, urllib.error.URLError, json.JSONDecodeError) as e:
+                    if isinstance(e, urllib.error.HTTPError) and e.code == 500 and attempt >= 1:
+                        probs = "skip"  # UTF-8 parcial en el borde del prompt: llama-server devuelve 500
+                        break
+                    print(f"  [remoto] t={t} intento {attempt + 1}: {type(e).__name__} {e} · "
+                          f"claves={sorted(res.keys())[:6] if isinstance(res, dict) else '?'} · "
+                          f"error={res.get('error') if isinstance(res, dict) else '?'}", flush=True)
+                    res = {}
+                    time.sleep(5 * (attempt + 1))
+            if probs is None:
+                raise RuntimeError(f"remoto sin completion_probabilities en t={t} tras 4 intentos")
+            if probs == "skip":
+                kl_chunk.append(float("nan"))
+                continue
             # llama.cpp b10520: top_logprobs = [{id, token, logprob}, ...]
             top = probs.get("top_logprobs") or probs.get("top_probs") or []
             q = {int(e["id"]): float(np.exp(e["logprob"])) if "logprob" in e else float(e.get("prob", 0.0))
@@ -493,12 +514,15 @@ def stage_kld_remote(tokenizer_path: str, data: str, chunks: int, chunk_len: int
             qr = np.array([max(q.get(int(j), 1e-9), 1e-9) for j in idx]); qr = qr / qr.sum()
             kl_chunk.append(float((pr * (np.log(pr) - np.log(qr))).sum()))
         kls.append(np.array(kl_chunk))
-        print(f"  remoto chunk {ci + 1}/{len(rows)}: KL media {np.mean(kl_chunk):.4f}")
-    kl = np.concatenate(kls)
+        print(f"  remoto chunk {ci + 1}/{len(rows)}: KL media {np.nanmean(kl_chunk):.4f} "
+              f"({int(np.isnan(kl_chunk).sum())} posiciones sin probs)")
+    kl_all = np.concatenate(kls)
     np.savez_compressed(f"runs/kld_{tag}_curve.npz", *kls)
+    n_skip = int(np.isnan(kl_all).sum())
+    kl = kl_all[~np.isnan(kl_all)]
     res = {"kld_mean": float(kl.mean()), "kld_p95": float(np.percentile(kl, 95)),
            "kld_p99": float(np.percentile(kl, 99)), "kld_max": float(kl.max()),
-           "tokens": int(len(kl)), "n_probs": n_probs, "truncated": True}
+           "tokens": int(len(kl)), "skipped_eos": n_skip, "n_probs": n_probs, "truncated": True}
     Path(f"runs/kld_{tag}.json").write_text(json.dumps(res, indent=2))
     print(f"[kld-remote] media {res['kld_mean']:.5f} · p95 {res['kld_p95']:.5f} · "
           f"p99 {res['kld_p99']:.5f} · max {res['kld_max']:.3f} ({len(kl)} tokens, top-{n_probs})")
