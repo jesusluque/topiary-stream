@@ -114,8 +114,22 @@ speed here (hybrid mamba at batch-1 + a 248k-vocab head).
   for its expert-union reads once from the memmaps), so the pool policy
   governs decode only. Before this design the pool's prefill toll measured
   +6–11% PPL on the 35B and +28%/+120% on the 80B — flat prefill routing
-  defeats recency — which is why the split exists. Decode-side pool cost is
-  bounded by the task results above.
+  defeats recency — which is why the split exists.
+- **The decode-side toll, measured hostile and head-to-head.** Token-by-token
+  KLD against the exact base with a live KV cache (WikiText 4×512, exact
+  64-token prefix): 80B at production C=240 **0.774**, all-P0 C=290 0.582,
+  30B-Stream with its universal floor **0.131**. Coverage is the first-order
+  term; refresh cadence is the second (256→32 tokens: 0.774→0.303, at
+  −10/−28/−47% tok/s) and it does *not* move focal tasks. Against Unsloth's
+  UD-Q2_K_XL of the same 80B on the same machine (30.1 GB, CPU-only at
+  12.6 tok/s): MATH-500 65 vs 69, MBPP 81 vs 86, MMLU 85.2 vs 86.2 — at par
+  on knowledge, ~5 points behind on generative tasks (n=100), while Stream
+  fits in 17 GB, runs 40–70% faster and serves the prompt exactly. Four
+  cheaper fixes were measured and retired (absorb 7.17; overflow tier 0.517
+  at 5.8 tok/s; 25%-width floor 1.354; the 2-bit gear scores MATH 52%).
+  The residue is the quality of the 2-bit plane itself — we stopped
+  modifying the runtime there rather than chase the gap without a clear
+  return.
 - **The 235B has no servable middle on 24 GB.** Four modes measured:
   drop-renormalize = fast but collapsed output; universal 16.7%-width floor =
   degenerate (salience too flat: 53.5% captured); blocking floor = perfect

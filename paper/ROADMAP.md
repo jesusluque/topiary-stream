@@ -82,43 +82,43 @@ G. **Porte CUDA en AWS (generalidad del método + upstream)**. La jerarquía
    dinámicos como PR a vLLM/FusedMoE, y suelo Q8_0→2×Q4_0 (¡el split porta
    a GGUF por arriba, simétrico sin fold!) al RFC llama.cpp #24528.
 
-## Estado 2026-08-23 (tras el duelo y la campaña de KLD)
+## Estado 2026-08-23 (tras el duelo y la campaña de KLD) — CAMPAÑA CERRADA
 
 **Cerrado esta semana (del roadmap):** 3a baseline Unsloth UD-Q2 (duelo
 completo); 3b KLD/trayectorias (TF 0.000, decode 0.77→0.30 por cadencia,
 traj 36%@32, curvas por posición); 4 cold-boot (35B); A dial C como perfil
 de tarea (n=500); C medida de persistencia del 235B (78% a W=8).
 
-**Objetivo activo — "superar la tabla del rival"** (69/86/86.2 en
-MATH/MBPP/MMLU; 12.6 tok/s; 30 GB). Posición: 65/81/86 @ 15.4 tok/s, 17 GB.
-Listón KLD (tabla Unsloth, Gemma-27B, wiki vs BF16): Q2_K_XL 0.221,
-Q4_K_XL 0.024 → objetivo 80B ≤0.20 vs base con ≥12.6 tok/s (hoy 0.303 a
-cadencia 32 pero 9.1 tok/s; 0.566 a 128 con 15.4).
+**Objetivo "superar la tabla del rival" (69/86/86.2): CANCELADO por
+decisión del usuario (12:08).** Regla: si no se alcanza al rival y cada
+modificación no da rédito claro o empeora otros ejes, no se sigue. Posición
+final: 65/81/85.2 @ 15.4 tok/s, 17 GB (rival 12.6 tok/s, 30 GB, CPU).
 
-**Hallazgos que reorientan:** (i) la cadencia del refresh es LA palanca de
-KLD (256→32: 0.77→0.30) pero NO mueve tareas focales (65/81); (ii) el peaje
-de tareas parece de COBERTURA (drops al 47%); (iii) el suelo universal fino
-(25%) no rescata (1.35) y C=340 no cabe (20.7 GB); (iv) absorb (shared
-como suelo) es negativo rotundo (7.17); (v) el 30B-Stream con suelo
-universal da 0.131 — bajo el 2-bit: el invariante funciona.
+**Lo que la campaña dejó medido (todo en el paper §2.7):**
+- Cadencia del refresh = LA palanca de KLD (256→32: 0.77→0.30) pero NO
+  mueve tareas focales (65/81 a r128). Coste −10/−28/−47% tok/s.
+- Cobertura a 2 bits (C=290, todo P0): KLD −25% en prosa; en tareas
+  **MATH 52%, MBPP ~72%** (−13/−9): NEGATIVO para razonamiento. Marcha de
+  texto general solamente.
+- Absorb (7.17), tier de desbordamiento (0.517 @ 5.8 tok/s), suelo fino
+  25% (1.354 a C=120; no cabe a C=240): NEGATIVOS.
+- Router ya va a 8 bits en mlx-community (corrección). `protect.py` (router
+  BF16 / esqueleto 8-bit) construido pero NO medido — la regla de
+  memoria/tiempo lo hacía un dial, no una mejora.
+- Ráfaga, marchas, EMA por masa, prewarm, sensor de margen, refresh
+  selectivo: **implementados como flags, NO medidos** (matados de la cola).
+  No reclamar nada de ellos.
 
-**En cola / en marcha (examples/*.sh, automático):**
-- H. **Refresh barato — tier de desbordamiento**: NEGATIVO medido (KLD 0.517,
-  5.8 tok/s a cadencia 32). Sustituido por H2: refresh SELECTIVO por capa
-  (`--refresh-min-miss`), test encolado.
-- I. **Batería de tareas en modo 2-bit C=290** (57%): ¿la cobertura
-  recupera los 5 puntos en MATH/MBPP? (bench_c290.sh).
-- J. **KLD del rival contra nuestra base exacta** (kldremote, top-100):
-  la misma columna para ambos (objetivo_kld.sh).
-- K. Ráfaga de refresh tras el prompt (arranque ~64 tokens a 0.5–0.6 KLD):
-  refresh cada 8–16 en los primeros 64 tokens.
-- L. Gobernador de dos marchas (K↔C por tasa de misses) — validado el
-  escalón (C=290: −25%), falta el conmutador.
+**Residuo explicativo del peaje generativo (~5 puntos):** ni cadencia ni
+cobertura → la calidad del propio plano 2-bit servido en los misses (P0 de
+ancla uniforme). Única palanca no probada: máster protegido por saliencia
+(D, AWQ/imatrix afín) — aparcada por disco y por la regla anterior.
 
-**Siguientes (orden sugerido):** n≥300 en MATH/MBPP (el ±5 del duelo no se
-cierra sin esto) → consolidación escrita (paper/README/web/cards, pendiente
-desde el 20) → B residencia guiada por daño →
-D máster imatrix afín (el P0 uniforme es el peor suelo posible).
+**Queda en marcha:** J (KLD del rival vs nuestra base, medida, no
+modificación) — cierra la columna del paper.
+
+**Siguientes:** consolidación escrita (paper §2.7 hecho; README/web/cards)
+→ n≥300 solo si se retoma la comparación → B/D cuando el usuario lo decida.
 
 ## Importado de Unsloth sin cambiar la filosofía (2026-08-23)
 

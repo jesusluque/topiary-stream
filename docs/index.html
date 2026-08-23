@@ -155,6 +155,19 @@ batched pass whose P1 union reads once from the memmaps, so the pool policy
 governs decode only. Before this fix the prefill toll measured +6–11% PPL on
 the 35B and +28%/+120% on the 80B (flat prefill routing defeats recency);
 that measurement is why the design changed.</li>
+<li><strong>The decode-side toll, measured hostile and head-to-head.</strong>
+Token-by-token KLD against the exact base with a live cache (WikiText, exact
+64-token prefix): 80B at production C=240 0.774, all-P0 0.582, 30B-Stream
+with its universal floor 0.131 — coverage first, refresh cadence second
+(256→32: 0.774→0.303 at up to −47% tok/s, and cadence does not move focal
+tasks). Duel against Unsloth's UD-Q2_K_XL of the same 80B on the same
+machine (30.1&nbsp;GB, CPU-only, 12.6 tok/s): MATH-500 65 vs 69, MBPP 81 vs
+86, MMLU 85.2 vs 86.2 — at par on knowledge, ~5 points behind on generative
+tasks (n=100), from 17&nbsp;GB at 40–70% higher throughput with an exact
+prompt. Four cheaper fixes were measured and retired (absorb, overflow tier,
+thin floor, 2-bit gear in tasks: MATH 52%). The residue is the quality of
+the 2-bit plane itself; we stopped there rather than chase the gap without a
+clear return.</li>
 <li><strong>The 235B has no servable middle on 24 GB.</strong> Four modes
 measured: fast-but-collapsed, degenerate floor (its salience is flat),
 perfect-at-0.2-tok/s, batch-only exact. Falsifiable prediction: at 48–64 GB

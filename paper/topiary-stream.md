@@ -27,7 +27,14 @@ own unpruned base); paged residency preserves both at the cost of speed; and
 an intra-model coverage ablation (same checkpoint, pool halved) breaks
 long-form reasoning by 20 points while leaving short-form knowledge intact —
 turning the coverage law from a cross-model observation into a controlled,
-same-model result.
+same-model result. Finally we submit the runtime to hostile metrics —
+token-by-token decode KLD with a live cache, greedy-trajectory divergence —
+and to a head-to-head duel against a calibrated static 2-bit of the same 80B
+(Unsloth UD-Q2_K_XL): task quality is at par on knowledge and ~5 points
+behind on generative tasks, while Stream fits in 17 GB instead of 30, runs
+40–70% faster and serves the prompt exactly. Four cheaper "fixes" for the
+generative toll were measured and retired; the honest residue is the quality
+of the 2-bit plane itself.
 
 ## 1. Method
 
@@ -242,6 +249,69 @@ scheme expands to 4.66 bits/weight. Quantized trained weights carry no
 row-to-row redundancy to exploit; the exploitable structure is *which*
 weights matter (salience), not *what values* they share.
 
+### 2.7 The decode regime: hostile metrics, the static-quant duel, and the levers that did not move
+
+Exact prefill makes the teacher-forced KLD zero by construction (0.000 over
+2,278 tokens), so the honest question moves to decode: what does the pool
+cost when the served model must feed on its own tokens? We measure it
+token-by-token with a live KV cache (exact prefix of 64 tokens, then one
+token at a time, refresh on the production cadence), on WikiText 4×512 —
+the dispersed domain where recency-based residency is weakest.
+
+**Coverage is the first-order term.** On the 80B, per-token KLD against the
+exact base is 1.563 at C=120 (23% of experts resident), 0.774 at the
+production C=240 (47%), and 0.582 with the whole pool spent on P0 (C=290,
+57%, no detail plane). The 30B-Stream, whose P0 covers every expert (the
+universal floor), measures 0.131 at comparable detail coverage — six times
+lower than the 80B with drops. The per-position curves *decrease* with
+length (80B C=240: 0.88 → 0.68 over 0–64 → 256–448 tokens; 30B-Stream
+0.23 → 0.11): the damage is a start-up cost while the pool learns the topic,
+not an accumulation in the KV cache. This retires the "poisoned cache"
+hypothesis for both models.
+
+**Cadence is the second-order term, and it is cheap only in KLD.** Refreshing
+every 128/64/32 tokens instead of 256 brings the 80B's KLD to 0.566 / 0.416 /
+0.303 (steady state 0.18), at 15.4 / 12.3 / 9.1 tok/s. Yet the focal-task
+battery does not follow: with in-generation refresh every 128 tokens MATH-500
+moves 64→65% and MBPP stays at 81% (n=100). On focal prompts the pool was
+already tracking the routing; the KLD gain is spent on tokens the tasks do
+not score.
+
+**The duel.** Against Unsloth's UD-Q2_K_XL of the same Qwen3-Next-80B
+(imatrix-calibrated, per-layer dynamic ~3 bpw, 30.1 GB GGUF) on the same
+machine, same prompts and parsers: the static artifact only runs with all
+weights on CPU (`-ngl 0`, paging from disk; Metal OOM otherwise) at
+12.6 ± 3.7 tok/s, and scores MATH-500 69% / MBPP 86% / MMLU 86.2% (n=100/
+100/500). Stream at C=240 serves from 17 GB at 17.3–21.5 tok/s with an
+exact prompt and scores 64–65 / 81 / 85.2. Our prior prediction that a
+calibrated 2-bit would "lose 6–10 points" is falsified: task quality is at
+par within n=100 noise on knowledge and nominally 5 points behind on the two
+generative tasks. Stream's advantages are *system* advantages — fitting
+where the static does not, +40–70% throughput, exact prefill, a floor and a
+governor — not a quality lead over a well-calibrated static quantization
+that needs 30 GB.
+
+**What did not close the gap (all measured, all retired).** (i) *Absorb*:
+re-injecting dropped gate mass into the shared expert, KLD 7.17 — the shared
+expert's output scale is not that of a routed expert. (ii) *Overflow tier*:
+incoming experts parked in 32 small rows with fast refreshes between full
+ones, KLD 0.517 at 5.8 tok/s — the cadence benefit comes from refreshing the
+large pool's membership and detail, and the extra gather per projection is
+not free. (iii) *Thin universal floor* (25% width, 6 GB): 1.354 at C=120,
+better than drops by 13% but it does not fit beside the production pool; a
+floor below ~50% width sits "under the cliff", as on the 235B. (iv) *2-bit
+gear in tasks*: C=290 all-P0 cuts KLD by 25% on prose but scores MATH-500
+52% and MBPP ≈72% — spending the hot experts' detail on coverage costs
+10–13 points on reasoning. The 2-bit configuration is a gear for general
+text, not for focal generation.
+
+Taken together, the ~5-point generative toll of the 80B at 24 GB is
+explained neither by cadence nor by coverage-at-2-bits. What remains is the
+quality of the 2-bit plane served on misses — P0 is a uniform-anchor plane,
+the weakest possible floor — which points to a salience-protected master
+(AWQ-style) as the only untested lever; we stopped here rather than keep
+modifying the runtime without a clear return.
+
 ## 3. Related work
 
 SliceMoE [slicemoe2026] caches experts at bit-slice granularity with a
@@ -373,8 +443,11 @@ and are discarded under our swap-zero protocol, leaving its warm figure
 Also: PPL anchors for
 the 35B under a short protocol; the 235B artifact mixes DWQ with plain 4-bit
 siblings. Exact prefill removes
-the pool's teacher-forced toll by construction; the residual decode-side toll
-is bounded only by task results at small n. In the solutions bench, only the
+the pool's teacher-forced toll by construction; the decode-side toll is now
+quantified (§2.7) but only on WikiText 4×512 and a 100-item generative
+battery — the duel's 5-point gap is within n=100 noise on each task taken
+alone, and only the direction (consistent across MATH-500 and MBPP) is
+claimed. In the solutions bench, only the
 original/pruned and pruned/Stream pairs are same-model controlled — the
 cross-scale columns confound technique with model family. The P1-subsampling
 matrix is n=100 per cell: its 64–72% MATH spread is not pairwise-orderable,
