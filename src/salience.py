@@ -51,6 +51,7 @@ def main() -> None:
 
     acc = {li: np.zeros((n_exp, inter), dtype=np.float64) for li, _ in blocks}
     cnt = {li: np.zeros(n_exp, dtype=np.int64) for li, _ in blocks}
+    mass = {li: np.zeros(n_exp, dtype=np.float64) for li, _ in blocks}   # gate mass per expert
     block_cls = type(blocks[0][1])
     orig_call = block_cls.__call__
 
@@ -58,7 +59,7 @@ def main() -> None:
         st = pager.S["layers"][id(self)]
         li = layer_of[id(self)]
         x_flat = x.reshape(-1, x.shape[-1]) if x.ndim > 2 else x
-        inds, _ = route(self, x_flat)
+        inds, scores = route(self, x_flat)
         inds_np = np.array(inds)
         uniq, inv = np.unique(inds_np, return_inverse=True)
         rme = mx.array(inv.reshape(inds_np.shape).astype(np.int32))
@@ -81,6 +82,7 @@ def main() -> None:
         flat = inds_np.reshape(-1)
         np.add.at(acc[li], flat, h2n)
         np.add.at(cnt[li], flat, 1)
+        np.add.at(mass[li], flat, np.array(scores.astype(mx.float32)).reshape(-1))
         return orig_call(self, x)
 
     block_cls.__call__ = spy
@@ -114,6 +116,8 @@ def main() -> None:
             del wd
         h2m = acc[li] / np.maximum(cnt[li], 1)[:, None]
         result[f"salience_{li}"] = (h2m * wnorm).astype(np.float32)
+        result[f"counts_{li}"] = cnt[li].astype(np.int64)        # routing popularity
+        result[f"mass_{li}"] = mass[li].astype(np.float32)        # summed gate score
         mx.clear_cache()
         if li % 10 == 0:
             print(f"  layer {li} done")
