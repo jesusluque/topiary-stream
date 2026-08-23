@@ -56,7 +56,7 @@ thesis stands **corrected**:
   65, MBPP 86 vs 81, MMLU 86.2 vs 85.2; n=100/100/500).
 - On general-text fidelity (KLD against the exact base) the static wins
   clearly (0.195 vs 0.774 in production).
-- What Stream contributes is **systemic**: it fits where the static does not
+- What Stream contributes is **at the system level**: it fits where the static does not
   (17 vs 30 GB), it is 40–70% faster (GPU versus CPU paging), it serves the
   prompt bit-exact, it has a guaranteed floor and an elastic governor.
 
