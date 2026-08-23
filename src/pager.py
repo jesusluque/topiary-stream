@@ -116,13 +116,22 @@ class PoolLayer:
             }
             mx.eval(*self.pools[proj].values())
 
-    def refresh_fast(self, counts: np.ndarray) -> int:
+    def refresh_fast(self, counts: np.ndarray, near: np.ndarray | None = None) -> int:
         """Refresh BARATO: los expertos que deberían entrar van al tier de
-        desbordamiento (servidos a suelo P0) sin tocar el pool grande."""
+        desbordamiento (servidos a suelo P0) sin tocar el pool grande.
+        `near`: casi-elegidos recientes (ranks k+1..) para PRECALENTAR el tier
+        antes de que falten (la persistencia del routing los respalda)."""
         self.ema = 0.8 * self.ema + counts
         ideal = np.argsort(-self.ema)[: self.c]
         in0 = set(self.members0); ino = set(e for e in self.ovf_members if e >= 0)
         entering = [int(e) for e in ideal if int(e) not in in0 and int(e) not in ino][:MAX_CHURN]
+        if near is not None and len(entering) < MAX_CHURN:
+            nc = np.bincount(near, minlength=self.n_experts)
+            for e in np.argsort(-nc):
+                if nc[e] == 0 or len(entering) >= MAX_CHURN:
+                    break
+                if int(e) not in in0 and int(e) not in ino and int(e) not in entering:
+                    entering.append(int(e))
         if not entering:
             return 0
         lo = np.array(self.lookup_o, copy=True)
@@ -289,7 +298,22 @@ def patch_pool(model, art_dir: Path, pool_c: int, pool_k: int,
         x_flat = x.reshape(-1, shape[-1]) if x.ndim > 2 else x
         gates = mx.softmax(self.gate(x_flat).astype(mx.float32), axis=-1, precise=True)
         k = self.top_k
-        inds = mx.stop_gradient(mx.argpartition(-gates, kth=k - 1, axis=-1)[..., :k])
+        near_n = S.get("prewarm", 0)
+        if near_n or S.get("gear_sensor") == "margin":
+            # top-(k+near) una sola vez; el top-k EXACTO se recupera ordenando
+            # dentro (mismo conjunto que argpartition(k)): routing intacto.
+            kk = k + max(near_n, 1)
+            cand = mx.stop_gradient(mx.argpartition(-gates, kth=kk - 1, axis=-1)[..., :kk])
+            cg = mx.take_along_axis(gates, cand, axis=-1)
+            order = mx.argsort(-cg, axis=-1)
+            cand = mx.take_along_axis(cand, order, axis=-1)
+            cg = mx.take_along_axis(cg, order, axis=-1)
+            inds = cand[..., :k]
+            near = cand[..., k:k + near_n] if near_n else None
+            margin = (cg[..., k - 1] - cg[..., k]) if S.get("gear_sensor") == "margin" else None
+        else:
+            inds = mx.stop_gradient(mx.argpartition(-gates, kth=k - 1, axis=-1)[..., :k])
+            near, margin = None, None
         scores = mx.take_along_axis(gates, inds, axis=-1)
         if getattr(self, "norm_topk_prob", False):
             scores = scores / scores.sum(axis=-1, keepdims=True)
@@ -299,6 +323,10 @@ def patch_pool(model, art_dir: Path, pool_c: int, pool_k: int,
             S["pending"][id(self)].append((inds, scores))   # masa de gate, no cuenta
         else:
             S["pending"][id(self)].append(inds)
+        if near is not None:
+            S.setdefault("near", {}).setdefault(id(self), []).append(near)
+        if margin is not None:
+            S.setdefault("margins", {}).setdefault(id(self), []).append(margin)
 
         pos0 = st.lookup0[inds]
         pos1 = st.lookup1[inds]
@@ -471,15 +499,29 @@ def refresh_all() -> None:
         if w_np is not None:
             counts *= len(idx_np) / max(w_np.sum(), 1e-9)   # misma escala que la cuenta
         if fast:
-            st.refresh_fast(counts)
+            nr = S.get("near", {}).pop(bid, None)
+            near_np = None
+            if nr:
+                near_np = np.concatenate([np.array(p).reshape(-1) for p in nr])
+                near_np = near_np[(near_np >= 0) & (near_np < st.n_experts)]
+            st.refresh_fast(counts, near_np)
         else:
+            S.get("near", {}).pop(bid, None)
             st.refresh(counts)
             if merge > 0:
                 st.clear_overflow()
     # Gobernador de DOS MARCHAS: dispersión alta → marcha 2-bit amplia (C alto,
     # K≈0); dispersión baja → marcha 4-bit focal. Histéresis + permanencia.
-    if S.get("gear_cfg") and misses:
-        m = float(np.mean(misses))
+    if S.get("gear_cfg") and (misses or S.get("margins")):
+        if S.get("gear_sensor") == "margin" and S.get("margins"):
+            # sensor de dispersión ADELANTADO: margen medio top-k/top-k+1 bajo
+            # = empates técnicos = routing disperso. Se mapea a 'miss-equivalente'
+            # como 1 - margen normalizado para reutilizar los umbrales.
+            allm = np.concatenate([np.array(v).reshape(-1) for vs in S["margins"].values() for v in vs])
+            S["margins"] = {}
+            m = float(np.clip(1.0 - allm.mean() / S.get("margin_ref", 0.05), 0.0, 1.0))
+        else:
+            m = float(np.mean(misses)) if misses else 0.0
         S["miss_rate"] = m
         S["gear_dwell"] = S.get("gear_dwell", 0) + 1
         if S["gear_dwell"] >= S.get("gear_min_dwell", 2):

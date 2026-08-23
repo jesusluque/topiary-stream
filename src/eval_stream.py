@@ -587,6 +587,10 @@ def main() -> None:
     parser.add_argument("--burst-every", type=int, default=8)
     parser.add_argument("--ema-mass", action="store_true",
                         help="EMA del pool ponderada por masa de gate (no por cuenta)")
+    parser.add_argument("--prewarm", type=int, default=0,
+                        help="precalentar el tier de desbordamiento con los N casi-elegidos (ranks k+1..)")
+    parser.add_argument("--gear-sensor", default="miss", choices=["miss", "margin"],
+                        help="sensor del gobernador de marchas: tasa de misses o margen top-k/top-k+1")
     parser.add_argument("--gear", default=None,
                         help="gobernador de dos marchas 'Clo:Klo,Chi:Khi' (p.ej. 240:32,290:1)")
     parser.add_argument("--gear-hi", type=float, default=0.25, help="tasa de misses que sube de marcha")
@@ -646,6 +650,8 @@ def main() -> None:
     if hasattr(rt, "S"):
         rt.S["ovf_merge"] = args.ovf_merge
         rt.S["ema_mass"] = args.ema_mass
+        rt.S["prewarm"] = args.prewarm
+        rt.S["gear_sensor"] = args.gear_sensor
     _setup_gear(rt, args.gear, args.gear_hi, args.gear_lo)
     print(f"[load] {mx.get_active_memory() / 1e9:.2f} GB")
     if args.stage == "ppl":
