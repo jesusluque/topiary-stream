@@ -98,7 +98,7 @@ final: 65/81/85.2 @ 15.4 tok/s, 17 GB (rival 12.6 tok/s, 30 GB, CPU).
 - Cadencia del refresh = LA palanca de KLD (256→32: 0.77→0.30) pero NO
   mueve tareas focales (65/81 a r128). Coste −10/−28/−47% tok/s.
 - Cobertura a 2 bits (C=290, todo P0): KLD −25% en prosa; en tareas
-  **MATH 52%, MBPP ~72%** (−13/−9): NEGATIVO para razonamiento. Marcha de
+  **MATH 52%, MBPP 70%** (−13/−9): NEGATIVO para razonamiento. Marcha de
   texto general solamente.
 - Absorb (7.17), tier de desbordamiento (0.517 @ 5.8 tok/s), suelo fino
   25% (1.354 a C=120; no cabe a C=240): NEGATIVOS.

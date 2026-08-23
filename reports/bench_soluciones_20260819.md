@@ -239,3 +239,6 @@ explicación: la calidad del 2-bit que sirven los misses (P0 uniforme, el
 peor suelo) — la dirección del máster protegido por saliencia (AWQ),
 aparcada — o aceptar la frontera: a 24 GB el 80B empata en conocimiento y
 gana en sistema, pero cede ~5 puntos en generativos.
+
+Cierre C=290 (12:24): **MATH 52% · MBPP 70%** (pico 19.8 GB). Frente a
+C=240+K32: −13 / −11. Veredicto definitivo: negativo en generativos.

@@ -301,7 +301,7 @@ not free. (iii) *Thin universal floor* (25% width, 6 GB): 1.354 at C=120,
 better than drops by 13% but it does not fit beside the production pool; a
 floor below ~50% width sits "under the cliff", as on the 235B. (iv) *2-bit
 gear in tasks*: C=290 all-P0 cuts KLD by 25% on prose but scores MATH-500
-52% and MBPP ≈72% — spending the hot experts' detail on coverage costs
+52% and MBPP 70% — spending the hot experts' detail on coverage costs
 10–13 points on reasoning. The 2-bit configuration is a gear for general
 text, not for focal generation.
 
