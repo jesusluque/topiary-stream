@@ -117,3 +117,5 @@ ValueError: [convert] Only length-1 arrays can be converted to Python scalars.
 [kld] por tramo de posición: {'pos_0-64': 0.5089, 'pos_64-128': 0.3744, 'pos_128-256': 0.1834, 'pos_256-448': 0.2954}
 [kld] media 0.30268 · p95 1.37404 · p99 4.28930 · max 13.578 (1980 tokens)
 [load] 17.97 GB
+[kld] por tramo de posición: {'pos_0-64': 0.6904, 'pos_64-128': 0.6559, 'pos_128-256': 0.4839, 'pos_256-448': 0.461}
+[kld] media 0.51745 · p95 2.58635 · p99 7.58598 · max 18.546 (1980 tokens)

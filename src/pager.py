@@ -491,13 +491,22 @@ def refresh_all() -> None:
             w_np = w_np[ok]
         if len(idx_np) == 0:
             continue
+        mr = _miss_rate(st, idx_np) if (S.get("gear_cfg") or S.get("refresh_min_miss")) else None
         if S.get("gear_cfg"):
-            misses.append(_miss_rate(st, idx_np))
+            misses.append(mr)
         # EMA por cuenta (default) o por MASA de gate (el daño de un miss es
         # proporcional a su gate: retener lo que importa perder)
         counts = np.bincount(idx_np, weights=w_np, minlength=st.n_experts).astype(np.float64)
         if w_np is not None:
             counts *= len(idx_np) / max(w_np.sum(), 1e-9)   # misma escala que la cuenta
+        # REFRESH SELECTIVO por capa: si la capa apenas falla, solo actualiza la
+        # EMA (barato) y se ahorra las copias de buffers (lo caro). La cadencia
+        # se gasta donde hay misses, no en las capas estables.
+        if mr is not None and S.get("refresh_min_miss") and mr < S["refresh_min_miss"]:
+            st.ema = 0.8 * st.ema + counts
+            S["skipped_layers"] = S.get("skipped_layers", 0) + 1
+            S.get("near", {}).pop(bid, None)
+            continue
         if fast:
             nr = S.get("near", {}).pop(bid, None)
             near_np = None
