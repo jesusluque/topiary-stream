@@ -108,6 +108,12 @@ moderado.
 Fuente: `runs/bench_udq2_*.json`, `runs/kld_udq2_vs_base.json`. Veredicto en
 §1.3.
 
+Fuentes: artefacto del rival https://huggingface.co/unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF ; metodología y su listón
+de KLD publicado (Gemma-27B vs BF16: Q2_K_XL 0.221, Q4_K_XL 0.024 — otro
+modelo y otra referencia, no comparable directamente con nuestra columna)
+https://unsloth.ai/docs/basics/dynamic-3.0-ggufs ; fundamento KLD/flips: *Accuracy is Not All You Need*
+(arXiv:2407.09141).
+
 ## 6.7 Cobertura en tareas (80B, mismo checkpoint)
 
 | Config | Cobertura | MATH-500 | MBPP | MMLU | LAMBADA | tok/s | Pico |

@@ -2,8 +2,8 @@
 # ¿Qué proyección es la "luma"? Reparto asimétrico del detalle P1 (MATH n=100).
 # Notación (gate:up:down). Baselines ya medidos: 4:4:4=67%, 2:2:2=66%(K64) y K32 en curso.
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src
 LOG=runs/ablation.log
 until grep -q "P1FRAC COMPLETO" runs/ablation.log 2>/dev/null && ! pgrep -f "eval_stream|src/serve.py" > /dev/null; do sleep 60; done
 echo "=== P1AXES START $(date) ===" >> $LOG

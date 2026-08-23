@@ -3,7 +3,7 @@
 Todo parte de un checkpoint 4-bit de `mlx-community` (cuantización afín,
 `group_size 64`, `bits 4`; los routers ya vienen a 8 bits por override del
 propio checkpoint). El entorno es el `.venv` del laboratorio
-(`/Users/muriel/luc/nanite-moe/.venv`, mlx 0.32.0 / mlx-lm 0.31.3) y los
+(`$LAB/.venv`, mlx 0.32.0 / mlx-lm 0.31.3) y los
 comandos se lanzan desde la raíz de `topiary-stream`.
 
 ## 4.1 `split.py` — checkpoint → artefacto servible
@@ -35,14 +35,14 @@ y los `.bin`.
 
 Para un checkpoint **Topiary** (anchos por capa, taper) el runtime necesita
 el shim `dense_loader.maybe_patch_per_layer` del laboratorio:
-`PYTHONPATH=/Users/muriel/luc/nanite-moe/src`. `examples/build30stream.sh`
+`PYTHONPATH=$LAB/src`. `examples/build30stream.sh`
 documenta la construcción completa del 30B-Stream (split + humo + suite).
 
 ## 4.2 `salience.py` — prior del pool y entrada del suelo
 
 ```bash
 python src/salience.py --artifact artifacts/qwen80-stream \
-    --data /Users/muriel/luc/nanite-moe/data/calib_general_qwen3/calib.jsonl \
+    --data $LAB/data/calib_general_qwen3/calib.jsonl \
     --tokens 6000 --out artifacts/qwen80-stream/orders_routed.npz
 ```
 

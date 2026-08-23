@@ -1,35 +1,35 @@
 Traceback (most recent call last):
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 349, in <module>
+  File "~/luc/topiary-stream/src/eval_stream.py", line 349, in <module>
     main()
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 336, in main
+  File "~/luc/topiary-stream/src/eval_stream.py", line 336, in main
     model, tokenizer, rt = load_runtime(args.artifact, args.pool_c, args.pool_k,
                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 61, in load_runtime
+  File "~/luc/topiary-stream/src/eval_stream.py", line 61, in load_runtime
     model, tokenizer = load(artifact)
                        ^^^^^^^^^^^^^^
-  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/utils.py", line 491, in load
+  File "~/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/utils.py", line 491, in load
     model, config = load_model(model_path, lazy, model_config=model_config)
                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/utils.py", line 415, in load_model
+  File "~/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/utils.py", line 415, in load_model
     model.load_weights(list(weights.items()), strict=strict)
-  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx/nn/layers/base.py", line 200, in load_weights
+  File "~/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx/nn/layers/base.py", line 200, in load_weights
     raise ValueError(
 ValueError: Expected shape (128, 704, 256) but received shape (128, 576, 256) for parameter model.layers.0.mlp.switch_mlp.gate_proj.weight
 Traceback (most recent call last):
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 349, in <module>
+  File "~/luc/topiary-stream/src/eval_stream.py", line 349, in <module>
     main()
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 336, in main
+  File "~/luc/topiary-stream/src/eval_stream.py", line 336, in main
     model, tokenizer, rt = load_runtime(args.artifact, args.pool_c, args.pool_k,
                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 61, in load_runtime
+  File "~/luc/topiary-stream/src/eval_stream.py", line 61, in load_runtime
     model, tokenizer = load(artifact)
                        ^^^^^^^^^^^^^^
-  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/utils.py", line 491, in load
+  File "~/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/utils.py", line 491, in load
     model, config = load_model(model_path, lazy, model_config=model_config)
                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/utils.py", line 415, in load_model
+  File "~/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/utils.py", line 415, in load_model
     model.load_weights(list(weights.items()), strict=strict)
-  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx/nn/layers/base.py", line 200, in load_weights
+  File "~/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx/nn/layers/base.py", line 200, in load_weights
     raise ValueError(
 ValueError: Expected shape (128, 704, 256) but received shape (128, 576, 256) for parameter model.layers.0.mlp.switch_mlp.gate_proj.weight
 [per-layer] active: moe 576-704x48

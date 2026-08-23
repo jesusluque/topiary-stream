@@ -5,8 +5,8 @@
 # Metal). Mismo protocolo: bench 1024 tok + batería por API. Gate: tras
 # KLD-LONG, GPU libre.
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src
 LOG=runs/ablation.log
 GGUF=artifacts/unsloth/Qwen3-Next-80B-A3B-Instruct-UD-Q2_K_XL.gguf
 until grep -q "KLD-LONG COMPLETO" runs/ablation.log 2>/dev/null && ! pgrep -f "eval_stream|src/serve.py|f48_persistence|llama-" > /dev/null; do sleep 60; done

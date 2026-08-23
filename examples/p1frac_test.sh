@@ -2,8 +2,8 @@
 # Experimento 4:2:2: P1 recortado al prefijo saliente. MATH-500 n=100
 # (el eje sensible al suelo) en dos puntos vs baseline 67% (K=32, P1 completo).
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src
 LOG=runs/ablation.log
 until ! pgrep -f "eval_stream|src/serve.py" > /dev/null; do sleep 30; done
 echo "=== P1FRAC START $(date) ===" >> $LOG

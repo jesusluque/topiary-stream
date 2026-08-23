@@ -2,8 +2,8 @@
 # Hipótesis "el peaje de tareas es de COBERTURA": batería hard (MATH/MBPP
 # n=100) en modo 2-bit C=290 (57%, K=1) con refresh 128 intra-gen.
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src
 LOG=runs/ablation.log
 A=artifacts/qwen80-stream; ORD=artifacts/qwen80-stream/orders_routed.npz
 until grep -qE "OVF (COMPLETO|HUMO FALLO)" runs/ablation.log 2>/dev/null && ! pgrep -f "eval_stream|llama-|src/serve.py" > /dev/null; do sleep 60; done

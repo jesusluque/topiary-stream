@@ -1,8 +1,8 @@
 #!/bin/zsh
 # Solo la pasada SERVIDA de la KLD-decode (la referencia base ya existe).
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src
 LOG=runs/ablation.log
 A=artifacts/qwen80-stream; ORD=artifacts/qwen80-stream/orders_routed.npz
 [ -f runs/kld80_base_decode.npz ] || { echo '=== KLD-DECODE SIN REFERENCIA ===' >> $LOG; exit 1; }

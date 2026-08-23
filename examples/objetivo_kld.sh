@@ -3,11 +3,11 @@
 # absorbe la masa caída) en GPU; (2) KLD del rival UD-Q2 contra NUESTRA base
 # exacta (misma referencia), via llama-server en CPU. Secuencial, con humo.
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src
 LOG=runs/ablation.log
 A=artifacts/qwen80-stream; ORD=artifacts/qwen80-stream/orders_routed.npz
-D=/Users/muriel/luc/nanite-moe/data/calib_general_qwen3/held_out.jsonl
+D=${LAB:-$HOME/luc/nanite-moe}/data/calib_general_qwen3/held_out.jsonl
 GGUF=artifacts/unsloth/Qwen3-Next-80B-A3B-Instruct-UD-Q2_K_XL.gguf
 until grep -q "BENCH-C290 COMPLETO" runs/ablation.log 2>/dev/null && ! pgrep -f "eval_stream|llama-|src/serve.py" > /dev/null; do sleep 60; done
 # --- rival contra la misma referencia ---

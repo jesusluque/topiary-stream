@@ -2,7 +2,7 @@
 # Control: el Qwen3-30B-A3B-4bit ORIGINAL (sin esculpir) en los mismos 4 ejes.
 # Espera a: (1) descarga completa, (2) GPU libre (ni evals ni ablación).
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
 LOG=runs/ablation.log
 until grep -q "30B ORIGINAL DESCARGADO" runs/dl30orig.log 2>/dev/null \
       && grep -q "SOLUCIONES OK" runs/ablation.log 2>/dev/null \

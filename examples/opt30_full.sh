@@ -3,8 +3,8 @@
 # refresh, governor (velocidad); y calidad COMPLETA (4 ejes) en los extremos
 # del dial K. El K=32 4:4:4 ya tiene batería (67/82/69.4/60).
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src
 LOG=runs/ablation.log
 A=artifacts/qwen30-stream
 until grep -q "C120 COMPLETO" runs/ablation.log 2>/dev/null && ! pgrep -f "eval_stream|src/serve.py" > /dev/null; do sleep 60; done

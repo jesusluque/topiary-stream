@@ -2,8 +2,8 @@
 # Orquestador post-reinicio (2026-08-20): bench citable en frío PRIMERO,
 # luego reanudar todo lo que el reboot mató.
 cd "$(dirname "$0")/.."
-export PATH=/Users/muriel/luc/nanite-moe/.venv/bin:$PATH
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
+export PATH=${LAB:-$HOME/luc/nanite-moe}/.venv/bin:$PATH
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src
 LOG=runs/ablation.log
 
 # 1. Esperar asentamiento: >=10 min de uptime y load < 4

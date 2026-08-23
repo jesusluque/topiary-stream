@@ -59,61 +59,61 @@ llama_bench: error: failed to run gen
 | ------------------------------ | ---------: | ---------: | ---------- | ------: | --------------: | -------------------: |
 vm.swapusage: total = 2048.00M  used = 655.44M  free = 1392.56M  (encrypted)
 Traceback (most recent call last):
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 534, in <module>
+  File "~/luc/topiary-stream/src/eval_stream.py", line 534, in <module>
     main()
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 511, in main
+  File "~/luc/topiary-stream/src/eval_stream.py", line 511, in main
     stage_bench(None, None, _NoRT, args.bench.split(","), args.n, args.tag)
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 238, in stage_bench
+  File "~/luc/topiary-stream/src/eval_stream.py", line 238, in stage_bench
     out = _ask(model, tokenizer, rt,
           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 136, in _ask
+  File "~/luc/topiary-stream/src/eval_stream.py", line 136, in _ask
     with urllib.request.urlopen(req, timeout=600) as r:
          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 215, in urlopen
+  File "~/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 215, in urlopen
     return opener.open(url, data, timeout)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 521, in open
+  File "~/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 521, in open
     response = meth(req, response)
                ^^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 630, in http_response
+  File "~/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 630, in http_response
     response = self.parent.error(
                ^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 559, in error
+  File "~/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 559, in error
     return self._call_chain(*args)
            ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 492, in _call_chain
+  File "~/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 492, in _call_chain
     result = func(*args)
              ^^^^^^^^^^^
-  File "/Users/muriel/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 639, in http_error_default
+  File "~/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 639, in http_error_default
     raise HTTPError(req.full_url, code, msg, hdrs, fp)
 urllib.error.HTTPError: HTTP Error 500: Internal Server Error
 Traceback (most recent call last):
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 534, in <module>
+  File "~/luc/topiary-stream/src/eval_stream.py", line 534, in <module>
     main()
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 511, in main
+  File "~/luc/topiary-stream/src/eval_stream.py", line 511, in main
     stage_bench(None, None, _NoRT, args.bench.split(","), args.n, args.tag)
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 272, in stage_bench
+  File "~/luc/topiary-stream/src/eval_stream.py", line 272, in stage_bench
     out = _ask(model, tokenizer, rt,
           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 136, in _ask
+  File "~/luc/topiary-stream/src/eval_stream.py", line 136, in _ask
     with urllib.request.urlopen(req, timeout=600) as r:
          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 215, in urlopen
+  File "~/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 215, in urlopen
     return opener.open(url, data, timeout)
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 521, in open
+  File "~/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 521, in open
     response = meth(req, response)
                ^^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 630, in http_response
+  File "~/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 630, in http_response
     response = self.parent.error(
                ^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 559, in error
+  File "~/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 559, in error
     return self._call_chain(*args)
            ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/muriel/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 492, in _call_chain
+  File "~/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 492, in _call_chain
     result = func(*args)
              ^^^^^^^^^^^
-  File "/Users/muriel/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 639, in http_error_default
+  File "~/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/urllib/request.py", line 639, in http_error_default
     raise HTTPError(req.full_url, code, msg, hdrs, fp)
 urllib.error.HTTPError: HTTP Error 500: Internal Server Error
 vm.swapusage: total = 2048.00M  used = 655.44M  free = 1392.56M  (encrypted)

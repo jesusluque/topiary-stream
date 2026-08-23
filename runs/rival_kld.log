@@ -1,20 +1,20 @@
 [transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
 Traceback (most recent call last):
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 612, in <module>
+  File "~/luc/topiary-stream/src/eval_stream.py", line 612, in <module>
     main()
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 575, in main
+  File "~/luc/topiary-stream/src/eval_stream.py", line 575, in main
     stage_kld_remote(args.artifact, args.data_general, args.chunks_general,
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 450, in stage_kld_remote
+  File "~/luc/topiary-stream/src/eval_stream.py", line 450, in stage_kld_remote
     probs = res["completion_probabilities"][0]
             ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 KeyError: 'completion_probabilities'
 [transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
 Traceback (most recent call last):
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 682, in <module>
+  File "~/luc/topiary-stream/src/eval_stream.py", line 682, in <module>
     main()
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 634, in main
+  File "~/luc/topiary-stream/src/eval_stream.py", line 634, in main
     stage_kld_remote(args.artifact, args.data_general, args.chunks_general,
-  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 484, in stage_kld_remote
+  File "~/luc/topiary-stream/src/eval_stream.py", line 484, in stage_kld_remote
     probs = res["completion_probabilities"][0]
             ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 KeyError: 'completion_probabilities'

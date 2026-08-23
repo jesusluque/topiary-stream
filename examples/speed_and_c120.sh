@@ -1,10 +1,10 @@
 #!/bin/zsh
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src
 LOG=runs/ablation.log
 ORIG=$($PY -c "from huggingface_hub import snapshot_download; print(snapshot_download('mlx-community/Qwen3-30B-A3B-4bit'))")
-TAPER=/Users/muriel/luc/nanite-moe/models/qwen3-30b-4bit-fine-taper085
+TAPER=${LAB:-$HOME/luc/nanite-moe}/models/qwen3-30b-4bit-fine-taper085
 echo "=== SPEED NATIVO START $(date) ===" >> $LOG
 for round in 1 2; do
   $PY -u examples/speed_nativo.py $ORIG  original_r$round >> $LOG 2>&1

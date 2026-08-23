@@ -2,8 +2,8 @@
 # KLD servido-vs-base + divergencia de trayectoria (80B): la métrica del
 # revisor hostil (2407.09141). Base = modo exact (el control que ya tenemos).
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src
 LOG=runs/ablation.log
 A=artifacts/qwen80-stream
 ORD=artifacts/qwen80-stream/orders_routed.npz

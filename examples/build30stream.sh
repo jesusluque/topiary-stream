@@ -1,10 +1,10 @@
 #!/bin/zsh
 # Versión Stream del campeón Topiary: split resident-p0 + smoke + suite 4 ejes.
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src
 LOG=runs/ablation.log
-M30=/Users/muriel/luc/nanite-moe/models/qwen3-30b-4bit-fine-taper085
+M30=${LAB:-$HOME/luc/nanite-moe}/models/qwen3-30b-4bit-fine-taper085
 
 until grep -q "SOLUCIONES v2 OK" runs/ablation.log 2>/dev/null && ! pgrep -f "eval_stream|src/serve.py" > /dev/null; do
   sleep 60

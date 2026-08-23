@@ -81,11 +81,17 @@ def main() -> None:
         import fastpath as rt
         from mlx_lm import load
 
-        try:  # checkpoints con anchos per-layer (taper de topiary)
-            from dense_loader import maybe_patch_per_layer
-            maybe_patch_per_layer(args.artifact)
+        # checkpoints con anchos per-layer (taper de Topiary): el shim público
+        # vive en topiary/src/per_layer.py; el del laboratorio es el fallback.
+        try:
+            from per_layer import maybe_patch as maybe_patch_per_layer
         except ImportError:
-            pass
+            try:
+                from dense_loader import maybe_patch_per_layer
+            except ImportError:
+                maybe_patch_per_layer = None
+        if maybe_patch_per_layer:
+            maybe_patch_per_layer(args.artifact)
         model, tokenizer = load(args.artifact)
         mx.eval(model.parameters())
         print(f"[load] {mx.get_active_memory() / 1e9:.2f} GB resident")

@@ -1,8 +1,8 @@
 #!/bin/zsh
 # KLD en régimen de DECODE (la métrica real del peaje del pool), tras las traj.
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src
 LOG=runs/ablation.log
 A=artifacts/qwen80-stream
 ORD=artifacts/qwen80-stream/orders_routed.npz

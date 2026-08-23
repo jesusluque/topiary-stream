@@ -36,7 +36,7 @@ claro, no":**
 - **E. Perfil 16 GB**: empaquetar 30B-Stream (9.2 GB) / 0:0:4 (10.4 GB) con
   config conservadora y gobernador agresivo. Solo empaquetado y medida.
 - **F. Modo exacto como servicio de evaluación**: PPL/KLD verdaderas de
-  modelos insersibles con 4 GB de pico, en batch.
+  modelos no servibles con 4 GB de pico, en batch.
 - **D. Máster protegido por saliencia (AWQ/imatrix afín)**: única palanca no
   probada para el residuo de calidad del plano 2-bit; necesita disco y horas
   de GPU.

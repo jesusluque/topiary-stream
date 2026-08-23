@@ -52,11 +52,16 @@ def load_runtime(artifact: str, pool_c: int, pool_k: int, serve_mode: str,
     layout = json.load(open(Path(artifact) / "config.json")).get("stream_layout")
     if layout is None:
         # checkpoint normal (p.ej. el campeón Topiary estático): sin runtime
-        try:  # anchos per-layer de topiary (shim del lab, vía PYTHONPATH)
-            from dense_loader import maybe_patch_per_layer
-            maybe_patch_per_layer(artifact)
+        # shim per-layer (taper): publico en topiary/src/per_layer.py; el del lab es fallback
+        try:
+            from per_layer import maybe_patch as maybe_patch_per_layer
         except ImportError:
-            pass
+            try:
+                from dense_loader import maybe_patch_per_layer
+            except ImportError:
+                maybe_patch_per_layer = None
+        if maybe_patch_per_layer:
+            maybe_patch_per_layer(artifact)
         from mlx_lm import load
 
         class _PlainRT:

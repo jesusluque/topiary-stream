@@ -278,7 +278,8 @@ already tracking the routing; the KLD gain is spent on tokens the tasks do
 not score.
 
 **The duel.** Against Unsloth's UD-Q2_K_XL of the same Qwen3-Next-80B
-(imatrix-calibrated, per-layer dynamic ~3 bpw, 30.1 GB GGUF) on the same
+[unslothqwen3next80b2026; unslothdynamic2026] (imatrix-calibrated,
+per-layer dynamic ~3 bpw, 30.1 GB GGUF) on the same
 machine, same prompts and parsers: the static artifact only runs with all
 weights on CPU (`-ngl 0`, paging from disk; Metal OOM otherwise) at
 12.6 ± 3.7 tok/s, and scores MATH-500 69% / MBPP 86% / MMLU 86.2% (n=100/

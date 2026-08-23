@@ -2,11 +2,11 @@
 # CAMPAÑA "SUPERAR LA TABLA": (1) KLD de candidatos; (2) elegir el mejor con
 # velocidad >= rival (12.6 tok/s); (3) batería completa con esa config.
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src
 LOG=runs/ablation.log
 A=artifacts/qwen80-stream; ORD=artifacts/qwen80-stream/orders_routed.npz
-D=/Users/muriel/luc/nanite-moe/data/calib_general_qwen3/held_out.jsonl
+D=${LAB:-$HOME/luc/nanite-moe}/data/calib_general_qwen3/held_out.jsonl
 until grep -q "RIVAL-KLD COMPLETO\|RIVAL-KLD SERVER MUERTO\|RIVAL-KLD HUMO FALLO" runs/ablation.log 2>/dev/null && ! pgrep -f "eval_stream|llama-" > /dev/null; do sleep 30; done
 echo "=== CAMPANA START $(date) ===" >> $LOG
 kld() {  # nombre modo refresh

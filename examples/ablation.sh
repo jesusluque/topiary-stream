@@ -2,10 +2,10 @@
 # Banco de las SOLUCIONES (v2, fallos de zsh corregidos): calidad del campeón
 # Topiary + matriz de velocidad de las soluciones y sus variaciones.
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src   # dense_loader (taper per-layer)
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src   # dense_loader (taper per-layer)
 LOG=runs/ablation.log
-M30=/Users/muriel/luc/nanite-moe/models/qwen3-30b-4bit-fine-taper085
+M30=${LAB:-$HOME/luc/nanite-moe}/models/qwen3-30b-4bit-fine-taper085
 
 echo "=== SOLUCIONES v2 START $(date) ===" >> $LOG
 

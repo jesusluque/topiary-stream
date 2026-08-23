@@ -47,6 +47,7 @@ font-style:italic;margin:18px 0}
 <a href="https://github.com/jesusluque/topiary-stream/blob/main/paper/topiary-stream.md">Paper draft</a>
 <a href="#results">Results</a>
 <a href="#limits">Honest limits</a>
+<a href="https://github.com/jesusluque/topiary-stream/blob/main/docs/manual/README.md">Technical manual</a>
 <a href="https://jesusluque.github.io/topiary/">Topiary (static sibling)</a>
 </nav>
 <p class="epigraph">Topiary shapes the tree once; Stream keeps the whole tree
@@ -62,12 +63,15 @@ every expert into <strong>bit planes that stock MLX kernels read directly</stron
 planes in a gate-governed pool, and guarantees that a cache miss serves the
 floor — blurry for one frame — never nothing, never a stall.</p>
 <pre>model                    4-bit size   served peak   HumanEval  GSM8K   tok/s
-Qwen3-30B-topiary (†)      14.5 GB      9.2–11.3 GB     92%      94%    47.9
+Qwen3-30B-topiary (†)      14.5 GB      9.2–11.3 GB      —        —     47.9
 Qwen3.5-35B-A3B            19.5 GB*    12.5–14 GB       92%      92%    44.5
 Qwen3-Next-80B-A3B         42   GB     17.6  GB       15/15    15/15    20.1
 Qwen3-235B-A22B           132   GB     — no servable middle at 24 GB (measured)
  * loads, but Metal OOMs on generation: unservable whole
- † the static sibling's champion, Stream-served: fits 16 GB machines</pre>
+ † the static sibling's champion (natively 92%/94%), Stream-served in 9.2 GB:
+   indistinguishable from its native run on 3 of 4 solutions-bench axes
+   (MBPP 82 vs 81, MMLU 69.4 vs 68.2, LAMBADA 60.0 vs 60.2; MATH 67 vs 72 at
+   the edge of n=100 significance) — fits 16 GB machines</pre>
 <p class="caption">Apple M5 Pro, 24 GB. The 35B matches the best model that
 does fit (92/94) and beats it on general knowledge (WikiText PPL 7.11 vs 10.27).</p>
 </section>
@@ -159,7 +163,7 @@ that measurement is why the design changed.</li>
 Token-by-token KLD against the exact base with a live cache (WikiText, exact 16-token prefix): 80B at production C=240 0.774, all-P0 0.582, 30B-Stream
 with its universal floor 0.131 — coverage first, refresh cadence second
 (256→32: 0.774→0.303 at up to −47% tok/s, and cadence does not move focal
-tasks). Duel against Unsloth's UD-Q2_K_XL of the same 80B on the same
+tasks). Duel against <a href="https://huggingface.co/unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF">Unsloth's UD-Q2_K_XL</a> (<a href="https://unsloth.ai/docs/basics/dynamic-3.0-ggufs">Dynamic 3.0</a>) of the same 80B on the same
 machine (30.1&nbsp;GB, CPU-only, 12.6 tok/s): MATH-500 65 vs 69, MBPP 81 vs
 86, MMLU 85.2 vs 86.2 — at par on knowledge, ~5 points behind on generative
 tasks (n=100), from 17&nbsp;GB at 40–70% higher throughput with an exact
@@ -189,8 +193,19 @@ Aug 19): Tied Trit-Planes folds planes to 4-bit through a bespoke Zig engine;
 vLLM-Moet gates FP4 recovery on Blackwell. Neither has stock kernels, a hard
 floor, or published quality accounting — the conjunction this project leads
 with. Details and citations in the paper's related work.</li>
+<li><strong>Generality is declared, not claimed:</strong> one machine, one
+family (Qwen3 / 3.5 / Next). Qwen's decode routing is highly local; a
+load-balanced router could defeat recency-based residency and must be
+measured before the coverage laws are read beyond "MoE with high decode
+locality". Stream-serving a Topiary (per-layer-width) checkpoint needs the
+public <code>per_layer</code> loader from the Topiary repo on
+<code>PYTHONPATH</code>.</li>
 <li><strong>Statistics:</strong> at n=25/50, ≤2-item gaps are
-indistinguishable, not ties; throughput measured on a long-uptime machine.</li>
+indistinguishable, not ties; n=100 generative tasks carry ±9 points, so the
+duel's 5-point gaps are directional (consistent across two tasks), not
+individually significant. Citable throughput after a clean reboot: 35B
+47.2 tok/s swap-free (cold round within 1% of warm); the 80B's cold rounds
+triggered swap and are discarded — its warm 17.3–21.5 stands.</li>
 </ul>
 </section>
 
@@ -207,7 +222,10 @@ python src/serve.py --artifact artifacts/qwen35-stream --pool-k 32 --governor</p
 <li><a href="https://huggingface.co/jesusluque/qwen3-next-80b-topiary-stream">qwen3-next-80b-topiary-stream</a> — the strongest model this hardware has touched, served at its true base</li>
 <li><a href="https://huggingface.co/jesusluque/qwen3-235b-topiary-stream-kit">qwen3-235b-topiary-stream-kit</a> — build kit + the honest negative, for the 48–64 GB machine you'll own someday</li>
 </ul>
-<p class="caption">Released with the runtime — August 2026.</p>
+<p class="caption">The runtime is public (August 2026). The three Stream
+artifacts above are <strong>private pending release</strong>; until then,
+<code>split.py</code> rebuilds any of them from the community 4-bit
+checkpoint in ~15 min (35B) to ~1 h (80B).</p>
 </section>
 
 <section id="cite">

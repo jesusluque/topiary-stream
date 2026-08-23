@@ -2,8 +2,8 @@
 # Subsampling profundo sobre la ganadora: 1:1:4 (25% saliente) y 0:0:4
 # (gate/up SIN detalle: puro suelo P0; down entero). MATH n=100.
 cd "$(dirname "$0")/.."
-PY=/Users/muriel/luc/nanite-moe/.venv/bin/python
-export PYTHONPATH=/Users/muriel/luc/nanite-moe/src
+PY=${LAB:-$HOME/luc/nanite-moe}/.venv/bin/python
+export PYTHONPATH=${LAB:-$HOME/luc/nanite-moe}/src
 LOG=runs/ablation.log
 until grep -q "224 FULL COMPLETO" runs/ablation.log 2>/dev/null && ! pgrep -f "eval_stream|src/serve.py" > /dev/null; do sleep 60; done
 sleep $((RANDOM % 20 + 5)); pgrep -f "eval_stream" > /dev/null && exec "$0"

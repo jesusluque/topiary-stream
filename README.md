@@ -119,8 +119,9 @@ speed here (hybrid mamba at batch-1 + a 248k-vocab head).
   KLD against the exact base with a live KV cache (WikiText 4×512, exact 16-token prefix): 80B at production C=240 **0.774**, all-P0 C=290 0.582,
   30B-Stream with its universal floor **0.131**. Coverage is the first-order
   term; refresh cadence is the second (256→32 tokens: 0.774→0.303, at
-  −10/−28/−47% tok/s) and it does *not* move focal tasks. Against Unsloth's
-  UD-Q2_K_XL of the same 80B on the same machine (30.1 GB, CPU-only at
+  −10/−28/−47% tok/s) and it does *not* move focal tasks. Against [Unsloth's
+  UD-Q2_K_XL](https://huggingface.co/unsloth/Qwen3-Next-80B-A3B-Instruct-GGUF) of the same 80B
+  ([Dynamic 3.0](https://unsloth.ai/docs/basics/dynamic-3.0-ggufs)) on the same machine (30.1 GB, CPU-only at
   12.6 tok/s): MATH-500 65 vs 69, MBPP 81 vs 86, MMLU 85.2 vs 86.2 — at par
   on knowledge, ~5 points behind on generative tasks (n=100), while Stream
   fits in 17 GB, runs 40–70% faster and serves the prompt exactly. Four
@@ -162,7 +163,7 @@ src/          the eight tools above + common.py (plane arithmetic, discovery)
 tests/        pure-logic suite (planes, pool state machine, governor) — CI on macos-14
 examples/     balloon.py (governor pressure demo)
 paper/        write-up, bibliography, roadmap
-docs/manual/  detailed technical manual (Spanish): method, internals, protocol, results, negatives, reproduction
+docs/manual/  detailed technical manual (English; Spanish in docs/manual/es/): method, internals, protocol, results, negatives, reproduction
 huggingface/  model-card template + hardened upload script
 ```
 

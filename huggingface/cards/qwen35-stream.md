@@ -34,12 +34,14 @@ python src/serve.py --artifact jesusluque/qwen3.5-35b-topiary-stream \
 | Metric | Value |
 |---|---|
 | 4-bit size / served peak | 19.5 GB (unservable) / **12.5–13.9 GB** |
-| Decode speed | 44–47 tok/s sustained (indicative; long-uptime machine) |
+| Decode speed | 44–47 tok/s sustained (K=64–32) |
 | HumanEval / GSM8K (greedy) | **92%** (23/25) / **92%** (46/50) |
 | With exact prefill (current runtime, n=15) | 14/15 / **15/15** · TF PPL 2.3614/7.0583 = base |
 | Exact-pager control (τ=0) | PPL 2.3614 vs true base 2.3623 — no measurable difference |
 | Operating point τ=0.10 | +0.9% code / +0.6% wiki PPL |
 | WikiText PPL vs best natively-fitting model | 7.11–7.83 vs 10.27 (−24 to −31%) |
+| MATH-500 / MBPP (n=100) · MMLU / LAMBADA (n=500) | 60% / 78% · 83.0% / 75.4% |
+| Citable throughput (fresh reboot, 3 interleaved 1024-token rounds, swap-free) | **47.2 tok/s** median (cold round within 1% of warm) |
 
 ## Honest limits
 
@@ -48,7 +50,7 @@ from the memmaps), so the pool policy governs decode only; before that fix
 the pool's teacher-forced prefill toll measured +6–11% PPL (flat prefill
 routing defeats recency). At n=25/50, task differences of ≤2 items are indistinguishable under
 exact McNemar; treat the 92/92 as *indistinguishable from* the best fitting
-model, not proven equal. Throughput figures predate a cold reboot.
+model, not proven equal. Throughput is now measured from a clean reboot (47.2 tok/s, swap-free).
 
 ## Provenance
 
