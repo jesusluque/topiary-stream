@@ -1,0 +1,6 @@
+[load] 0.75 GB (skeleton)
+[pool] C=8 K=2 mode=exact (3.80 GB)
+[warmup] pool adapted to the prompt
+Certainly! You can use the `sorted()` function in Python, which is a built-in function that returns a new sorted list from the elements of any iterable. Here's how you can write a function to merge two sorted lists into
+
+[serve] 47 tokens in 9.2s = 5.1 tok/s · peak 4.30 GB
