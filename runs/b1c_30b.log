@@ -17,3 +17,207 @@ Traceback (most recent call last):
     b = np.array(tensors[key[: -len("scales")] + "biases"]
                  ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 KeyError: 'model.layers.29.mlp.switch_mlp.down_proj.biases'
+Fetching 14 files:   0%|          | 0/14 [00:00<?, ?it/s]Fetching 14 files: 100%|██████████| 14/14 [00:00<00:00, 5115.45it/s]
+  model-00001-of-00004.safetensors: 44 expert tensors
+  model-00002-of-00004.safetensors: 46 expert tensors
+  model-00003-of-00004.safetensors: 45 expert tensors
+  model-00004-of-00004.safetensors: 9 expert tensors
+[out] artifacts/qwen30orig-memmap: skeleton 0.87 GB · memmaps 16.31 GB · 48 MoE layers
+Traceback (most recent call last):
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 721, in <module>
+    main()
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 688, in main
+    model, tokenizer, rt = load_runtime(args.artifact, args.pool_c, args.pool_k,
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 90, in load_runtime
+    model, tokenizer = rt.load_model(artifact)
+                       ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muriel/luc/topiary-stream/src/pager.py", line 266, in load_model
+    model, tokenizer = load(artifact)
+                       ^^^^^^^^^^^^^^
+  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/utils.py", line 491, in load
+    model, config = load_model(model_path, lazy, model_config=model_config)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx_lm/utils.py", line 415, in load_model
+    model.load_weights(list(weights.items()), strict=strict)
+  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/mlx/nn/layers/base.py", line 191, in load_weights
+    raise ValueError(f"Missing {num_missing} parameters: \n{missing}.")
+ValueError: Missing 144 parameters: 
+model.layers.0.mlp.switch_mlp.down_proj.weight,
+model.layers.0.mlp.switch_mlp.gate_proj.weight,
+model.layers.0.mlp.switch_mlp.up_proj.weight,
+model.layers.1.mlp.switch_mlp.down_proj.weight,
+model.layers.1.mlp.switch_mlp.gate_proj.weight,
+model.layers.1.mlp.switch_mlp.up_proj.weight,
+model.layers.10.mlp.switch_mlp.down_proj.weight,
+model.layers.10.mlp.switch_mlp.gate_proj.weight,
+model.layers.10.mlp.switch_mlp.up_proj.weight,
+model.layers.11.mlp.switch_mlp.down_proj.weight,
+model.layers.11.mlp.switch_mlp.gate_proj.weight,
+model.layers.11.mlp.switch_mlp.up_proj.weight,
+model.layers.12.mlp.switch_mlp.down_proj.weight,
+model.layers.12.mlp.switch_mlp.gate_proj.weight,
+model.layers.12.mlp.switch_mlp.up_proj.weight,
+model.layers.13.mlp.switch_mlp.down_proj.weight,
+model.layers.13.mlp.switch_mlp.gate_proj.weight,
+model.layers.13.mlp.switch_mlp.up_proj.weight,
+model.layers.14.mlp.switch_mlp.down_proj.weight,
+model.layers.14.mlp.switch_mlp.gate_proj.weight,
+model.layers.14.mlp.switch_mlp.up_proj.weight,
+model.layers.15.mlp.switch_mlp.down_proj.weight,
+model.layers.15.mlp.switch_mlp.gate_proj.weight,
+model.layers.15.mlp.switch_mlp.up_proj.weight,
+model.layers.16.mlp.switch_mlp.down_proj.weight,
+model.layers.16.mlp.switch_mlp.gate_proj.weight,
+model.layers.16.mlp.switch_mlp.up_proj.weight,
+model.layers.17.mlp.switch_mlp.down_proj.weight,
+model.layers.17.mlp.switch_mlp.gate_proj.weight,
+model.layers.17.mlp.switch_mlp.up_proj.weight,
+model.layers.18.mlp.switch_mlp.down_proj.weight,
+model.layers.18.mlp.switch_mlp.gate_proj.weight,
+model.layers.18.mlp.switch_mlp.up_proj.weight,
+model.layers.19.mlp.switch_mlp.down_proj.weight,
+model.layers.19.mlp.switch_mlp.gate_proj.weight,
+model.layers.19.mlp.switch_mlp.up_proj.weight,
+model.layers.2.mlp.switch_mlp.down_proj.weight,
+model.layers.2.mlp.switch_mlp.gate_proj.weight,
+model.layers.2.mlp.switch_mlp.up_proj.weight,
+model.layers.20.mlp.switch_mlp.down_proj.weight,
+model.layers.20.mlp.switch_mlp.gate_proj.weight,
+model.layers.20.mlp.switch_mlp.up_proj.weight,
+model.layers.21.mlp.switch_mlp.down_proj.weight,
+model.layers.21.mlp.switch_mlp.gate_proj.weight,
+model.layers.21.mlp.switch_mlp.up_proj.weight,
+model.layers.22.mlp.switch_mlp.down_proj.weight,
+model.layers.22.mlp.switch_mlp.gate_proj.weight,
+model.layers.22.mlp.switch_mlp.up_proj.weight,
+model.layers.23.mlp.switch_mlp.down_proj.weight,
+model.layers.23.mlp.switch_mlp.gate_proj.weight,
+model.layers.23.mlp.switch_mlp.up_proj.weight,
+model.layers.24.mlp.switch_mlp.down_proj.weight,
+model.layers.24.mlp.switch_mlp.gate_proj.weight,
+model.layers.24.mlp.switch_mlp.up_proj.weight,
+model.layers.25.mlp.switch_mlp.down_proj.weight,
+model.layers.25.mlp.switch_mlp.gate_proj.weight,
+model.layers.25.mlp.switch_mlp.up_proj.weight,
+model.layers.26.mlp.switch_mlp.down_proj.weight,
+model.layers.26.mlp.switch_mlp.gate_proj.weight,
+model.layers.26.mlp.switch_mlp.up_proj.weight,
+model.layers.27.mlp.switch_mlp.down_proj.weight,
+model.layers.27.mlp.switch_mlp.gate_proj.weight,
+model.layers.27.mlp.switch_mlp.up_proj.weight,
+model.layers.28.mlp.switch_mlp.down_proj.weight,
+model.layers.28.mlp.switch_mlp.gate_proj.weight,
+model.layers.28.mlp.switch_mlp.up_proj.weight,
+model.layers.29.mlp.switch_mlp.down_proj.weight,
+model.layers.29.mlp.switch_mlp.gate_proj.weight,
+model.layers.29.mlp.switch_mlp.up_proj.weight,
+model.layers.3.mlp.switch_mlp.down_proj.weight,
+model.layers.3.mlp.switch_mlp.gate_proj.weight,
+model.layers.3.mlp.switch_mlp.up_proj.weight,
+model.layers.30.mlp.switch_mlp.down_proj.weight,
+model.layers.30.mlp.switch_mlp.gate_proj.weight,
+model.layers.30.mlp.switch_mlp.up_proj.weight,
+model.layers.31.mlp.switch_mlp.down_proj.weight,
+model.layers.31.mlp.switch_mlp.gate_proj.weight,
+model.layers.31.mlp.switch_mlp.up_proj.weight,
+model.layers.32.mlp.switch_mlp.down_proj.weight,
+model.layers.32.mlp.switch_mlp.gate_proj.weight,
+model.layers.32.mlp.switch_mlp.up_proj.weight,
+model.layers.33.mlp.switch_mlp.down_proj.weight,
+model.layers.33.mlp.switch_mlp.gate_proj.weight,
+model.layers.33.mlp.switch_mlp.up_proj.weight,
+model.layers.34.mlp.switch_mlp.down_proj.weight,
+model.layers.34.mlp.switch_mlp.gate_proj.weight,
+model.layers.34.mlp.switch_mlp.up_proj.weight,
+model.layers.35.mlp.switch_mlp.down_proj.weight,
+model.layers.35.mlp.switch_mlp.gate_proj.weight,
+model.layers.35.mlp.switch_mlp.up_proj.weight,
+model.layers.36.mlp.switch_mlp.down_proj.weight,
+model.layers.36.mlp.switch_mlp.gate_proj.weight,
+model.layers.36.mlp.switch_mlp.up_proj.weight,
+model.layers.37.mlp.switch_mlp.down_proj.weight,
+model.layers.37.mlp.switch_mlp.gate_proj.weight,
+model.layers.37.mlp.switch_mlp.up_proj.weight,
+model.layers.38.mlp.switch_mlp.down_proj.weight,
+model.layers.38.mlp.switch_mlp.gate_proj.weight,
+model.layers.38.mlp.switch_mlp.up_proj.weight,
+model.layers.39.mlp.switch_mlp.down_proj.weight,
+model.layers.39.mlp.switch_mlp.gate_proj.weight,
+model.layers.39.mlp.switch_mlp.up_proj.weight,
+model.layers.4.mlp.switch_mlp.down_proj.weight,
+model.layers.4.mlp.switch_mlp.gate_proj.weight,
+model.layers.4.mlp.switch_mlp.up_proj.weight,
+model.layers.40.mlp.switch_mlp.down_proj.weight,
+model.layers.40.mlp.switch_mlp.gate_proj.weight,
+model.layers.40.mlp.switch_mlp.up_proj.weight,
+model.layers.41.mlp.switch_mlp.down_proj.weight,
+model.layers.41.mlp.switch_mlp.gate_proj.weight,
+model.layers.41.mlp.switch_mlp.up_proj.weight,
+model.layers.42.mlp.switch_mlp.down_proj.weight,
+model.layers.42.mlp.switch_mlp.gate_proj.weight,
+model.layers.42.mlp.switch_mlp.up_proj.weight,
+model.layers.43.mlp.switch_mlp.down_proj.weight,
+model.layers.43.mlp.switch_mlp.gate_proj.weight,
+model.layers.43.mlp.switch_mlp.up_proj.weight,
+model.layers.44.mlp.switch_mlp.down_proj.weight,
+model.layers.44.mlp.switch_mlp.gate_proj.weight,
+model.layers.44.mlp.switch_mlp.up_proj.weight,
+model.layers.45.mlp.switch_mlp.down_proj.weight,
+model.layers.45.mlp.switch_mlp.gate_proj.weight,
+model.layers.45.mlp.switch_mlp.up_proj.weight,
+model.layers.46.mlp.switch_mlp.down_proj.weight,
+model.layers.46.mlp.switch_mlp.gate_proj.weight,
+model.layers.46.mlp.switch_mlp.up_proj.weight,
+model.layers.47.mlp.switch_mlp.down_proj.weight,
+model.layers.47.mlp.switch_mlp.gate_proj.weight,
+model.layers.47.mlp.switch_mlp.up_proj.weight,
+model.layers.5.mlp.switch_mlp.down_proj.weight,
+model.layers.5.mlp.switch_mlp.gate_proj.weight,
+model.layers.5.mlp.switch_mlp.up_proj.weight,
+model.layers.6.mlp.switch_mlp.down_proj.weight,
+model.layers.6.mlp.switch_mlp.gate_proj.weight,
+model.layers.6.mlp.switch_mlp.up_proj.weight,
+model.layers.7.mlp.switch_mlp.down_proj.weight,
+model.layers.7.mlp.switch_mlp.gate_proj.weight,
+model.layers.7.mlp.switch_mlp.up_proj.weight,
+model.layers.8.mlp.switch_mlp.down_proj.weight,
+model.layers.8.mlp.switch_mlp.gate_proj.weight,
+model.layers.8.mlp.switch_mlp.up_proj.weight,
+model.layers.9.mlp.switch_mlp.down_proj.weight,
+model.layers.9.mlp.switch_mlp.gate_proj.weight,
+model.layers.9.mlp.switch_mlp.up_proj.weight.
+[load] 10.83 GB
+Traceback (most recent call last):
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 721, in <module>
+    main()
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 707, in main
+    stage_kld(model, tokenizer, rt, args.data_general,
+  File "/Users/muriel/luc/topiary-stream/src/eval_stream.py", line 437, in stage_kld
+    refz = np.load(ref)
+           ^^^^^^^^^^^^
+  File "/Users/muriel/luc/nanite-moe/.venv/lib/python3.12/site-packages/numpy/lib/_npyio_impl.py", line 454, in load
+    fid = stack.enter_context(open(os.fspath(file), "rb"))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'runs/kld30orig_base_long.npz'
+[load] 10.83 GB
+  math500 10/100: 10 ok
+  math500 20/100: 18 ok
+  math500 30/100: 27 ok
+  math500 40/100: 36 ok
+  math500 50/100: 41 ok
+  math500 60/100: 48 ok
+  math500 70/100: 54 ok
+  math500 80/100: 57 ok
+  math500 90/100: 60 ok
+  math500 100/100: 66 ok
+[math500] 66/100 = 66%
+  mbpp 10/100: 4 ok
+  mbpp 20/100: 11 ok
+  mbpp 30/100: 21 ok
+  mbpp 40/100: 30 ok
+  mbpp 50/100: 39 ok
+  mbpp 60/100: 48 ok
+  mbpp 70/100: 56 ok
+  mbpp 80/100: 64 ok
+  mbpp 90/100: 72 ok

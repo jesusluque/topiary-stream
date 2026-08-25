@@ -323,3 +323,7 @@ C=64: [serve] 255 tokens in 5.9s = 43.5 tok/s · peak 10.19 GB
 === B1C START Tue Aug 25 07:42:13 CEST 2026 ===
 === B1C SPLIT OK:  16G ===
 === B1C SPLIT-MEMMAP FALLO ===
+=== B1C START Tue Aug 25 07:43:29 CEST 2026 ===
+=== B1C SPLIT OK:  16G ===
+=== B1C KLD-REF FALLO ===
+=== B1C KLD K=4 FALLO ===
