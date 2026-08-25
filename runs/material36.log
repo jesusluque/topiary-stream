@@ -72,3 +72,71 @@ Traceback (most recent call last):
     if args.serve_mode == "exact" and args.kld_decode:
        ^^^^
 NameError: name 'args' is not defined
+[load] 12.46 GB
+[kld] por tramo de posición: {'pos_0-64': 0.1317, 'pos_64-128': 0.1216, 'pos_128-256': 0.1155, 'pos_256-448': 0.1767}
+[kld] media 0.14244 · p95 0.65193 · p99 2.14168 · max 8.012 (1980 tokens)
+[load] 12.46 GB
+[kld] por tramo de posición: {'pos_0-64': 0.2409, 'pos_64-128': 0.2227, 'pos_128-256': 0.1704, 'pos_256-448': 0.2473}
+[kld] media 0.21969 · p95 1.04317 · p99 2.78725 · max 6.089 (1980 tokens)
+[load] 12.46 GB
+  mmlu 50/500: 43 ok
+  mmlu 100/500: 85 ok
+  mmlu 150/500: 125 ok
+  mmlu 200/500: 167 ok
+  mmlu 250/500: 208 ok
+  mmlu 300/500: 249 ok
+  mmlu 350/500: 292 ok
+  mmlu 400/500: 334 ok
+  mmlu 450/500: 378 ok
+  mmlu 500/500: 418 ok
+[mmlu] 418/500 = 84%
+  lambada 100/500: 72 ok
+  lambada 200/500: 143 ok
+  lambada 300/500: 219 ok
+  lambada 400/500: 293 ok
+  lambada 500/500: 372 ok
+[lambada] 372/500 = 74%
+[mem] peak 15.30 GB
+[load] 12.46 GB
+  math500 10/100: 10 ok
+  math500 20/100: 18 ok
+  math500 30/100: 25 ok
+  math500 40/100: 34 ok
+  math500 50/100: 37 ok
+  math500 60/100: 43 ok
+  math500 70/100: 45 ok
+  math500 80/100: 48 ok
+  math500 90/100: 50 ok
+  math500 100/100: 56 ok
+[math500] 56/100 = 56%
+  mbpp 10/100: 5 ok
+  mbpp 20/100: 12 ok
+  mbpp 30/100: 21 ok
+  mbpp 40/100: 29 ok
+  mbpp 50/100: 37 ok
+  mbpp 60/100: 46 ok
+  mbpp 70/100: 53 ok
+  mbpp 80/100: 60 ok
+  mbpp 90/100: 69 ok
+  mbpp 100/100: 79 ok
+[mbpp] 79/100 = 79%
+[mem] peak 14.59 GB
+[load] 12.46 GB
+  mmlu 50/500: 44 ok
+  mmlu 100/500: 87 ok
+  mmlu 150/500: 127 ok
+  mmlu 200/500: 169 ok
+  mmlu 250/500: 211 ok
+  mmlu 300/500: 252 ok
+  mmlu 350/500: 294 ok
+  mmlu 400/500: 336 ok
+  mmlu 450/500: 380 ok
+  mmlu 500/500: 421 ok
+[mmlu] 421/500 = 84%
+  lambada 100/500: 72 ok
+  lambada 200/500: 143 ok
+  lambada 300/500: 219 ok
+  lambada 400/500: 293 ok
+  lambada 500/500: 372 ok
+[lambada] 372/500 = 74%
+[mem] peak 14.31 GB

@@ -73,3 +73,201 @@ NameError: name 'args' is not defined
   math500 70/100: 1 ok
   math500 80/100: 1 ok
   math500 90/100: 2 ok
+  math500 100/100: 2 ok
+[math500] 2/100 = 2%
+  mbpp 10/100: 5 ok
+  mbpp 20/100: 12 ok
+  mbpp 30/100: 21 ok
+  mbpp 40/100: 28 ok
+  mbpp 50/100: 36 ok
+  mbpp 60/100: 38 ok
+  mbpp 70/100: 44 ok
+  mbpp 80/100: 51 ok
+  mbpp 90/100: 57 ok
+  mbpp 100/100: 65 ok
+[mbpp] 65/100 = 65%
+[mem] peak 11.61 GB
+[load] 10.44 GB
+  mmlu 50/500: 27 ok
+  mmlu 100/500: 60 ok
+  mmlu 150/500: 89 ok
+  mmlu 200/500: 119 ok
+  mmlu 250/500: 146 ok
+  mmlu 300/500: 172 ok
+  mmlu 350/500: 205 ok
+  mmlu 400/500: 235 ok
+  mmlu 450/500: 262 ok
+  mmlu 500/500: 290 ok
+[mmlu] 290/500 = 58%
+  lambada 100/500: 59 ok
+  lambada 200/500: 119 ok
+  lambada 300/500: 168 ok
+  lambada 400/500: 234 ok
+  lambada 500/500: 291 ok
+[lambada] 291/500 = 58%
+[mem] peak 11.36 GB
+  model-00001-of-00004.safetensors: written (105 expert/router tensors so far)
+  model-00002-of-00004.safetensors: written (240 expert/router tensors so far)
+  model-00003-of-00004.safetensors: written (378 expert/router tensors so far)
+  model-00004-of-00004.safetensors: written (480 expert/router tensors so far)
+[out] /Users/muriel/luc/topiary-bonsai/models/q36-pop96: 9.06 GB · experts 256 -> 96 per layer · 480 tensors rewritten
+[load] 8.17 GB
+[q36_pop96] PPL code: 3.3192 (3s)
+[q36_pop96] PPL general: 14.9848 (3s)
+[mem] peak 9.44 GB
+[load] 8.17 GB
+[kld] por tramo de posición: {'pos_0-64': 0.7276, 'pos_64-128': 0.838, 'pos_128-256': 0.7213, 'pos_256-448': 0.8612}
+[kld] media 0.79327 · p95 3.87822 · p99 7.24109 · max 12.817 (1980 tokens)
+[load] 8.17 GB
+  math500 10/100: 0 ok
+  math500 20/100: 0 ok
+  math500 30/100: 0 ok
+  math500 40/100: 0 ok
+  math500 50/100: 0 ok
+  math500 60/100: 0 ok
+  math500 70/100: 0 ok
+  math500 80/100: 0 ok
+  math500 90/100: 0 ok
+  math500 100/100: 0 ok
+[math500] 0/100 = 0%
+  mbpp 10/100: 6 ok
+  mbpp 20/100: 12 ok
+  mbpp 30/100: 20 ok
+  mbpp 40/100: 24 ok
+  mbpp 50/100: 28 ok
+  mbpp 60/100: 29 ok
+  mbpp 70/100: 34 ok
+  mbpp 80/100: 39 ok
+  mbpp 90/100: 44 ok
+  mbpp 100/100: 51 ok
+[mbpp] 51/100 = 51%
+[mem] peak 9.41 GB
+[load] 8.17 GB
+  mmlu 50/500: 6 ok
+  mmlu 100/500: 11 ok
+  mmlu 150/500: 16 ok
+  mmlu 200/500: 22 ok
+  mmlu 250/500: 26 ok
+  mmlu 300/500: 26 ok
+  mmlu 350/500: 31 ok
+  mmlu 400/500: 35 ok
+  mmlu 450/500: 40 ok
+  mmlu 500/500: 45 ok
+[mmlu] 45/500 = 9%
+  lambada 100/500: 48 ok
+  lambada 200/500: 95 ok
+  lambada 300/500: 135 ok
+  lambada 400/500: 191 ok
+  lambada 500/500: 238 ok
+[lambada] 238/500 = 48%
+[mem] peak 9.22 GB
+  model-00001-of-00004.safetensors: written (105 expert/router tensors so far)
+  model-00002-of-00004.safetensors: written (240 expert/router tensors so far)
+  model-00003-of-00004.safetensors: written (378 expert/router tensors so far)
+  model-00004-of-00004.safetensors: written (480 expert/router tensors so far)
+[out] /Users/muriel/luc/topiary-bonsai/models/q36-mass96: 9.06 GB · experts 256 -> 96 per layer · 480 tensors rewritten
+[load] 8.17 GB
+[q36_mass96] PPL code: 3.3336 (3s)
+[q36_mass96] PPL general: 14.3895 (3s)
+[mem] peak 9.44 GB
+[load] 8.17 GB
+[kld] por tramo de posición: {'pos_0-64': 0.7008, 'pos_64-128': 0.7266, 'pos_128-256': 0.6572, 'pos_256-448': 0.8829}
+[kld] media 0.75905 · p95 3.63007 · p99 7.40832 · max 13.316 (1980 tokens)
+[load] 8.17 GB
+  math500 10/100: 0 ok
+  math500 20/100: 0 ok
+  math500 30/100: 0 ok
+  math500 40/100: 0 ok
+  math500 50/100: 0 ok
+  math500 60/100: 0 ok
+  math500 70/100: 0 ok
+  math500 80/100: 0 ok
+  math500 90/100: 0 ok
+  math500 100/100: 0 ok
+[math500] 0/100 = 0%
+  mbpp 10/100: 3 ok
+  mbpp 20/100: 8 ok
+  mbpp 30/100: 15 ok
+  mbpp 40/100: 17 ok
+  mbpp 50/100: 20 ok
+  mbpp 60/100: 23 ok
+  mbpp 70/100: 26 ok
+  mbpp 80/100: 32 ok
+  mbpp 90/100: 33 ok
+  mbpp 100/100: 39 ok
+[mbpp] 39/100 = 39%
+[mem] peak 9.41 GB
+[load] 8.17 GB
+  mmlu 50/500: 8 ok
+  mmlu 100/500: 13 ok
+  mmlu 150/500: 21 ok
+  mmlu 200/500: 29 ok
+  mmlu 250/500: 36 ok
+  mmlu 300/500: 40 ok
+  mmlu 350/500: 44 ok
+  mmlu 400/500: 49 ok
+  mmlu 450/500: 53 ok
+  mmlu 500/500: 60 ok
+[mmlu] 60/500 = 12%
+  lambada 100/500: 48 ok
+  lambada 200/500: 91 ok
+  lambada 300/500: 134 ok
+  lambada 400/500: 191 ok
+  lambada 500/500: 237 ok
+[lambada] 237/500 = 47%
+[mem] peak 9.22 GB
+  model-00001-of-00004.safetensors: written (105 expert/router tensors so far)
+  model-00002-of-00004.safetensors: written (240 expert/router tensors so far)
+  model-00003-of-00004.safetensors: written (378 expert/router tensors so far)
+  model-00004-of-00004.safetensors: written (480 expert/router tensors so far)
+[out] /Users/muriel/luc/topiary-bonsai/models/q36-mass64: 6.80 GB · experts 256 -> 64 per layer · 480 tensors rewritten
+[load] 5.90 GB
+[q36_mass64] PPL code: 4.0676 (3s)
+[q36_mass64] PPL general: 21.6132 (2s)
+[mem] peak 7.17 GB
+[load] 5.90 GB
+[kld] por tramo de posición: {'pos_0-64': 1.1615, 'pos_64-128': 1.3576, 'pos_128-256': 1.1774, 'pos_256-448': 1.2791}
+[kld] media 1.24043 · p95 5.31251 · p99 8.35874 · max 12.629 (1980 tokens)
+[load] 5.90 GB
+  math500 10/100: 0 ok
+  math500 20/100: 0 ok
+  math500 30/100: 0 ok
+  math500 40/100: 0 ok
+  math500 50/100: 0 ok
+  math500 60/100: 0 ok
+  math500 70/100: 0 ok
+  math500 80/100: 0 ok
+  math500 90/100: 0 ok
+  math500 100/100: 0 ok
+[math500] 0/100 = 0%
+  mbpp 10/100: 4 ok
+  mbpp 20/100: 8 ok
+  mbpp 30/100: 17 ok
+  mbpp 40/100: 22 ok
+  mbpp 50/100: 29 ok
+  mbpp 60/100: 30 ok
+  mbpp 70/100: 32 ok
+  mbpp 80/100: 37 ok
+  mbpp 90/100: 42 ok
+  mbpp 100/100: 48 ok
+[mbpp] 48/100 = 48%
+[mem] peak 7.16 GB
+[load] 5.90 GB
+  mmlu 50/500: 2 ok
+  mmlu 100/500: 5 ok
+  mmlu 150/500: 11 ok
+  mmlu 200/500: 14 ok
+  mmlu 250/500: 16 ok
+  mmlu 300/500: 21 ok
+  mmlu 350/500: 22 ok
+  mmlu 400/500: 25 ok
+  mmlu 450/500: 28 ok
+  mmlu 500/500: 29 ok
+[mmlu] 29/500 = 6%
+  lambada 100/500: 34 ok
+  lambada 200/500: 59 ok
+  lambada 300/500: 87 ok
+  lambada 400/500: 125 ok
+  lambada 500/500: 158 ok
+[lambada] 158/500 = 32%
+[mem] peak 6.93 GB

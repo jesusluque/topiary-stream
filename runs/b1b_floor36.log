@@ -1,0 +1,257 @@
+[out] /Users/muriel/luc/topiary-bonsai/runs/keepset_pop144.npz: 40 layers × 144 experts (popularity) · general/code Jaccard 0.54
+  model-00001-of-00004.safetensors: written (105 expert/router tensors so far)
+  model-00002-of-00004.safetensors: written (240 expert/router tensors so far)
+  model-00003-of-00004.safetensors: written (378 expert/router tensors so far)
+  model-00004-of-00004.safetensors: written (480 expert/router tensors so far)
+[out] /Users/muriel/luc/topiary-bonsai/models/q36-pop144: 12.46 GB · experts 256 -> 144 per layer · 480 tensors rewritten
+  model-00001-of-00004.safetensors done (consumed)
+  model-00002-of-00004.safetensors done (consumed)
+  model-00003-of-00004.safetensors done (consumed)
+  model-00004-of-00004.safetensors done (consumed)
+[out] artifacts/qwen36-pop144: resident 7.94 GB · P1 memmaps 4.53 GB
+[load] 7.61 GB
+[kld] por tramo de posición: {'pos_0-64': 0.5331, 'pos_64-128': 0.4688, 'pos_128-256': 0.4428, 'pos_256-448': 0.6436}
+[kld] media 0.53482 · p95 2.77849 · p99 6.62727 · max 10.528 (1980 tokens)
+[load] 7.61 GB
+  math500 10/100: 7 ok
+  math500 20/100: 8 ok
+  math500 30/100: 10 ok
+  math500 40/100: 13 ok
+  math500 50/100: 14 ok
+  math500 60/100: 16 ok
+  math500 70/100: 17 ok
+  math500 80/100: 18 ok
+  math500 90/100: 18 ok
+  math500 100/100: 18 ok
+[math500] 18/100 = 18%
+  mbpp 10/100: 6 ok
+  mbpp 20/100: 14 ok
+  mbpp 30/100: 23 ok
+  mbpp 40/100: 28 ok
+  mbpp 50/100: 37 ok
+  mbpp 60/100: 40 ok
+  mbpp 70/100: 47 ok
+  mbpp 80/100: 54 ok
+  mbpp 90/100: 61 ok
+  mbpp 100/100: 69 ok
+[mbpp] 69/100 = 69%
+[mem] peak 9.62 GB
+[load] 7.61 GB
+  mmlu 50/500: 34 ok
+  mmlu 100/500: 64 ok
+  mmlu 150/500: 95 ok
+  mmlu 200/500: 130 ok
+  mmlu 250/500: 155 ok
+  mmlu 300/500: 187 ok
+  mmlu 350/500: 223 ok
+  mmlu 400/500: 261 ok
+  mmlu 450/500: 288 ok
+  mmlu 500/500: 319 ok
+[mmlu] 319/500 = 64%
+  lambada 100/500: 60 ok
+  lambada 200/500: 125 ok
+  lambada 300/500: 172 ok
+  lambada 400/500: 240 ok
+  lambada 500/500: 302 ok
+[lambada] 302/500 = 60%
+[mem] peak 9.37 GB
+[out] /Users/muriel/luc/topiary-bonsai/runs/keepset_pop176.npz: 40 layers × 176 experts (popularity) · general/code Jaccard 0.69
+  model-00001-of-00004.safetensors: written (105 expert/router tensors so far)
+  model-00002-of-00004.safetensors: written (240 expert/router tensors so far)
+  model-00003-of-00004.safetensors: written (378 expert/router tensors so far)
+  model-00004-of-00004.safetensors: written (480 expert/router tensors so far)
+[out] /Users/muriel/luc/topiary-bonsai/models/q36-pop176: 14.73 GB · experts 256 -> 176 per layer · 480 tensors rewritten
+[out] /Users/muriel/luc/topiary-bonsai/runs/keepset_pop176.npz: 40 layers × 176 experts (popularity) · general/code Jaccard 0.69
+  model-00001-of-00004.safetensors done (consumed)
+  model-00001-of-00004.safetensors: written (105 expert/router tensors so far)
+  model-00002-of-00004.safetensors: written (240 expert/router tensors so far)
+  model-00003-of-00004.safetensors: written (378 expert/router tensors so far)
+  model-00004-of-00004.safetensors: written (480 expert/router tensors so far)
+[out] /Users/muriel/luc/topiary-bonsai/models/q36-pop176: 14.73 GB · experts 256 -> 176 per layer · 480 tensors rewritten
+  model-00002-of-00004.safetensors done (consumed)
+Traceback (most recent call last):
+  File "/Users/muriel/luc/topiary-stream/src/split.py", line 244, in <module>
+    main()
+  File "/Users/muriel/luc/topiary-stream/src/split.py", line 238, in main
+    split_resident_p0(src, Path(args.out), args.consume)
+  File "/Users/muriel/luc/topiary-stream/src/split.py", line 119, in split_resident_p0
+    consume_shard(shard_path)
+  File "/Users/muriel/luc/topiary-stream/src/split.py", line 72, in consume_shard
+    p.unlink()
+  File "/Users/muriel/.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/pathlib.py", line 1342, in unlink
+    os.unlink(self)
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/muriel/luc/topiary-bonsai/models/q36-pop176/model-00002-of-00004.safetensors'
+[out] /Users/muriel/luc/topiary-bonsai/runs/keepset_pop208.npz: 40 layers × 208 experts (popularity) · general/code Jaccard 0.82
+  model-00001-of-00004.safetensors: written (105 expert/router tensors so far)
+  model-00002-of-00004.safetensors: written (240 expert/router tensors so far)
+  model-00003-of-00004.safetensors: written (378 expert/router tensors so far)
+  model-00004-of-00004.safetensors: written (480 expert/router tensors so far)
+[out] /Users/muriel/luc/topiary-bonsai/models/q36-pop208: 17.00 GB · experts 256 -> 208 per layer · 480 tensors rewritten
+  model-00003-of-00004.safetensors done (consumed)
+  model-00001-of-00004.safetensors done (consumed)
+  model-00004-of-00004.safetensors done (consumed)
+[out] artifacts/qwen36-pop176: resident 9.20 GB · P1 memmaps 5.54 GB
+  model-00002-of-00004.safetensors done (consumed)
+  model-00003-of-00004.safetensors done (consumed)
+  model-00004-of-00004.safetensors done (consumed)
+[out] artifacts/qwen36-pop208: resident 10.46 GB · P1 memmaps 6.54 GB
+[load] 10.38 GB
+[kld] por tramo de posición: {'pos_0-64': 0.2163, 'pos_64-128': 0.2611, 'pos_128-256': 0.1998, 'pos_256-448': 0.2829}
+[kld] media 0.24441 · p95 1.14214 · p99 3.65001 · max 8.730 (1980 tokens)
+[load] 10.38 GB
+  math500 10/100: 10 ok
+  math500 20/100: 18 ok
+  math500 30/100: 25 ok
+  math500 40/100: 34 ok
+  math500 50/100: 38 ok
+  math500 60/100: 44 ok
+  math500 70/100: 46 ok
+  math500 80/100: 48 ok
+  math500 90/100: 51 ok
+  math500 100/100: 56 ok
+[math500] 56/100 = 56%
+  mbpp 10/100: 5 ok
+  mbpp 20/100: 13 ok
+  mbpp 30/100: 22 ok
+  mbpp 40/100: 31 ok
+  mbpp 50/100: 40 ok
+  mbpp 60/100: 46 ok
+  mbpp 70/100: 54 ok
+  mbpp 80/100: 61 ok
+  mbpp 90/100: 70 ok
+  mbpp 100/100: 79 ok
+[mbpp] 79/100 = 79%
+[mem] peak 12.70 GB
+[load] 10.38 GB
+  mmlu 50/500: 37 ok
+  mmlu 100/500: 78 ok
+  mmlu 150/500: 116 ok
+  mmlu 200/500: 153 ok
+  mmlu 250/500: 192 ok
+  mmlu 300/500: 230 ok
+  mmlu 350/500: 272 ok
+  mmlu 400/500: 314 ok
+  mmlu 450/500: 357 ok
+  mmlu 500/500: 399 ok
+[mmlu] 399/500 = 80%
+  lambada 100/500: 68 ok
+  lambada 200/500: 142 ok
+  lambada 300/500: 211 ok
+  lambada 400/500: 286 ok
+  lambada 500/500: 361 ok
+[lambada] 361/500 = 72%
+[mem] peak 12.44 GB
+[out] /Users/muriel/luc/topiary-bonsai/runs/keepset_pop240.npz: 40 layers × 240 experts (popularity) · general/code Jaccard 0.94
+  model-00001-of-00004.safetensors: written (105 expert/router tensors so far)
+  model-00002-of-00004.safetensors: written (240 expert/router tensors so far)
+  model-00003-of-00004.safetensors: written (378 expert/router tensors so far)
+  model-00004-of-00004.safetensors: written (480 expert/router tensors so far)
+[out] /Users/muriel/luc/topiary-bonsai/models/q36-pop240: 19.27 GB · experts 256 -> 240 per layer · 480 tensors rewritten
+  model-00001-of-00004.safetensors done (consumed)
+  model-00002-of-00004.safetensors done (consumed)
+  model-00003-of-00004.safetensors done (consumed)
+  model-00004-of-00004.safetensors done (consumed)
+[out] artifacts/qwen36-pop240: resident 11.72 GB · P1 memmaps 7.55 GB
+[load] 11.77 GB
+[kld] por tramo de posición: {'pos_0-64': 0.1977, 'pos_64-128': 0.2058, 'pos_128-256': 0.1473, 'pos_256-448': 0.2232}
+[kld] media 0.19423 · p95 0.89973 · p99 3.03877 · max 6.861 (1980 tokens)
+[load] 11.77 GB
+  math500 10/100: 10 ok
+  math500 20/100: 18 ok
+  math500 30/100: 25 ok
+  math500 40/100: 33 ok
+  math500 50/100: 39 ok
+  math500 60/100: 46 ok
+  math500 70/100: 52 ok
+  math500 80/100: 56 ok
+  math500 90/100: 59 ok
+  math500 100/100: 66 ok
+[math500] 66/100 = 66%
+  mbpp 10/100: 6 ok
+  mbpp 20/100: 13 ok
+  mbpp 30/100: 23 ok
+  mbpp 40/100: 32 ok
+  mbpp 50/100: 41 ok
+  mbpp 60/100: 49 ok
+  mbpp 70/100: 57 ok
+  mbpp 80/100: 64 ok
+  mbpp 90/100: 73 ok
+  mbpp 100/100: 82 ok
+[mbpp] 82/100 = 82%
+[mem] peak 14.24 GB
+[load] 11.77 GB
+  mmlu 50/500: 42 ok
+  mmlu 100/500: 85 ok
+  mmlu 150/500: 125 ok
+  mmlu 200/500: 166 ok
+  mmlu 250/500: 208 ok
+  mmlu 300/500: 248 ok
+  mmlu 350/500: 288 ok
+  mmlu 400/500: 329 ok
+  mmlu 450/500: 372 ok
+  mmlu 500/500: 414 ok
+[mmlu] 414/500 = 83%
+  lambada 100/500: 71 ok
+  lambada 200/500: 144 ok
+  lambada 300/500: 212 ok
+  lambada 400/500: 287 ok
+  lambada 500/500: 363 ok
+[lambada] 363/500 = 73%
+[mem] peak 13.97 GB
+[out] /Users/muriel/luc/topiary-bonsai/runs/keepset_pop176.npz: 40 layers × 176 experts (popularity) · general/code Jaccard 0.69
+  model-00001-of-00004.safetensors: written (105 expert/router tensors so far)
+  model-00002-of-00004.safetensors: written (240 expert/router tensors so far)
+  model-00003-of-00004.safetensors: written (378 expert/router tensors so far)
+  model-00004-of-00004.safetensors: written (480 expert/router tensors so far)
+[out] /Users/muriel/luc/topiary-bonsai/models/q36-pop176: 14.73 GB · experts 256 -> 176 per layer · 480 tensors rewritten
+  model-00001-of-00004.safetensors done (consumed)
+  model-00002-of-00004.safetensors done (consumed)
+  model-00003-of-00004.safetensors done (consumed)
+  model-00004-of-00004.safetensors done (consumed)
+[out] artifacts/qwen36-pop176: resident 9.20 GB · P1 memmaps 5.54 GB
+[load] 9.00 GB
+[kld] por tramo de posición: {'pos_0-64': 0.3392, 'pos_64-128': 0.3284, 'pos_128-256': 0.336, 'pos_256-448': 0.4721}
+[kld] media 0.39101 · p95 2.04192 · p99 5.13904 · max 13.931 (1980 tokens)
+[load] 9.00 GB
+  math500 10/100: 10 ok
+  math500 20/100: 19 ok
+  math500 30/100: 24 ok
+  math500 40/100: 30 ok
+  math500 50/100: 34 ok
+  math500 60/100: 38 ok
+  math500 70/100: 39 ok
+  math500 80/100: 41 ok
+  math500 90/100: 43 ok
+  math500 100/100: 48 ok
+[math500] 48/100 = 48%
+  mbpp 10/100: 4 ok
+  mbpp 20/100: 11 ok
+  mbpp 30/100: 20 ok
+  mbpp 40/100: 28 ok
+  mbpp 50/100: 37 ok
+  mbpp 60/100: 43 ok
+  mbpp 70/100: 50 ok
+  mbpp 80/100: 57 ok
+  mbpp 90/100: 64 ok
+  mbpp 100/100: 73 ok
+[mbpp] 73/100 = 73%
+[mem] peak 11.16 GB
+[load] 9.00 GB
+  mmlu 50/500: 31 ok
+  mmlu 100/500: 67 ok
+  mmlu 150/500: 103 ok
+  mmlu 200/500: 143 ok
+  mmlu 250/500: 177 ok
+  mmlu 300/500: 210 ok
+  mmlu 350/500: 245 ok
+  mmlu 400/500: 284 ok
+  mmlu 450/500: 320 ok
+  mmlu 500/500: 358 ok
+[mmlu] 358/500 = 72%
+  lambada 100/500: 63 ok
+  lambada 200/500: 131 ok
+  lambada 300/500: 192 ok
+  lambada 400/500: 265 ok
+  lambada 500/500: 333 ok
+[lambada] 333/500 = 67%
+[mem] peak 10.91 GB

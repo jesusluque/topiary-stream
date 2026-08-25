@@ -163,7 +163,15 @@ def split_full_memmap(src: Path, out: Path, consume: bool) -> None:
     skeleton: dict[str, mx.array] = {}
     seen_layers: set[int] = set()
     total = 0
-    for shard_path in sorted(glob.glob(str(src / "model-*.safetensors"))):
+    shards = sorted(glob.glob(str(src / "model-*.safetensors")))
+    # scales/biases de un mismo experto pueden vivir en shards distintos (checkpoints
+    # antiguos): se recogen primero (son pequeños) y se consumen al ver las scales.
+    sb_all: dict[str, mx.array] = {}
+    for shard_path in shards:
+        for key, arr in mx.load(shard_path).items():
+            if is_switch_weightlike(key) and key.endswith((".scales", ".biases")):
+                sb_all[key] = arr
+    for shard_path in shards:
         tensors = mx.load(shard_path)
         done = 0
         for key in tensors:
@@ -185,7 +193,7 @@ def split_full_memmap(src: Path, out: Path, consume: bool) -> None:
                     done += 1
                 elif key.endswith(".scales"):
                     s = np.array(tensors[key].astype(mx.float16))
-                    b = np.array(tensors[key[: -len("scales")] + "biases"]
+                    b = np.array(sb_all[key[: -len("scales")] + "biases"]
                                  .astype(mx.float16))
                     sb = np.stack([s.reshape(s.shape[0], -1),
                                    b.reshape(b.shape[0], -1)], axis=1)
@@ -201,6 +209,10 @@ def split_full_memmap(src: Path, out: Path, consume: bool) -> None:
                             skeleton[f"{prefix}{proj_d}.{leaf}"] = arr
             else:
                 skeleton[key] = tensors[key]
+        # biases huérfanos (su scales estaba en otro shard) no van al esqueleto: ya están en sb_all
+        for key in list(skeleton):
+            if is_switch_weightlike(key):
+                del skeleton[key]
         mx.eval(*[v for v in skeleton.values()])
         del tensors
         mx.clear_cache()

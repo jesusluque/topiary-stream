@@ -1,0 +1,19 @@
+Fetching 14 files:   0%|          | 0/14 [00:00<?, ?it/s]Fetching 14 files: 100%|██████████| 14/14 [00:00<00:00, 4770.13it/s]
+  model-00001-of-00004.safetensors done
+  model-00002-of-00004.safetensors done
+  model-00003-of-00004.safetensors done
+  model-00004-of-00004.safetensors done
+[out] artifacts/qwen30orig-stream: resident 9.93 GB · P1 memmaps 7.25 GB
+Fetching 14 files:   0%|          | 0/14 [00:00<?, ?it/s]Fetching 14 files: 100%|██████████| 14/14 [00:00<00:00, 5237.74it/s]
+[load] 17.17 GB
+Fetching 14 files:   0%|          | 0/14 [00:00<?, ?it/s]Fetching 14 files: 100%|██████████| 14/14 [00:00<00:00, 2451.89it/s]
+  model-00001-of-00004.safetensors: 44 expert tensors
+Traceback (most recent call last):
+  File "/Users/muriel/luc/topiary-stream/src/split.py", line 244, in <module>
+    main()
+  File "/Users/muriel/luc/topiary-stream/src/split.py", line 240, in main
+    split_full_memmap(src, Path(args.out), args.consume)
+  File "/Users/muriel/luc/topiary-stream/src/split.py", line 188, in split_full_memmap
+    b = np.array(tensors[key[: -len("scales")] + "biases"]
+                 ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'model.layers.29.mlp.switch_mlp.down_proj.biases'

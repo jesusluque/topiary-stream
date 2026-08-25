@@ -211,3 +211,115 @@ C=64: [serve] 255 tokens in 5.9s = 43.5 tok/s · peak 10.19 GB
 === B1 SMOKE pop128 rc=0 Generation: 32 tokens, 106.696 tokens-per-sec Peak memory: 10.575 GB  ===
 === B1 PPL pop128: {'ppl_code': 3.015, 'ppl_general': 11.4879} ===
 === B1 KLD pop128: 0.5428 p99 6.851 ===
+=== B1 HARD pop128: {'math500': 0.02, 'mbpp': 0.65, 'peak_gb': 11.605021294} ===
+=== B1 WIDE pop128: {'mmlu': 0.58, 'lambada': 0.582, 'peak_gb': 11.357115896} ===
+[pop128] 0 tokens = 0.0 tok/s · pico 10.57 GB
+=== B1 PRUNE pop96 OK: 8.5G ===
+=== B1 SMOKE pop96 rc=0 Generation: 12 tokens, 115.606 tokens-per-sec Peak memory: 8.321 GB  ===
+=== B1 PPL pop96: {'ppl_code': 3.3192, 'ppl_general': 14.9848} ===
+=== B1 KLD pop96: 0.7933 p99 7.241 ===
+=== B1 HARD pop96: {'math500': 0.0, 'mbpp': 0.51, 'peak_gb': 9.409765336} ===
+=== B1 WIDE pop96: {'mmlu': 0.09, 'lambada': 0.476, 'peak_gb': 9.220873932} ===
+[pop96] 22 tokens = 101.8 tok/s · pico 8.32 GB
+=== B1 PRUNE mass96 OK: 8.5G ===
+=== B1 SMOKE mass96 rc=0 Generation: 32 tokens, 108.992 tokens-per-sec Peak memory: 8.321 GB  ===
+=== B1 PPL mass96: {'ppl_code': 3.3336, 'ppl_general': 14.3895} ===
+=== B1 KLD mass96: 0.7591 p99 7.408 ===
+=== B1 HARD mass96: {'math500': 0.0, 'mbpp': 0.39, 'peak_gb': 9.409765336} ===
+=== B1 WIDE mass96: {'mmlu': 0.12, 'lambada': 0.474, 'peak_gb': 9.220693708} ===
+[mass96] 25 tokens = 102.0 tok/s · pico 8.32 GB
+=== B1 PRUNE mass64 OK: 6.4G ===
+=== B1 SMOKE mass64 rc=0 Generation: 32 tokens, 108.058 tokens-per-sec Peak memory: 6.063 GB  ===
+=== B1 PPL mass64: {'ppl_code': 4.0676, 'ppl_general': 21.6132} ===
+=== B1 KLD mass64: 1.2404 p99 8.359 ===
+=== B1 HARD mass64: {'math500': 0.0, 'mbpp': 0.48, 'peak_gb': 7.164667246} ===
+=== B1 WIDE mass64: {'mmlu': 0.058, 'lambada': 0.316, 'peak_gb': 6.934503132} ===
+[mass64] 255 tokens = 105.4 tok/s · pico 6.06 GB
+=== B1 COMPLETO Sun Aug 23 19:40:30 CEST 2026 ===
+=== MAT36-FIX START Sun Aug 23 19:41:27 CEST 2026 ===
+=== MAT36 KLD K=32 (ref exacta): 0.1424 p99 2.142 ===
+=== MAT36 KLD K=4 (ref exacta): 0.2197 p99 2.787 ===
+=== MAT36 WIDE K32: {'mmlu': 0.836, 'lambada': 0.744, 'peak_gb': 15.304010102} ===
+=== MAT36 HARD K4: {'math500': 0.56, 'mbpp': 0.79, 'peak_gb': 14.586031064} ===
+=== MAT36 WIDE K4: {'mmlu': 0.842, 'lambada': 0.744, 'peak_gb': 14.313105782} ===
+=== MAT36-FIX COMPLETO Mon Aug 24 01:27:28 CEST 2026 ===
+=== REFS START Mon Aug 24 01:28:39 CEST 2026 ===
+=== REFS HARD Qwen3.8-27B-4bit: {'math500': 0.55, 'mbpp': 0.76, 'peak_gb': 16.858401866} ===
+=== REFS WIDE Qwen3.8-27B-4bit: {'mmlu': 0.838, 'lambada': 0.714, 'peak_gb': 16.47558001} ===
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files: 100%|██████████| 13/13 [00:00<00:00, 2199.34it/s]
+[Qwen3.8-27B-4bit] 255 tokens = 17.5 tok/s · pico 15.51 GB
+=== REFS HARD gpt-oss-20b-MXFP4-Q8: {'math500': 0.72, 'mbpp': 0.78, 'peak_gb': 12.775139574} ===
+=== REFS WIDE gpt-oss-20b-MXFP4-Q8: {'mmlu': 0.0, 'lambada': 0.214, 'peak_gb': 12.599708154} ===
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 1837.91it/s]
+[gpt-oss-20b-MXFP4-Q8] 255 tokens = 82.5 tok/s · pico 12.20 GB
+=== REFS HARD gemma-3-12b-it-qat-4bit: {'math500': 0.72, 'mbpp': 0.81, 'peak_gb': 8.301501588} ===
+=== REFS WIDE gemma-3-12b-it-qat-4bit: {'mmlu': 0.736, 'lambada': 0.688, 'peak_gb': 7.988501168} ===
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files: 100%|██████████| 13/13 [00:00<00:00, 2092.16it/s]
+[gemma-3-12b-it-qat-4bit] 255 tokens = 35.5 tok/s · pico 7.46 GB
+=== REFS HARD gemma-4-e4b-it-4bit: {'math500': 0.18, 'mbpp': 0.67, 'peak_gb': 4.939180217} ===
+=== REFS WIDE gemma-4-e4b-it-4bit: {'mmlu': 0.682, 'lambada': 0.17, 'peak_gb': 4.94903434} ===
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files: 100%|██████████| 8/8 [00:00<00:00, 1797.82it/s]
+[gemma-4-e4b-it-4bit] 255 tokens = 83.7 tok/s · pico 4.30 GB
+=== REFS HARD Qwen3.5-9B-4bit: {'math500': 0.52, 'mbpp': 0.69, 'peak_gb': 6.171736752} ===
+=== REFS WIDE Qwen3.5-9B-4bit: {'mmlu': 0.772, 'lambada': 0.696, 'peak_gb': 5.933750926} ===
+Fetching 11 files:   0%|          | 0/11 [00:00<?, ?it/s]Fetching 11 files: 100%|██████████| 11/11 [00:00<00:00, 1958.04it/s]
+[Qwen3.5-9B-4bit] 255 tokens = 56.9 tok/s · pico 5.21 GB
+=== REFS HARD granite-4.1-8b-4bit: {'math500': 0.77, 'mbpp': 0.74, 'peak_gb': 5.969096148} ===
+=== REFS WIDE granite-4.1-8b-4bit: {'mmlu': 0.704, 'lambada': 0.698, 'peak_gb': 5.908965702} ===
+Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 1557.98it/s]
+[granite-4.1-8b-4bit] 255 tokens = 49.1 tok/s · pico 5.36 GB
+=== REFS HARD Phi-4-mini-instruct-4bit: {'math500': 0.48, 'mbpp': 0.48, 'peak_gb': 3.203515074} ===
+=== REFS WIDE Phi-4-mini-instruct-4bit: {'mmlu': 0.596, 'lambada': 0.428, 'peak_gb': 2.99281443} ===
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Fetching 12 files: 100%|██████████| 12/12 [00:00<00:00, 2043.18it/s]
+[transformers] This model config has set a `rope_parameters['original_max_position_embeddings']` field, to be used together with `max_position_embeddings` to determine a scaling factor. Please set the `factor` field of `rope_parameters`with this ratio instead -- we recommend the use of this field over `original_max_position_embeddings`, as it is compatible with most model architectures.
+[Phi-4-mini-instruct-4bit] 255 tokens = 109.7 tok/s · pico 2.27 GB
+=== REFS HARD Qwen3.5-0.8B-4bit: {'math500': 0.18, 'mbpp': 0.28, 'peak_gb': 1.578416602} ===
+=== REFS WIDE Qwen3.5-0.8B-4bit: {'mmlu': 0.426, 'lambada': 0.4, 'peak_gb': 1.223072268} ===
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 2089.94it/s]
+[Qwen3.5-0.8B-4bit] 255 tokens = 382.7 tok/s · pico 0.53 GB
+=== REFS HARD gemma-3-1b-it-4bit: {'math500': 0.16, 'mbpp': 0.37, 'peak_gb': 1.53182972} ===
+=== REFS WIDE gemma-3-1b-it-4bit: {'mmlu': 0.378, 'lambada': 0.358, 'peak_gb': 1.336759282} ===
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 1787.18it/s]
+[gemma-3-1b-it-4bit] 255 tokens = 277.1 tok/s · pico 0.79 GB
+=== REFS HARD LFM2-1.2B-4bit: {'math500': 0.42, 'mbpp': 0.39, 'peak_gb': 1.474152034} ===
+=== REFS WIDE LFM2-1.2B-4bit: {'mmlu': 0.48, 'lambada': 0.46, 'peak_gb': 1.233745506} ===
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files: 100%|██████████| 8/8 [00:00<00:00, 1719.33it/s]
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+[LFM2-1.2B-4bit] 255 tokens = 349.5 tok/s · pico 0.73 GB
+=== REFS HARD LFM2-700M-4bit: {'math500': 0.26, 'mbpp': 0.26, 'peak_gb': 1.086901034} ===
+=== REFS WIDE LFM2-700M-4bit: {'mmlu': 0.442, 'lambada': 0.42, 'peak_gb': 0.867149408} ===
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files: 100%|██████████| 8/8 [00:00<00:00, 1669.13it/s]
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+[LFM2-700M-4bit] 255 tokens = 489.3 tok/s · pico 0.48 GB
+=== REFS COMPLETO Mon Aug 24 06:26:28 CEST 2026 ===
+=== B1B START Mon Aug 24 14:30:05 CEST 2026 ===
+=== B1B SPLIT pop144 OK:  12G ===
+=== B1B SERVE pop144 K=16: [serve] 29 tokens in 0.5s = 57.9 tok/s · peak 8.94 GB ===
+=== B1B SERVE pop144 K=4: [serve] 255 tokens in 3.9s = 66.2 tok/s · peak 8.53 GB ===
+=== B1B KLD pop144 K16: 0.5348 p99 6.627 ===
+=== B1B HARD pop144 K16: {'math500': 0.18, 'mbpp': 0.69, 'peak_gb': 9.620906584} ===
+=== B1B WIDE pop144 K16: {'mmlu': 0.638, 'lambada': 0.604, 'peak_gb': 9.372376648} ===
+=== B1B relanzada sin tests de velocidad (usuario en el Mac) Mon Aug 24 16:00:32 CEST 2026 ===
+=== B1B START Mon Aug 24 16:00:32 CEST 2026 ===
+=== B1B SPLIT pop176 FALLO ===
+=== B1B SPLIT pop208 OK:  16G ===
+=== B1B KLD pop208 K16: 0.2444 p99 3.65 ===
+=== B1B HARD pop208 K16: {'math500': 0.56, 'mbpp': 0.79, 'peak_gb': 12.703190104} ===
+=== B1B WIDE pop208 K16: {'mmlu': 0.798, 'lambada': 0.722, 'peak_gb': 12.444289352} ===
+=== B1B SPLIT pop240 OK:  18G ===
+=== B1B KLD pop240 K16: 0.1942 p99 3.039 ===
+=== B1B HARD pop240 K16: {'math500': 0.66, 'mbpp': 0.82, 'peak_gb': 14.237843802} ===
+=== B1B WIDE pop240 K16: {'mmlu': 0.828, 'lambada': 0.726, 'peak_gb': 13.96853932} ===
+=== B1B COMPLETO Tue Aug 25 01:37:29 CEST 2026 ===
+=== B1B START Tue Aug 25 01:37:57 CEST 2026 ===
+=== B1B SPLIT pop176 OK:  14G ===
+=== B1B KLD pop176 K16: 0.391 p99 5.139 ===
+=== B1B HARD pop176 K16: {'math500': 0.48, 'mbpp': 0.73, 'peak_gb': 11.164383064} ===
+=== B1B WIDE pop176 K16: {'mmlu': 0.716, 'lambada': 0.666, 'peak_gb': 10.913772488} ===
+=== B1B COMPLETO Tue Aug 25 03:52:36 CEST 2026 ===
+=== B1C START Tue Aug 25 03:53:10 CEST 2026 ===
+=== B1C SPLIT OK:  16G ===
+=== B1C KLD-REF nativo ABORTADO (swap 10 GB con el usuario en el Mac; referencia via pager exacto) Tue Aug 25 07:42:12 CEST 2026 ===
+=== B1C START Tue Aug 25 07:42:13 CEST 2026 ===
+=== B1C SPLIT OK:  16G ===
+=== B1C SPLIT-MEMMAP FALLO ===

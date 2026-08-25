@@ -1,0 +1,501 @@
+Fetching 15 files:   0%|          | 0/15 [00:00<?, ?it/s]Fetching 15 files: 100%|██████████| 15/15 [00:00<00:00, 2212.34it/s]
+[load] 15.13 GB
+  math500 10/100: 10 ok
+  math500 20/100: 19 ok
+  math500 30/100: 26 ok
+  math500 40/100: 33 ok
+  math500 50/100: 36 ok
+  math500 60/100: 42 ok
+  math500 70/100: 43 ok
+  math500 80/100: 45 ok
+  math500 90/100: 48 ok
+  math500 100/100: 55 ok
+[math500] 55/100 = 55%
+  mbpp 10/100: 4 ok
+  mbpp 20/100: 12 ok
+  mbpp 30/100: 22 ok
+  mbpp 40/100: 29 ok
+  mbpp 50/100: 38 ok
+  mbpp 60/100: 45 ok
+  mbpp 70/100: 53 ok
+  mbpp 80/100: 59 ok
+  mbpp 90/100: 66 ok
+  mbpp 100/100: 76 ok
+[mbpp] 76/100 = 76%
+[mem] peak 16.86 GB
+Fetching 15 files:   0%|          | 0/15 [00:00<?, ?it/s]Fetching 15 files: 100%|██████████| 15/15 [00:00<00:00, 2165.06it/s]
+[load] 15.13 GB
+  mmlu 50/500: 44 ok
+  mmlu 100/500: 87 ok
+  mmlu 150/500: 127 ok
+  mmlu 200/500: 169 ok
+  mmlu 250/500: 212 ok
+  mmlu 300/500: 252 ok
+  mmlu 350/500: 295 ok
+  mmlu 400/500: 335 ok
+  mmlu 450/500: 379 ok
+  mmlu 500/500: 419 ok
+[mmlu] 419/500 = 84%
+  lambada 100/500: 71 ok
+  lambada 200/500: 141 ok
+  lambada 300/500: 209 ok
+  lambada 400/500: 283 ok
+  lambada 500/500: 357 ok
+[lambada] 357/500 = 71%
+[mem] peak 16.48 GB
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Fetching 12 files: 100%|██████████| 12/12 [00:00<00:00, 2376.71it/s]
+[load] 12.08 GB
+  math500 10/100: 10 ok
+  math500 20/100: 19 ok
+  math500 30/100: 28 ok
+  math500 40/100: 38 ok
+  math500 50/100: 45 ok
+  math500 60/100: 52 ok
+  math500 70/100: 60 ok
+  math500 80/100: 63 ok
+  math500 90/100: 67 ok
+  math500 100/100: 72 ok
+[math500] 72/100 = 72%
+  mbpp 10/100: 4 ok
+  mbpp 20/100: 11 ok
+  mbpp 30/100: 21 ok
+  mbpp 40/100: 28 ok
+  mbpp 50/100: 36 ok
+  mbpp 60/100: 44 ok
+  mbpp 70/100: 52 ok
+  mbpp 80/100: 60 ok
+  mbpp 90/100: 69 ok
+  mbpp 100/100: 78 ok
+[mbpp] 78/100 = 78%
+[mem] peak 12.78 GB
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Fetching 12 files: 100%|██████████| 12/12 [00:00<00:00, 2379.97it/s]
+[load] 12.08 GB
+  mmlu 50/500: 0 ok
+  mmlu 100/500: 0 ok
+  mmlu 150/500: 0 ok
+  mmlu 200/500: 0 ok
+  mmlu 250/500: 0 ok
+  mmlu 300/500: 0 ok
+  mmlu 350/500: 0 ok
+  mmlu 400/500: 0 ok
+  mmlu 450/500: 0 ok
+  mmlu 500/500: 0 ok
+[mmlu] 0/500 = 0%
+  lambada 100/500: 24 ok
+  lambada 200/500: 42 ok
+  lambada 300/500: 61 ok
+  lambada 400/500: 87 ok
+  lambada 500/500: 107 ok
+[lambada] 107/500 = 21%
+[mem] peak 12.60 GB
+Fetching 15 files:   0%|          | 0/15 [00:00<?, ?it/s]Fetching 15 files: 100%|██████████| 15/15 [00:00<00:00, 2692.91it/s]
+[load] 7.19 GB
+  math500 10/100: 10 ok
+  math500 20/100: 19 ok
+  math500 30/100: 28 ok
+  math500 40/100: 36 ok
+  math500 50/100: 45 ok
+  math500 60/100: 52 ok
+  math500 70/100: 57 ok
+  math500 80/100: 62 ok
+  math500 90/100: 66 ok
+  math500 100/100: 72 ok
+[math500] 72/100 = 72%
+  mbpp 10/100: 5 ok
+  mbpp 20/100: 12 ok
+  mbpp 30/100: 22 ok
+  mbpp 40/100: 31 ok
+  mbpp 50/100: 40 ok
+  mbpp 60/100: 47 ok
+  mbpp 70/100: 56 ok
+  mbpp 80/100: 63 ok
+  mbpp 90/100: 72 ok
+  mbpp 100/100: 81 ok
+[mbpp] 81/100 = 81%
+[mem] peak 8.30 GB
+Fetching 15 files:   0%|          | 0/15 [00:00<?, ?it/s]Fetching 15 files: 100%|██████████| 15/15 [00:00<00:00, 2074.13it/s]
+[load] 7.19 GB
+  mmlu 50/500: 38 ok
+  mmlu 100/500: 75 ok
+  mmlu 150/500: 112 ok
+  mmlu 200/500: 151 ok
+  mmlu 250/500: 183 ok
+  mmlu 300/500: 221 ok
+  mmlu 350/500: 256 ok
+  mmlu 400/500: 291 ok
+  mmlu 450/500: 331 ok
+  mmlu 500/500: 368 ok
+[mmlu] 368/500 = 74%
+  lambada 100/500: 67 ok
+  lambada 200/500: 134 ok
+  lambada 300/500: 203 ok
+  lambada 400/500: 275 ok
+  lambada 500/500: 344 ok
+[lambada] 344/500 = 69%
+[mem] peak 7.99 GB
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 2465.64it/s]
+[load] 4.20 GB
+  math500 10/100: 8 ok
+  math500 20/100: 11 ok
+  math500 30/100: 12 ok
+  math500 40/100: 13 ok
+  math500 50/100: 15 ok
+  math500 60/100: 17 ok
+  math500 70/100: 17 ok
+  math500 80/100: 17 ok
+  math500 90/100: 17 ok
+  math500 100/100: 18 ok
+[math500] 18/100 = 18%
+  mbpp 10/100: 6 ok
+  mbpp 20/100: 11 ok
+  mbpp 30/100: 20 ok
+  mbpp 40/100: 25 ok
+  mbpp 50/100: 34 ok
+  mbpp 60/100: 39 ok
+  mbpp 70/100: 45 ok
+  mbpp 80/100: 51 ok
+  mbpp 90/100: 58 ok
+  mbpp 100/100: 67 ok
+[mbpp] 67/100 = 67%
+[mem] peak 4.94 GB
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 1764.31it/s]
+[load] 4.20 GB
+  mmlu 50/500: 32 ok
+  mmlu 100/500: 69 ok
+  mmlu 150/500: 102 ok
+  mmlu 200/500: 135 ok
+  mmlu 250/500: 167 ok
+  mmlu 300/500: 201 ok
+  mmlu 350/500: 234 ok
+  mmlu 400/500: 268 ok
+  mmlu 450/500: 306 ok
+  mmlu 500/500: 341 ok
+[mmlu] 341/500 = 68%
+  lambada 100/500: 17 ok
+  lambada 200/500: 29 ok
+  lambada 300/500: 48 ok
+  lambada 400/500: 69 ok
+  lambada 500/500: 85 ok
+[lambada] 85/500 = 17%
+[mem] peak 4.95 GB
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files: 100%|██████████| 13/13 [00:00<00:00, 1995.39it/s]
+[load] 5.04 GB
+  math500 10/100: 10 ok
+  math500 20/100: 18 ok
+  math500 30/100: 24 ok
+  math500 40/100: 33 ok
+  math500 50/100: 36 ok
+  math500 60/100: 41 ok
+  math500 70/100: 43 ok
+  math500 80/100: 45 ok
+  math500 90/100: 48 ok
+  math500 100/100: 52 ok
+[math500] 52/100 = 52%
+  mbpp 10/100: 4 ok
+  mbpp 20/100: 9 ok
+  mbpp 30/100: 18 ok
+  mbpp 40/100: 27 ok
+  mbpp 50/100: 35 ok
+  mbpp 60/100: 42 ok
+  mbpp 70/100: 49 ok
+  mbpp 80/100: 55 ok
+  mbpp 90/100: 61 ok
+  mbpp 100/100: 69 ok
+[mbpp] 69/100 = 69%
+[mem] peak 6.17 GB
+Fetching 13 files:   0%|          | 0/13 [00:00<?, ?it/s]Fetching 13 files: 100%|██████████| 13/13 [00:00<00:00, 2049.23it/s]
+[load] 5.04 GB
+  mmlu 50/500: 40 ok
+  mmlu 100/500: 76 ok
+  mmlu 150/500: 115 ok
+  mmlu 200/500: 157 ok
+  mmlu 250/500: 194 ok
+  mmlu 300/500: 231 ok
+  mmlu 350/500: 271 ok
+  mmlu 400/500: 309 ok
+  mmlu 450/500: 346 ok
+  mmlu 500/500: 386 ok
+[mmlu] 386/500 = 77%
+  lambada 100/500: 71 ok
+  lambada 200/500: 137 ok
+  lambada 300/500: 201 ok
+  lambada 400/500: 273 ok
+  lambada 500/500: 348 ok
+[lambada] 348/500 = 70%
+[mem] peak 5.93 GB
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 1972.04it/s]
+[load] 5.24 GB
+  math500 10/100: 10 ok
+  math500 20/100: 20 ok
+  math500 30/100: 27 ok
+  math500 40/100: 37 ok
+  math500 50/100: 45 ok
+  math500 60/100: 51 ok
+  math500 70/100: 59 ok
+  math500 80/100: 64 ok
+  math500 90/100: 71 ok
+  math500 100/100: 77 ok
+[math500] 77/100 = 77%
+  mbpp 10/100: 4 ok
+  mbpp 20/100: 11 ok
+  mbpp 30/100: 20 ok
+  mbpp 40/100: 27 ok
+  mbpp 50/100: 36 ok
+  mbpp 60/100: 44 ok
+  mbpp 70/100: 52 ok
+  mbpp 80/100: 59 ok
+  mbpp 90/100: 66 ok
+  mbpp 100/100: 74 ok
+[mbpp] 74/100 = 74%
+[mem] peak 5.97 GB
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 1832.55it/s]
+[load] 5.24 GB
+  mmlu 50/500: 34 ok
+  mmlu 100/500: 67 ok
+  mmlu 150/500: 100 ok
+  mmlu 200/500: 136 ok
+  mmlu 250/500: 171 ok
+  mmlu 300/500: 208 ok
+  mmlu 350/500: 247 ok
+  mmlu 400/500: 281 ok
+  mmlu 450/500: 317 ok
+  mmlu 500/500: 352 ok
+[mmlu] 352/500 = 70%
+  lambada 100/500: 72 ok
+  lambada 200/500: 141 ok
+  lambada 300/500: 211 ok
+  lambada 400/500: 277 ok
+  lambada 500/500: 349 ok
+[lambada] 349/500 = 70%
+[mem] peak 5.91 GB
+Fetching 14 files:   0%|          | 0/14 [00:00<?, ?it/s]Fetching 14 files: 100%|██████████| 14/14 [00:00<00:00, 2120.25it/s]
+[transformers] This model config has set a `rope_parameters['original_max_position_embeddings']` field, to be used together with `max_position_embeddings` to determine a scaling factor. Please set the `factor` field of `rope_parameters`with this ratio instead -- we recommend the use of this field over `original_max_position_embeddings`, as it is compatible with most model architectures.
+[load] 2.16 GB
+  math500 10/100: 7 ok
+  math500 20/100: 16 ok
+  math500 30/100: 23 ok
+  math500 40/100: 27 ok
+  math500 50/100: 32 ok
+  math500 60/100: 38 ok
+  math500 70/100: 41 ok
+  math500 80/100: 42 ok
+  math500 90/100: 43 ok
+  math500 100/100: 48 ok
+[math500] 48/100 = 48%
+  mbpp 10/100: 4 ok
+  mbpp 20/100: 10 ok
+  mbpp 30/100: 15 ok
+  mbpp 40/100: 20 ok
+  mbpp 50/100: 26 ok
+  mbpp 60/100: 30 ok
+  mbpp 70/100: 32 ok
+  mbpp 80/100: 37 ok
+  mbpp 90/100: 42 ok
+  mbpp 100/100: 48 ok
+[mbpp] 48/100 = 48%
+[mem] peak 3.20 GB
+Fetching 14 files:   0%|          | 0/14 [00:00<?, ?it/s]Fetching 14 files: 100%|██████████| 14/14 [00:00<00:00, 2035.43it/s]
+[transformers] This model config has set a `rope_parameters['original_max_position_embeddings']` field, to be used together with `max_position_embeddings` to determine a scaling factor. Please set the `factor` field of `rope_parameters`with this ratio instead -- we recommend the use of this field over `original_max_position_embeddings`, as it is compatible with most model architectures.
+[load] 2.16 GB
+  mmlu 50/500: 29 ok
+  mmlu 100/500: 62 ok
+  mmlu 150/500: 91 ok
+  mmlu 200/500: 119 ok
+  mmlu 250/500: 148 ok
+  mmlu 300/500: 173 ok
+  mmlu 350/500: 206 ok
+  mmlu 400/500: 238 ok
+  mmlu 450/500: 272 ok
+  mmlu 500/500: 298 ok
+[mmlu] 298/500 = 60%
+  lambada 100/500: 45 ok
+  lambada 200/500: 81 ok
+  lambada 300/500: 123 ok
+  lambada 400/500: 175 ok
+  lambada 500/500: 214 ok
+[lambada] 214/500 = 43%
+[mem] peak 2.99 GB
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Fetching 12 files: 100%|██████████| 12/12 [00:00<00:00, 2648.48it/s]
+[load] 0.42 GB
+  math500 10/100: 4 ok
+  math500 20/100: 8 ok
+  math500 30/100: 9 ok
+  math500 40/100: 11 ok
+  math500 50/100: 14 ok
+  math500 60/100: 16 ok
+  math500 70/100: 16 ok
+  math500 80/100: 16 ok
+  math500 90/100: 16 ok
+  math500 100/100: 18 ok
+[math500] 18/100 = 18%
+  mbpp 10/100: 2 ok
+  mbpp 20/100: 6 ok
+  mbpp 30/100: 9 ok
+  mbpp 40/100: 12 ok
+  mbpp 50/100: 13 ok
+  mbpp 60/100: 17 ok
+  mbpp 70/100: 18 ok
+  mbpp 80/100: 21 ok
+  mbpp 90/100: 25 ok
+  mbpp 100/100: 28 ok
+[mbpp] 28/100 = 28%
+[mem] peak 1.58 GB
+Fetching 12 files:   0%|          | 0/12 [00:00<?, ?it/s]Fetching 12 files: 100%|██████████| 12/12 [00:00<00:00, 2952.00it/s]
+[load] 0.42 GB
+  mmlu 50/500: 22 ok
+  mmlu 100/500: 48 ok
+  mmlu 150/500: 68 ok
+  mmlu 200/500: 93 ok
+  mmlu 250/500: 110 ok
+  mmlu 300/500: 124 ok
+  mmlu 350/500: 144 ok
+  mmlu 400/500: 164 ok
+  mmlu 450/500: 186 ok
+  mmlu 500/500: 213 ok
+[mmlu] 213/500 = 43%
+  lambada 100/500: 46 ok
+  lambada 200/500: 79 ok
+  lambada 300/500: 116 ok
+  lambada 400/500: 162 ok
+  lambada 500/500: 200 ok
+[lambada] 200/500 = 40%
+[mem] peak 1.22 GB
+Fetching 11 files:   0%|          | 0/11 [00:00<?, ?it/s]Fetching 11 files: 100%|██████████| 11/11 [00:00<00:00, 5066.70it/s]
+[load] 0.74 GB
+  math500 10/100: 4 ok
+  math500 20/100: 8 ok
+  math500 30/100: 9 ok
+  math500 40/100: 11 ok
+  math500 50/100: 12 ok
+  math500 60/100: 15 ok
+  math500 70/100: 15 ok
+  math500 80/100: 15 ok
+  math500 90/100: 15 ok
+  math500 100/100: 16 ok
+[math500] 16/100 = 16%
+  mbpp 10/100: 3 ok
+  mbpp 20/100: 6 ok
+  mbpp 30/100: 11 ok
+  mbpp 40/100: 15 ok
+  mbpp 50/100: 18 ok
+  mbpp 60/100: 21 ok
+  mbpp 70/100: 24 ok
+  mbpp 80/100: 28 ok
+  mbpp 90/100: 31 ok
+  mbpp 100/100: 37 ok
+[mbpp] 37/100 = 37%
+[mem] peak 1.53 GB
+Fetching 11 files:   0%|          | 0/11 [00:00<?, ?it/s]Fetching 11 files: 100%|██████████| 11/11 [00:00<00:00, 1871.01it/s]
+[load] 0.74 GB
+  mmlu 50/500: 14 ok
+  mmlu 100/500: 35 ok
+  mmlu 150/500: 54 ok
+  mmlu 200/500: 77 ok
+  mmlu 250/500: 94 ok
+  mmlu 300/500: 114 ok
+  mmlu 350/500: 135 ok
+  mmlu 400/500: 154 ok
+  mmlu 450/500: 172 ok
+  mmlu 500/500: 189 ok
+[mmlu] 189/500 = 38%
+  lambada 100/500: 36 ok
+  lambada 200/500: 65 ok
+  lambada 300/500: 103 ok
+  lambada 400/500: 142 ok
+  lambada 500/500: 179 ok
+[lambada] 179/500 = 36%
+[mem] peak 1.34 GB
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 4685.85it/s]
+[load] 0.66 GB
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+  math500 10/100: 8 ok
+  math500 20/100: 15 ok
+  math500 30/100: 21 ok
+  math500 40/100: 26 ok
+  math500 50/100: 28 ok
+  math500 60/100: 32 ok
+  math500 70/100: 34 ok
+  math500 80/100: 36 ok
+  math500 90/100: 38 ok
+  math500 100/100: 42 ok
+[math500] 42/100 = 42%
+  mbpp 10/100: 2 ok
+  mbpp 20/100: 6 ok
+  mbpp 30/100: 14 ok
+  mbpp 40/100: 17 ok
+  mbpp 50/100: 19 ok
+  mbpp 60/100: 22 ok
+  mbpp 70/100: 28 ok
+  mbpp 80/100: 31 ok
+  mbpp 90/100: 34 ok
+  mbpp 100/100: 39 ok
+[mbpp] 39/100 = 39%
+[mem] peak 1.47 GB
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 2069.12it/s]
+[load] 0.66 GB
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+  mmlu 50/500: 16 ok
+  mmlu 100/500: 45 ok
+  mmlu 150/500: 69 ok
+  mmlu 200/500: 96 ok
+  mmlu 250/500: 114 ok
+  mmlu 300/500: 133 ok
+  mmlu 350/500: 161 ok
+  mmlu 400/500: 190 ok
+  mmlu 450/500: 218 ok
+  mmlu 500/500: 240 ok
+[mmlu] 240/500 = 48%
+  lambada 100/500: 43 ok
+  lambada 200/500: 88 ok
+  lambada 300/500: 133 ok
+  lambada 400/500: 180 ok
+  lambada 500/500: 230 ok
+[lambada] 230/500 = 46%
+[mem] peak 1.23 GB
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 2629.33it/s]
+[load] 0.42 GB
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+  math500 10/100: 4 ok
+  math500 20/100: 10 ok
+  math500 30/100: 12 ok
+  math500 40/100: 15 ok
+  math500 50/100: 17 ok
+  math500 60/100: 20 ok
+  math500 70/100: 22 ok
+  math500 80/100: 23 ok
+  math500 90/100: 24 ok
+  math500 100/100: 26 ok
+[math500] 26/100 = 26%
+  mbpp 10/100: 2 ok
+  mbpp 20/100: 4 ok
+  mbpp 30/100: 9 ok
+  mbpp 40/100: 11 ok
+  mbpp 50/100: 14 ok
+  mbpp 60/100: 14 ok
+  mbpp 70/100: 16 ok
+  mbpp 80/100: 19 ok
+  mbpp 90/100: 21 ok
+  mbpp 100/100: 26 ok
+[mbpp] 26/100 = 26%
+[mem] peak 1.09 GB
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Fetching 10 files: 100%|██████████| 10/10 [00:00<00:00, 1816.90it/s]
+[load] 0.42 GB
+[transformers] Ignoring clean_up_tokenization_spaces=True for BPE tokenizer TokenizersBackend. The clean_up_tokenization post-processing step is designed for WordPiece tokenizers and is destructive for BPE (it strips spaces before punctuation). Set clean_up_tokenization_spaces=False to suppress this warning, or set clean_up_tokenization_spaces_for_bpe_even_though_it_will_corrupt_output=True to force cleanup anyway.
+  mmlu 50/500: 21 ok
+  mmlu 100/500: 43 ok
+  mmlu 150/500: 69 ok
+  mmlu 200/500: 89 ok
+  mmlu 250/500: 114 ok
+  mmlu 300/500: 139 ok
+  mmlu 350/500: 161 ok
+  mmlu 400/500: 184 ok
+  mmlu 450/500: 203 ok
+  mmlu 500/500: 221 ok
+[mmlu] 221/500 = 44%
+  lambada 100/500: 36 ok
+  lambada 200/500: 71 ok
+  lambada 300/500: 113 ok
+  lambada 400/500: 166 ok
+  lambada 500/500: 210 ok
+[lambada] 210/500 = 42%
+[mem] peak 0.87 GB
