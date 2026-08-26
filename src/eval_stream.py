@@ -658,6 +658,9 @@ def main() -> None:
         from huggingface_hub import snapshot_download
 
         args.artifact = snapshot_download(args.artifact)
+    if args.kld_ref and not Path(args.kld_ref).exists():
+        raise SystemExit(f"--kld-ref {args.kld_ref} no existe: la referencia se comprueba ANTES de "
+                         "la pasada (antes fallaba al final, tirando ~40 min de GPU)")
     _cfg = Path(args.artifact) / "config.json"
     if (_cfg.exists() and json.load(open(_cfg)).get("stream_layout") == "resident-p0"
             and args.serve_mode == "exact" and args.kld_decode):

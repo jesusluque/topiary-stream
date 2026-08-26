@@ -209,11 +209,6 @@ def split_full_memmap(src: Path, out: Path, consume: bool) -> None:
                             skeleton[f"{prefix}{proj_d}.{leaf}"] = arr
             else:
                 skeleton[key] = tensors[key]
-        # scales/biases reales de expertos (huérfanos de otro shard) no van al esqueleto:
-        # ya están en sb_all. Los dummies de 1x64 (no están en sb_all) se conservan.
-        for key in list(skeleton):
-            if key in sb_all:
-                del skeleton[key]
         mx.eval(*[v for v in skeleton.values()])
         del tensors
         mx.clear_cache()

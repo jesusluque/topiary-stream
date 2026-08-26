@@ -327,3 +327,24 @@ C=64: [serve] 255 tokens in 5.9s = 43.5 tok/s · peak 10.19 GB
 === B1C SPLIT OK:  16G ===
 === B1C KLD-REF FALLO ===
 === B1C KLD K=4 FALLO ===
+=== B1C HARD K=4: {'math500': 0.66, 'mbpp': 0.82, 'peak_gb': 12.454344224} ===
+=== PAUSA por el usuario hasta esta noche Tue Aug 25 09:43:07 CEST 2026 (B1C: hard K=4 hecho; wide K=4 interrumpida en mmlu ~150/500; pendientes: wide K=4, K=16 hard/wide, KLDs) ===
+=== B1C START Tue Aug 25 19:15:02 CEST 2026 ===
+=== B1C SPLIT OK:  16G ===
+=== REANUDADO por el usuario Tue Aug 25 19:15:03 CEST 2026 ===
+=== B1C KLD-REF FALLO ===
+=== B1C KLD K=4 FALLO ===
+=== B1C HARD K=4: {'math500': 0.66, 'mbpp': 0.82, 'peak_gb': 12.454344224} ===
+=== B1C WIDE K=4: {'mmlu': 0.746, 'lambada': 0.638, 'peak_gb': 12.34912208} ===
+=== B1C KLD K=16 FALLO ===
+=== B1C HARD K=16: {'math500': 0.7, 'mbpp': 0.83, 'peak_gb': 13.218756128} ===
+=== PAUSA por el usuario Wed Aug 26 09:12:54 CEST 2026 (pendiente: wide K=16 del 30B+suelo interrumpida en lambada ~100/500; KLDs de B1c) ===
+=== B1C START Wed Aug 26 18:04:33 CEST 2026 ===
+=== B1C SPLIT OK:  16G ===
+=== REANUDADO (sin tests de velocidad; equipo cargado) Wed Aug 26 18:04:35 CEST 2026 ===
+=== B1C KLD-REF FALLO ===
+=== B1C KLD K=4 FALLO ===
+=== B1C HARD K=4: {'math500': 0.66, 'mbpp': 0.82, 'peak_gb': 12.454344224} ===
+=== B1C WIDE K=4: {'mmlu': 0.746, 'lambada': 0.638, 'peak_gb': 12.34912208} ===
+=== B1C KLD K=16 FALLO ===
+=== B1C HARD K=16: {'math500': 0.7, 'mbpp': 0.83, 'peak_gb': 13.218756128} ===
