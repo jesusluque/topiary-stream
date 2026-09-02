@@ -282,10 +282,9 @@ python src/serve.py --artifact artifacts/qwen35-stream --pool-k 32 --governor</p
 <li><a href="https://huggingface.co/jesusluque/qwen3-next-80b-topiary-stream">qwen3-next-80b-topiary-stream</a> — the strongest model this hardware has touched, served at its true base</li>
 <li><a href="https://huggingface.co/jesusluque/qwen3-235b-topiary-stream-kit">qwen3-235b-topiary-stream-kit</a> — build kit + the honest negative, for the 48–64 GB machine you'll own someday</li>
 </ul>
-<p class="caption">The runtime is public (August 2026). The three Stream
-artifacts above are <strong>private pending release</strong>; until then,
-<code>split.py</code> rebuilds any of them from the community 4-bit
-checkpoint in ~15 min (35B) to ~1 h (80B).</p>
+<p class="caption">All public since August 2026 — runtime and artifacts.
+The 235B entry is a build kit plus its honest negative (the expert planes are
+rebuilt locally with <code>split.py</code> in ~1 h).</p>
 </section>
 
 <section id="cite">

@@ -348,3 +348,4 @@ C=64: [serve] 255 tokens in 5.9s = 43.5 tok/s · peak 10.19 GB
 === B1C WIDE K=4: {'mmlu': 0.746, 'lambada': 0.638, 'peak_gb': 12.34912208} ===
 === B1C KLD K=16 FALLO ===
 === B1C HARD K=16: {'math500': 0.7, 'mbpp': 0.83, 'peak_gb': 13.218756128} ===
+=== PARADA por el usuario Wed Aug 26 23:13:34 CEST 2026 (pendiente B1c: memmap+ref exacta, KLD K=4/16, wide K=16) ===

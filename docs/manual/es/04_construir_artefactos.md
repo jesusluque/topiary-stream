@@ -131,7 +131,7 @@ Regla: el runtime nunca borra nada salvo con `--consume` explícito.
 
 ## 4.8 Publicación en Hugging Face
 
-Repos (privados a fecha de hoy, pendientes de flip):
+Repos (todos públicos desde 2026-08-27):
 `jesusluque/qwen3.5-35b-topiary-stream`, `qwen3-next-80b-topiary-stream`,
 `qwen3-235b-topiary-stream-kit`. El test `test_model_card_placeholder_gate`
 impide subir cards con marcadores sin rellenar. Los checkpoints Topiary

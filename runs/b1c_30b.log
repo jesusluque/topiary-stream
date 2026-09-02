@@ -519,3 +519,10 @@ Traceback (most recent call last):
 FileNotFoundError: [Errno 2] No such file or directory: 'runs/kld30orig_base_long.npz'
 [load] 10.83 GB
 [load] 10.83 GB
+  mmlu 50/500: 37 ok
+  mmlu 100/500: 76 ok
+  mmlu 150/500: 112 ok
+  mmlu 200/500: 154 ok
+  mmlu 250/500: 183 ok
+  mmlu 300/500: 218 ok
+  mmlu 350/500: 261 ok

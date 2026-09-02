@@ -133,7 +133,7 @@ Rule: the runtime never deletes anything except under an explicit
 
 ## 4.8 Publishing on Hugging Face
 
-Repos (private as of today, pending the flip):
+Repos (all public since 2026-08-27):
 `jesusluque/qwen3.5-35b-topiary-stream`, `qwen3-next-80b-topiary-stream`,
 `qwen3-235b-topiary-stream-kit`. The `test_model_card_placeholder_gate` test
 prevents uploading cards with unfilled markers. The Topiary checkpoints
